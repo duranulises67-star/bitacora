@@ -1,5 +1,5 @@
 // Guarda la app en el dispositivo para que abra sin internet. Muestra la copia guardada y la actualiza en segundo plano.
-const CACHE='bitacora-c78c7c468f';
+const CACHE='bitacora-d58cab1ec8';
 const ARCHIVOS=['./','index.html','config.js','manifest.webmanifest','icono-192.png','icono-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARCHIVOS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

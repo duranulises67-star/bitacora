@@ -231,6 +231,14 @@ ol.pasos{margin:0;padding-left:1.3em;display:grid;gap:4px}
 .mx .code{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--primary);cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 .evs{display:grid;gap:4px;font-size:.88rem}
 .ev{display:grid;grid-template-columns:52px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;background:var(--surface2)}
+.ev.act{grid-template-columns:86px minmax(0,1fr) auto auto}
+.ev .fch{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+details.acts{margin:10px 0}
+details.acts>summary{cursor:pointer;padding:6px 0;list-style-position:inside}
+input.cin{width:54px;padding:4px 2px;text-align:center;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input.cin:focus{outline:2px solid var(--primary);outline-offset:0}
+input.cin.bad{border-color:var(--l0);background:var(--l0bg)}
+@media (max-width:560px){.ev.act{grid-template-columns:minmax(0,1fr) auto auto}.ev.act .fch{grid-column:1/-1}}
 .ev>b{color:var(--primary);font-family:var(--f-display)}
 @media (max-width:620px){.ev{grid-template-columns:44px minmax(0,1fr) auto}.ev .ed{grid-column:2 / -1;justify-self:start}}
 /* participaciones e instrumentos */
@@ -402,7 +410,7 @@ function normalize(){
   S.cfg.discV2=true;
   for(const k of ['alumnos','ppas','registros','notas'])S[k]=S[k]||[];
   S.fichas=S.fichas||{};S.grupoTexto=S.grupoTexto||{};
-  S.ppas.forEach(p=>{p.pas=p.pas||[];p.campos=p.campos||[]});
+  S.ppas.forEach(p=>{p.pas=p.pas||[];p.campos=p.campos||[];p.pas.forEach(pa=>{if(!Array.isArray(pa.discs))pa.discs=pa.disc?[pa.disc]:[]})});
   S.notas.forEach(n=>{if(!NOTA_CAT[n.cat])n.cat='socioemocional'});
   CACHE={};
 }
@@ -712,17 +720,18 @@ const ppaById=id=>S.ppas.find(p=>p.id===id);
 const paDe=(P,id)=>P&&(P.pas||[]).find(x=>x.id===id);
 const rango=P=>P.inicio||P.fin?`${fmtF(P.inicio)||'…'} – ${fmtF(P.fin)||'…'}`:'';
 const pesoDe=k=>tipo(k).oculto?0:(+S.cfg.pesos[k]||0);
+const paDs=pa=>pa?(Array.isArray(pa.discs)?pa.discs:(pa.disc?[pa.disc]:[])):[]; // disciplinas de un proyecto académico (una o varias)
 function discsCampo(k){const c=S.cfg.disciplinas;return (c&&Array.isArray(c[k])?c[k]:discDefault()[k])||[]}
 function rTrim(r){const P=r.ppa&&ppaById(r.ppa);return P?+P.trim:+r.trim}
 function rCampos(r){const P=r.ppa&&ppaById(r.ppa);if(!P)return r.campos||[];const pa=r.pa&&paDe(P,r.pa);return pa&&pa.campos&&pa.campos.length?pa.campos:(P.campos||[])}
 function rDiscs(r){ // disciplinas (asignaturas) a las que cuenta una valoración
   if(r.disc)return [r.disc];
   const P=r.ppa&&ppaById(r.ppa);if(!P)return [];
-  if(r.pa){const pa=paDe(P,r.pa);return pa&&pa.disc?[pa.disc]:[]}
-  return [...new Set((P.pas||[]).map(p=>p.disc).filter(Boolean))];
+  if(r.pa)return paDs(paDe(P,r.pa)).slice();
+  return [...new Set((P.pas||[]).flatMap(paDs))];
 }
 function discCampo(n,r){for(const c of CAMPOS)if(discsCampo(c.k).includes(n))return c.k;return r?(rCampos(r)[0]||''):''}
-const discsPA=pa=>r=>(!r.disc&&!r.pa&&pa)?(pa.disc?[pa.disc]:[]):rDiscs(r); // dentro de un proyecto, lo de «todo el PPA» cuenta para su disciplina
+const discsPA=pa=>r=>(!r.disc&&!r.pa&&pa)?paDs(pa).slice():rDiscs(r); // dentro de un proyecto, lo de «todo el PPA» cuenta para su disciplina
 function discsEn(regs,fn=rDiscs){
   const m=new Map();for(const r of regs)for(const d of fn(r))if(!m.has(d))m.set(d,discCampo(d,r));
   const ci=k=>{const i=CAMPOS.findIndex(c=>c.k===k);return i<0?9:i},oi=x=>{const i=discsCampo(x.c).indexOf(x.n);return i<0?99:i};
@@ -806,10 +815,10 @@ function columnas(P,pa){
 }
 function unoAUno(P){ // cada proyecto académico corresponde a una sola disciplina distinta
   const pas=P.pas||[];if(!pas.length)return false;
-  const ds=pas.map(p=>p.disc||'');if(ds.some(d=>!d)||new Set(ds).size!==ds.length)return false;
-  return regsPPA(P).every(r=>r.pa?(!r.disc||r.disc===(paDe(P,r.pa)||{}).disc):!r.disc);
+  const ds=pas.map(p=>paDs(p));if(ds.some(d=>d.length!==1))return false;const u=ds.map(d=>d[0]);if(new Set(u).size!==u.length)return false;
+  return regsPPA(P).every(r=>r.pa?(!r.disc||r.disc===paDs(paDe(P,r.pa))[0]):!r.disc);
 }
-const discsDePPA=P=>[...new Set((P.pas||[]).map(p=>p.disc).filter(Boolean))];
+const discsDePPA=P=>[...new Set((P.pas||[]).flatMap(paDs))];
 const ordPPA=(a,b)=>(a.estado==='concluido')-(b.estado==='concluido')||((b.inicio||'')>(a.inicio||'')?1:(b.inicio||'')<(a.inicio||'')?-1:0);
 function pctTipo(k){const sum=TIPOS.reduce((s,t)=>s+pesoDe(t.k),0);return sum?Math.round(100*pesoDe(k)/sum):0}
 function ponderacionTxt(tp){
@@ -995,7 +1004,7 @@ function datosEnc(P,pa){
   const c=S.cfg;
   const d=[['Escuela',c.escuela||'Telesecundaria'],['CCT',c.cct||'—'],['Docente',c.docente||'—'],['Grado y grupo',`${c.grado||''}° ${c.grupo||''}`.trim()],['Ciclo escolar',c.ciclo||'—'],['Trimestre',ORDC[P.trim]||'—'],['Periodo',rango(P)||'—'],['Fecha de emisión',fmtF(hoy())],['Campo formativo',(pa&&pa.campos&&pa.campos.length?pa.campos:P.campos||[]).map(nombreCampo).join(', ')||'—'],['Proyecto parcial de aula',P.nombre]];
   if(P.contenido)d.push(['Contenido integrador',P.contenido]);
-  if(pa){d.push(['Proyecto académico',pa.nombre]);if(pa.disc)d.push(['Disciplina',pa.disc]);if(pa.producto)d.push(['Producto final',pa.producto])}
+  if(pa){d.push(['Proyecto académico',pa.nombre]);{const dd=paDs(pa);if(dd.length)d.push([dd.length>1?'Disciplinas':'Disciplina',dd.join(', ')])}if(pa.producto)d.push(['Producto final',pa.producto])}
   else{const l=[...new Set(discsEn(regsPPA(P)).map(x=>x.n).concat(discsDePPA(P)))];if(l.length)d.push(['Disciplinas',l.join(', ')])}
   return d;
 }
@@ -1072,7 +1081,7 @@ function hojaResumen(P){
   const sp=A.map(a=>pas.map(pa=>scorePA(a.id,P,pa).score)),sf=A.map(a=>scorePPA(a.id,P));
   const sd=A.map(a=>ds.map(d=>scoreSet(a.id,regs.filter(r=>rDiscs(r).includes(d.n))).score));
   const tc=[{h:'#',w:4,al:'c'},{h:'Alumno(a)',w:32,al:'l'}]
-    .concat(pas.map((pa,i)=>({h:`${i+1}. ${pa.nombre}${pa.disc?' ('+pa.disc+')':''}`,w:16,al:'c',g:'Promedio por proyecto académico'})))
+    .concat(pas.map((pa,i)=>({h:`${i+1}. ${pa.nombre}${paDs(pa).length?' ('+paDs(pa).join(', ')+')':''}`,w:16,al:'c',g:'Promedio por proyecto académico'})))
     .concat(ds.map(d=>({h:d.n,w:anchoDisc(d.n),al:'c',g:'Promedio por disciplina'})))
     .concat([{h:'Promedio PPA',w:10,al:'c',g:'Resultado'},{h:'Calif.',w:7,al:'c',g:'Resultado'}]);
   const filas=A.map((a,i)=>{const k=calOf(sf[i]);return [{v:i+1,f:'int'},{v:a.nombre},...sp[i].map(x=>numC(x)),...sd[i].map(x=>numC(x)),numC(sf[i],true),k==null?{v:''}:{v:k,f:'int',b:true,bg:AZ3,c:k<6?ROJO:null}]});
@@ -1337,7 +1346,7 @@ function resolveDraft(){
   if(P){const pas=P.pas||[];if(d.pa==null||(d.pa&&!paDe(P,d.pa)))d.pa=pas[0]?pas[0].id:''}else d.pa=null;
 }
 function draftCampos(){const d=U.draft,P=d.ppa&&ppaById(d.ppa);if(!P)return d.campos;const pa=d.pa&&paDe(P,d.pa);return pa&&pa.campos&&pa.campos.length?pa.campos:(P.campos||[])}
-function draftDiscInh(){const d=U.draft,P=d.ppa&&ppaById(d.ppa),pa=P&&d.pa&&paDe(P,d.pa);return pa&&pa.disc||''}
+function draftDiscInh(){const d=U.draft,P=d.ppa&&ppaById(d.ppa),pa=P&&d.pa&&paDe(P,d.pa);return paDs(pa)}
 function ctxDraft(){const d=U.draft;return {ppa:d.ppa||null,pa:d.ppa?(d.pa||''):null,disc:d.disc||'',campos:draftCampos().slice(),trim:d.trim||U.trim}}
 const modoLog=()=>U.draft.tipo==='participacion'&&!U.draft.id;
 function ppaOptions(sel){
@@ -1348,8 +1357,8 @@ function vRegistrar(){
   if(!activos().length)return sinAlumnos();
   resolveDraft();
   const d=U.draft,part=d.tipo==='participacion',log=modoLog(),P=d.ppa&&ppaById(d.ppa),t=P?+P.trim:(d.trim||U.trim),pas=P?(P.pas||[]):[];
-  const cs=draftCampos(),inh=draftDiscInh(),ef=d.disc||inh;
-  const dopts=[...new Set(cs.flatMap(k=>discsCampo(k)).concat(ef?[ef]:[]))];
+  const cs=draftCampos(),inh=draftDiscInh(),ef=d.disc?[d.disc]:inh;
+  const dopts=[...new Set(cs.flatMap(k=>discsCampo(k)).concat(ef))];
   const todoDs=P&&d.pa===''&&!d.disc?discsDePPA(P):[];
   const ctx=ctxDraft();
   return `${d.id?`<div class="editing">Editando «${esc(corto(d.titulo,60))}» del ${fmtF(d.fecha)}<span class="spacer"></span><button class="btn sm" data-act="cancelEdit">Cancelar edición</button></div>`:''}
@@ -1367,8 +1376,8 @@ function vRegistrar(){
       <div class="row"><span class="lbl">Campo formativo</span>${cs.map(k=>`<span class="tag"><span class="dot" style="--cc:var(--c-${k})"></span>${nombreCampo(k)}</span>`).join('')||'<span class="hint">El PPA no tiene campo formativo; edítalo en Proyectos.</span>'}</div>`
     :`<div class="fld"><span>Campo formativo <em>· elige varios si la actividad los integra</em></span><div class="chips">${CAMPOS.map(c=>`<button class="chip campo ${d.campos.includes(c.k)?'on':''}" style="--cc:var(--c-${c.k})" data-act="dCampo" data-k="${c.k}" aria-pressed="${d.campos.includes(c.k)}"><i></i>${c.n}</button>`).join('')}</div>
       ${S.ppas.length?'':'<p class="hint">Organiza tus valoraciones por proyecto: <button class="btn sm" data-act="newPPA">Crear proyecto parcial de aula</button></p>'}</div>`}
-    ${dopts.length?`<div class="fld"><span>Disciplina <em>· opcional; permite calificar por asignatura</em></span><div class="chips">${dopts.map(n=>`<button class="chip ${ef===n?'on':''}" data-act="dDisc" data-k="${esc(n)}" aria-pressed="${ef===n}">${esc(n)}</button>`).join('')}</div>
-      ${inh&&!d.disc?`<p class="hint">Tomada del proyecto académico. Elige otra si esta valoración corresponde a otra asignatura.</p>`:''}${todoDs.length?`<p class="hint">Sin elegir, cuenta para ${lista(todoDs)}.</p>`:''}</div>`:''}
+    ${dopts.length?`<div class="fld"><span>Disciplina <em>· opcional; permite calificar por asignatura</em></span><div class="chips">${dopts.map(n=>`<button class="chip ${ef.includes(n)?'on':''}" data-act="dDisc" data-k="${esc(n)}" aria-pressed="${ef.includes(n)}">${esc(n)}</button>`).join('')}</div>
+      ${inh.length&&!d.disc?`<p class="hint">${inh.length>1?`Tomadas del proyecto académico: cuenta para ${esc(lista(inh))}. Toca una para que cuente solo para esa asignatura.`:'Tomada del proyecto académico. Elige otra si esta valoración corresponde a otra asignatura.'}</p>`:''}${d.disc&&inh.length>1?'<p class="hint">Toca de nuevo la asignatura elegida para que cuente para todas las del proyecto.</p>':''}${todoDs.length?`<p class="hint">Sin elegir, cuenta para ${lista(todoDs)}.</p>`:''}</div>`:''}
     <div class="fld"><span>Tipo de evidencia</span><div class="chips">${TIPOS.map(x=>`<button class="chip ${d.tipo===x.k?'on':''}" data-act="dTipo" data-k="${x.k}" aria-pressed="${d.tipo===x.k}">${x.n}</button>`).join('')}</div>
       ${!part&&P?'<p class="hint">Para calificar un producto con rúbrica o lista de cotejo, ábrelo desde Proyectos → Ver valoraciones → «Rúbrica o lista de cotejo».</p>':''}</div>
     ${log?'':`<div class="grid2">
@@ -1416,7 +1425,7 @@ function vProyectos(){
   const sueltos=S.registros.filter(r=>!r.ppa&&rTrim(r)===t).length;
   const P=U.ppaSel&&ppaById(U.ppaSel);
   return `<section class="panel flat"><div class="sec-h"><div><div class="eyebrow">Trimestre ${t}</div><h2>Proyectos parciales de aula</h2></div>${U.ppaForm?'':'<button class="btn primary" data-act="newPPA">+ Nuevo PPA</button>'}</div>
-    <p class="lead">Cada PPA se divide en hasta tres proyectos académicos, y cada proyecto puede corresponder a una disciplina. Dentro de cada proyecto registras valoraciones, participaciones y rúbricas o listas de cotejo para su producto. Al concluir, descarga el registro en Word o Excel para imprimirlo.</p></section>
+    <p class="lead">Cada PPA se divide en hasta tres proyectos académicos, y cada proyecto puede corresponder a una o varias disciplinas. Dentro de cada proyecto registras valoraciones, participaciones y rúbricas o listas de cotejo para su producto. Al concluir, descarga el registro en Word o Excel para imprimirlo.</p></section>
   ${U.ppaForm?ppaFormHTML():''}
   ${ps.length?ps.map(ppaCard).join(''):(U.ppaForm?'':`<section class="panel empty"><h3>Sin proyectos en el trimestre ${t}</h3><p class="lead">Crea tu primer proyecto parcial de aula con sus proyectos académicos.</p><button class="btn primary" data-act="newPPA">+ Nuevo PPA</button></section>`)}
   ${sueltos?`<p class="hint">${sueltos===1?'1 valoración de este trimestre no pertenece':sueltos+' valoraciones de este trimestre no pertenecen'} a un PPA. Consúltalas en la Bitácora.</p>`:''}
@@ -1429,7 +1438,7 @@ function ppaCard(P){
     <div class="hd"><div style="min-width:0"><h3>${esc(P.nombre)}</h3><div class="meta">${(P.campos||[]).map(k=>`<span><span class="dot" style="--cc:var(--c-${k})"></span> ${nombreCampo(k)}</span>`).join('')}${rango(P)?`<span>${rango(P)}</span>`:''}<span class="badge ${fin?'fin':'curso'}">${fin?'Concluido':'En curso'}</span></div></div>
       <div class="prom">${gnum(pg,'cal')}<small>Promedio del grupo</small></div></div>
     <div class="palist">${pas.map((pa,i)=>{const rs=regs.filter(r=>r.pa===pa.id),n=rs.length,ni=rs.filter(r=>r.inst).length,pr=avg(A.map(a=>scorePA(a.id,P,pa).score).filter(x=>x!=null));
-      return `<div class="parow"><span class="k">${i+1}</span><span style="min-width:0"><b>${esc(pa.nombre)}</b>${pa.disc?' '+tagsDisc([pa.disc]):''}${pa.estado==='concluido'?' <span class="badge fin">Concluido</span>':''}${pa.producto?`<br><span class="muted" style="font-size:.85rem">Producto final: ${esc(pa.producto)}</span>`:''}</span><span class="stat muted" style="font-size:.85rem">${pl(n,'valoración','valoraciones')}${ni?' · '+pl(ni,'instrumento','instrumentos'):''}</span>${gnum(pr)}</div>`}).join('')||'<p class="hint">Sin proyectos académicos. Edita el PPA para agregar hasta tres.</p>'}
+      return `<div class="parow"><span class="k">${i+1}</span><span style="min-width:0"><b>${esc(pa.nombre)}</b>${paDs(pa).length?' '+tagsDisc(paDs(pa)):''}${pa.estado==='concluido'?' <span class="badge fin">Concluido</span>':''}${pa.producto?`<br><span class="muted" style="font-size:.85rem">Producto final: ${esc(pa.producto)}</span>`:''}</span><span class="stat muted" style="font-size:.85rem">${pl(n,'valoración','valoraciones')}${ni?' · '+pl(ni,'instrumento','instrumentos'):''}</span>${gnum(pr)}</div>`}).join('')||'<p class="hint">Sin proyectos académicos. Edita el PPA para agregar hasta tres.</p>'}
       ${todo?`<p class="hint">${todo===1?'1 valoración aplica':todo+' valoraciones aplican'} a todo el PPA.</p>`:''}</div>
     <div class="row"><button class="btn sm ${sel?'primary':''}" data-act="verPPA" data-k="${P.id}">${sel?'Ocultar valoraciones':'Ver valoraciones'}</button><button class="btn sm" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><button class="btn sm" data-act="editPPA" data-k="${P.id}">Editar</button><button class="btn sm" data-act="finPPA" data-k="${P.id}">${fin?'Reabrir PPA':'Concluir PPA'}</button><span class="spacer"></span><button class="btn sm" data-act="docx" data-k="${P.id}">Descargar Word</button><button class="btn sm" data-act="xlsx" data-k="${P.id}">Descargar Excel</button>${confirmBtn('delPPA',P.id,regs.length?`Eliminar (${pl(regs.length,'valoración','valoraciones')})`:'Eliminar')}</div>
   </section>`;
@@ -1457,10 +1466,10 @@ function resumenPPA(P){
   return `${kpisDe(sf,`<div class="kpi"><b>${regs.length}</b><span>Valoraciones registradas</span></div>`)}
   <div class="tw"><table class="mx"><thead>
     <tr><th class="nm" rowspan="2">Alumno(a)</th><th class="grp" colspan="${pas.length}">Promedio por proyecto académico</th>${ds.length?`<th class="grp" colspan="${ds.length}">Promedio por disciplina</th>`:''}<th class="grp" colspan="2">Resultado</th></tr>
-    <tr>${pas.map((pa,i)=>`<th title="${esc(pa.nombre)}">Proyecto ${i+1}${pa.disc?`<small>${esc(pa.disc)}</small>`:''}</th>`).join('')}${ds.map(d=>`<th class="dn">${esc(d.n)}</th>`).join('')}<th>Promedio PPA</th><th>Calif.</th></tr></thead>
+    <tr>${pas.map((pa,i)=>`<th title="${esc(pa.nombre)}">Proyecto ${i+1}${paDs(pa).length?`<small>${esc(paDs(pa).join(', '))}</small>`:''}</th>`).join('')}${ds.map(d=>`<th class="dn">${esc(d.n)}</th>`).join('')}<th>Promedio PPA</th><th>Calif.</th></tr></thead>
   <tbody>${A.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${sp[i].map(x=>`<td>${gnum(x)}</td>`).join('')}${sd[i].map(x=>`<td>${gnum(x)}</td>`).join('')}<td><b>${f1(sf[i])}</b></td><td>${gcal(sf[i])}</td></tr>`).join('')}</tbody>
   <tfoot><tr><td class="nm">Promedio del grupo</td>${pas.map((pa,j)=>`<td>${av(sp.map(x=>x[j]))}</td>`).join('')}${ds.map((d,j)=>`<td>${av(sd.map(x=>x[j]))}</td>`).join('')}<td>${av(sf)}</td><td>${av(sf.map(calOf))}</td></tr></tfoot></table></div>
-  <div class="evs">${pas.map((pa,i)=>`<div class="ev"><b>P${i+1}</b><span style="min-width:0">${esc(pa.nombre)}${pa.disc?' · '+esc(pa.disc):''}${pa.producto?` <span class="muted">· ${esc(pa.producto)}</span>`:''}</span><span></span><button class="btn sm ed" data-act="paSel" data-k="${pa.id}">Ver detalle</button></div>`).join('')}</div>
+  <div class="evs">${pas.map((pa,i)=>`<div class="ev"><b>P${i+1}</b><span style="min-width:0">${esc(pa.nombre)}${paDs(pa).length?' · '+esc(paDs(pa).join(', ')):''}${pa.producto?` <span class="muted">· ${esc(pa.producto)}</span>`:''}</span><span></span><button class="btn sm ed" data-act="paSel" data-k="${pa.id}">Ver detalle</button></div>`).join('')}</div>
   <p class="hint">El promedio del PPA es el promedio de sus proyectos académicos.${ds.length?' El promedio por disciplina considera solo las valoraciones de cada asignatura.':''}</p>
   <div class="row"><button class="btn" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><span class="spacer"></span><button class="btn primary" data-act="docx" data-k="${P.id}">Descargar PPA en Word</button><button class="btn primary" data-act="xlsx" data-k="${P.id}">Descargar PPA en Excel</button></div>`;
 }
@@ -1476,7 +1485,7 @@ function matrizPA(P,pa){
   const k_=`data-k="${P.id}" data-pa="${pa?pa.id:''}"`;
   const acciones=`<div class="row"><button class="btn" data-act="${pa?'regPA':'regPPA'}" ${k_}>Registrar valoración</button><button class="btn" data-act="partOpen" ${k_}>Registrar participaciones</button><button class="btn" data-act="instNew" ${k_}>+ Rúbrica o lista de cotejo</button></div>`;
   const fin=pa?`<button class="btn" data-act="finPA" ${k_}>${pa.estado==='concluido'?'Reabrir proyecto académico':'Concluir proyecto académico'}</button>`:'';
-  const head=pa?`<div class="row"><div style="min-width:0"><b>${esc(pa.nombre)}</b> ${pa.disc?tagsDisc([pa.disc]):''}${pa.producto?`<br><span class="muted" style="font-size:.88rem">Producto final: ${esc(pa.producto)}</span>`:''}</div>${pa.estado==='concluido'?'<span class="badge fin">Concluido</span>':''}</div>`:'';
+  const head=pa?`<div class="row"><div style="min-width:0"><b>${esc(pa.nombre)}</b> ${tagsDisc(paDs(pa))}${pa.producto?`<br><span class="muted" style="font-size:.88rem">Producto final: ${esc(pa.producto)}</span>`:''}</div>${pa.estado==='concluido'?'<span class="badge fin">Concluido</span>':''}</div>`:'';
   if(!cols.length)return `${head}${acciones}<div class="empty"><p class="lead">Aún no hay valoraciones${pa?' en este proyecto académico':' en este PPA'}.</p></div>${instLista(P,pa)}`;
   const regs=cols.map(c=>c.r),sc=A.map(a=>scoreSet(a.id,regs)),dOf=discsPA(pa);
   const dsAll=discsEn(regs,dOf),ds=dsAll.length>1?dsAll:[];
@@ -1484,14 +1493,21 @@ function matrizPA(P,pa){
   const runs=[];cols.forEach(c=>{const g=tipo(c.t).pl;if(runs.length&&runs[runs.length-1].g===g)runs[runs.length-1].n++;else runs.push({g,n:1})});
   const av=fn=>{const v=A.map((a,i)=>fn(a,i)).filter(x=>x!=null);return v.length?f1(avg(v)):'—'};
   const pond=t=>pesoDe(t.k)>0;
-  return `${head}${acciones}${kpisDe(sc.map(x=>x.score),`<div class="kpi"><b>${cols.length}</b><span>Evidencias valoradas</span></div>`)}
+  const dec=U.decimal&&pa,editable=r=>!r.inst&&!r.log&&r.tipo!=='participacion';
+  const vCel=v=>v==null?'':v==='ne'?'NE':v==='j'?'J':typeof v==='object'?'':fg(gradeOf(v));
+  const celdaDe=(c,a)=>{const v=c.r.valores&&c.r.valores[a.id];
+    return dec&&editable(c.r)&&(v==null||typeof v!=='object')?`<input class="cin" id="c-${c.r.id}-${a.id}" data-chg="celda" data-r="${c.r.id}" data-aid="${a.id}" value="${vCel(v)}" inputmode="decimal" autocomplete="off" aria-label="${esc(a.nombre)}, ${esc(c.code)}">`:celda(v)};
+  const ords=cols.slice().sort((x,y)=>(x.r.fecha||'').localeCompare(y.r.fecha||'')||cols.indexOf(x)-cols.indexOf(y));
+  const lst=`<details class="acts" open><summary><b>Actividades registradas</b> <span class="muted">· ${pl(cols.length,'evidencia','evidencias')}${ords.length?` · del ${fmtF(ords[0].r.fecha)} al ${fmtF(ords[ords.length-1].r.fecha)}`:''}</span></summary>
+    <div class="evs">${ords.map(c=>{const dd=dOf(c.r),dt=detalleReg(c.r);return `<div class="ev act"><span class="fch">${fmtF(c.r.fecha)}</span><span style="min-width:0"><b>${esc(c.r.titulo)}</b> <span class="muted">· ${c.code}${c.todo?'•':''} · ${esc(tipo(c.t).n)}${c.todo?' · todo el PPA':''}${dd.length?' · '+esc(dd.join(', ')):''}${dt?' · '+esc(dt):''}</span></span>${gnum(promReg(c.r))}<button class="btn sm ed" data-act="editReg" data-k="${c.r.id}">${c.r.inst?'Evaluar':c.r.log?'Participaciones':'Abrir'}</button></div>`}).join('')}</div></details>`;
+  const decBtn=pa?`<div class="row"><button class="btn sm ${dec?'primary':''}" data-act="decimal" aria-pressed="${!!dec}">${dec?'Terminar de calificar':'Calificar con decimales'}</button>${dec?'<span class="hint">Escribe de 5 a 10 (por ejemplo 8.5), NE o J. Se guarda al salir de cada casilla. Las evidencias con rúbrica o participaciones se califican desde su propia pantalla.</span>':''}</div>`:'';
+  return `${head}${acciones}${lst}${decBtn}${kpisDe(sc.map(x=>x.score),`<div class="kpi"><b>${cols.length}</b><span>Evidencias valoradas</span></div>`)}
   <div class="tw"><table class="mx"><thead>
     <tr><th class="nm" rowspan="2">Alumno(a)</th>${runs.map(x=>`<th class="grp" colspan="${x.n}">${esc(x.g)}</th>`).join('')}<th class="grp" colspan="${tp.length}">Promedio por tipo</th>${ds.length?`<th class="grp" colspan="${ds.length}">Promedio por disciplina</th>`:''}<th class="grp" colspan="2">Resultado</th></tr>
     <tr>${cols.map(c=>`<th><button class="code" data-act="editReg" data-k="${c.r.id}" title="${esc(c.r.titulo)} · ${fmtF(c.r.fecha)}${c.todo?' · todo el PPA':''}${c.r.inst?' · '+instNom(c.r.inst):''}. Toca para ${c.r.inst?'evaluar':'editar'}.">${c.code}${c.todo?'•':''}${c.r.inst?'ᴿ':''}</button></th>`).join('')}${tp.map(t=>`<th title="${esc(t.pl)}${pond(t)?'':' · no pondera'}">${t.p}${pond(t)?'':'°'}</th>`).join('')}${ds.map(d=>`<th class="dn">${esc(d.n)}</th>`).join('')}<th>Promedio</th><th>Calif.</th></tr></thead>
-  <tbody>${A.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${cols.map(c=>`<td>${celda(c.r.valores&&c.r.valores[a.id])}</td>`).join('')}${tp.map(t=>{const x=sc[i].porTipo[t.k];return `<td>${x?f1(x.avg):'<span class="tx">—</span>'}</td>`}).join('')}${sd[i].map(x=>`<td>${gnum(x)}</td>`).join('')}<td><b>${f1(sc[i].score)}</b></td><td>${gcal(sc[i].score)}</td></tr>`).join('')}</tbody>
+  <tbody>${A.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${cols.map(c=>`<td>${celdaDe(c,a)}</td>`).join('')}${tp.map(t=>{const x=sc[i].porTipo[t.k];return `<td>${x?f1(x.avg):'<span class="tx">—</span>'}</td>`}).join('')}${sd[i].map(x=>`<td>${gnum(x)}</td>`).join('')}<td><b>${f1(sc[i].score)}</b></td><td>${gcal(sc[i].score)}</td></tr>`).join('')}</tbody>
   <tfoot><tr><td class="nm">Promedio del grupo</td>${cols.map(c=>`<td>${av(a=>gradeOf(c.r.valores&&c.r.valores[a.id]))}</td>`).join('')}${tp.map(t=>`<td>${av((a,i)=>{const x=sc[i].porTipo[t.k];return x?x.avg:null})}</td>`).join('')}${ds.map((d,j)=>`<td>${av((a,i)=>sd[i][j])}</td>`).join('')}<td>${av((a,i)=>sc[i].score)}</td><td>${av((a,i)=>calOf(sc[i].score))}</td></tr></tfoot></table></div>
   <p class="hint">${esc(ponderacionTxt(tp))} NE = no entregó (cuenta ${+S.cfg.ne||5}) · J = justificado · ×n = número de participaciones · • = valoración para todo el PPA · ᴿ = calificado con rúbrica o lista de cotejo · ° = no pondera.</p>
-  <div class="fld"><span>Claves de las evidencias</span><div class="evs">${cols.map(c=>{const dd=dOf(c.r),dt=detalleReg(c.r);return `<div class="ev"><b>${c.code}${c.todo?'•':''}</b><span style="min-width:0">${esc(c.r.titulo)} <span class="muted">· ${esc(tipo(c.t).n)} · ${fmtF(c.r.fecha)}${c.todo?' · todo el PPA':''}${dd.length?' · '+esc(dd.join(', ')):''}${dt?' · '+esc(dt):''}</span></span>${gnum(promReg(c.r))}<button class="btn sm ed" data-act="editReg" data-k="${c.r.id}">${c.r.inst?'Evaluar':c.r.log?'Participaciones':'Editar'}</button></div>`}).join('')}</div></div>
   ${instLista(P,pa)}
   <div class="row">${fin}<span class="spacer"></span>${pa?`<button class="btn primary" data-act="docx" ${k_}>Descargar en Word</button><button class="btn primary" data-act="xlsx" ${k_}>Descargar en Excel</button>`:`<button class="btn primary" data-act="docx" data-k="${P.id}">Descargar en Word</button><button class="btn primary" data-act="xlsx" data-k="${P.id}">Descargar en Excel</button>`}</div>`;
 }
@@ -1543,7 +1559,7 @@ function instEvalHTML(P,r){
 }
 function ppaFormHTML(){
   const f=U.ppaForm,cnt=id=>S.registros.filter(r=>r.pa===id).length;
-  const optsPA=pa=>{const ks=pa.campos&&pa.campos.length?pa.campos:f.campos;const l=[...new Set(ks.flatMap(k=>discsCampo(k)))];if(pa.disc&&!l.includes(pa.disc))l.push(pa.disc);return l};
+  const optsPA=pa=>{const ks=pa.campos&&pa.campos.length?pa.campos:f.campos;const l=[...new Set(ks.flatMap(k=>discsCampo(k)))];paDs(pa).forEach(d=>{if(!l.includes(d))l.push(d)});return l};
   return `<section class="panel" id="ppa-form"><h2>${f.id?'Editar':'Nuevo'} proyecto parcial de aula</h2>
     <label class="fld"><span>Número y nombre del PPA</span><input id="pf-nombre" data-inp="pf" data-k="nombre" value="${esc(f.nombre)}" placeholder="Ej. PPA 5 – Problemas e intereses comunitarios y los lenguajes"></label>
     <div class="fld"><span>Campo formativo</span><div class="chips">${CAMPOS.map(c=>`<button class="chip campo ${f.campos.includes(c.k)?'on':''}" style="--cc:var(--c-${c.k})" data-act="pfCampo" data-k="${c.k}" aria-pressed="${f.campos.includes(c.k)}"><i></i>${c.n}</button>`).join('')}</div></div>
@@ -1556,7 +1572,7 @@ function ppaFormHTML(){
     <div class="fld"><span>Proyectos académicos (hasta 3)</span>
     ${f.pas.map((pa,i)=>{const n=pa.id?cnt(pa.id):0,op=optsPA(pa);return `<div class="paform"><div class="sec-h"><b>Proyecto académico ${i+1}</b>${n?`<span class="hint">${pl(n,'valoración registrada','valoraciones registradas')}</span>`:`<button class="btn sm ghost" data-act="pfDelPA" data-i="${i}">Quitar</button>`}</div>
       <div class="grid2"><label class="fld"><span>Número y nombre</span><input id="pf-pa${i}-nombre" data-inp="pfPA" data-i="${i}" data-k="nombre" value="${esc(pa.nombre)}" placeholder="Ej. Proyecto 13 – Soluciones creativas y problemas comunitarios"></label>
-      <label class="fld"><span>Disciplina (opcional)</span><select id="pf-pa${i}-disc" data-chg="pfPADisc" data-i="${i}"><option value="">${op.length?'Sin disciplina':'Elige primero el campo formativo'}</option>${op.map(d=>`<option value="${esc(d)}" ${pa.disc===d?'selected':''}>${esc(d)}</option>`).join('')}</select></label>
+      <div class="fld"><span>Disciplinas <em>· opcional; elige una o varias</em></span>${op.length?`<div class="chips">${op.map(d=>`<button class="chip ${paDs(pa).includes(d)?'on':''}" data-act="pfPADisc" data-i="${i}" data-k="${esc(d)}" aria-pressed="${paDs(pa).includes(d)}">${esc(d)}</button>`).join('')}</div>`:'<span class="hint">Elige primero el campo formativo.</span>'}</div>
       <label class="fld"><span>Producto final (opcional)</span><input id="pf-pa${i}-producto" data-inp="pfPA" data-i="${i}" data-k="producto" value="${esc(pa.producto)}" placeholder="Ej. Catálogo ilustrado"></label></div>
       ${f.campos.length>1?`<div class="row"><span class="lbl">Campo de este proyecto</span>${f.campos.map(k=>`<button class="chip campo ${(pa.campos||[]).includes(k)?'on':''}" style="--cc:var(--c-${k})" data-act="pfPACampo" data-i="${i}" data-k="${k}"><i></i>${cortoCampo(k)}</button>`).join('')}<span class="hint">Sin elegir: todos los campos del PPA</span></div>`:''}
     </div>`}).join('')}
@@ -1712,7 +1728,7 @@ function render(){
 }
 function modal(h){$('#modal').innerHTML=`<div class="modal" data-act="bg"><div class="box" role="dialog" aria-modal="true">${h}</div></div>`}
 function irA(id){setTimeout(()=>{const e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},30)}
-const limpiarModos=()=>{U.part=null;U.instForm=null;U.instEval=null};
+const limpiarModos=()=>{U.part=null;U.instForm=null;U.instEval=null;U.decimal=false};
 
 /* ---------- Acciones ---------- */
 function fichaDe(aid){return S.fichas[aid]||(S.fichas[aid]={})}
@@ -1723,7 +1739,7 @@ const A={
   /* registrar */
   dCampo(b){const d=U.draft,k=b.dataset.k;d.campos=d.campos.includes(k)?d.campos.filter(x=>x!==k):[...d.campos,k];LS.set('tsf-draft',d);render()},
   dPA(b){U.draft.pa=b.dataset.k;U.draft.disc='';LS.set('tsf-draft',U.draft);render()},
-  dDisc(b){const d=U.draft,k=b.dataset.k,inh=draftDiscInh(),ef=d.disc||inh;d.disc=ef===k?'':(k===inh?'':k);LS.set('tsf-draft',d);render()},
+  dDisc(b){const d=U.draft,k=b.dataset.k,inh=draftDiscInh();d.disc=d.disc===k?'':((inh.length===1&&inh[0]===k)?'':k);LS.set('tsf-draft',d);render()},
   dTipo(b){const d=U.draft,k=b.dataset.k,wasP=d.tipo==='participacion',isP=k==='participacion';if(wasP!==isP&&Object.keys(d.valores).length){d.valores={};toast('Se limpiaron las calificaciones al cambiar a o desde participación.')}d.tipo=k;LS.set('tsf-draft',d);render()},
   lv(b){const d=U.draft,a=b.dataset.aid,v=numK(b.dataset.k);if(String(d.valores[a])===String(v))delete d.valores[a];else d.valores[a]=v;refreshList()},
   fill(b){const v=numK(b.dataset.k);activos().forEach(a=>{if(U.draft.valores[a.id]==null)U.draft.valores[a.id]=v});refreshList()},
@@ -1898,23 +1914,25 @@ const A={
   async borrarTodo(){U.confirm=null;toast('Quitando datos de ejemplo…');await Store.replaceAll({cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},ejemplo:false});U.draft=newDraft();LS.set('tsf-draft',U.draft);U.sel=null;U.fsel=null;U.ppaSel=null;limpiarModos();render();toast('Listo. Agrega a tus alumnos para comenzar.')},
   /* proyectos */
   newPPA(){U.view='proyectos';LS.set('tsf-view','proyectos');limpiarModos();U.ppaForm={id:null,nombre:'',campos:[],trim:U.trim,inicio:hoy(),fin:'',contenido:'',estado:'curso',pas:[{id:null,nombre:'',producto:'',campos:[],disc:''}]};render();irA('ppa-form');setTimeout(()=>$('#pf-nombre')?.focus(),60)},
-  editPPA(b){const P=ppaById(b.dataset.k);if(!P)return;U.view='proyectos';LS.set('tsf-view','proyectos');limpiarModos();U.ppaForm=clone(P);U.ppaForm.pas=U.ppaForm.pas||[];if(!U.ppaForm.pas.length)U.ppaForm.pas.push({id:null,nombre:'',producto:'',campos:[],disc:''});render();irA('ppa-form')},
+  editPPA(b){const P=ppaById(b.dataset.k);if(!P)return;U.view='proyectos';LS.set('tsf-view','proyectos');limpiarModos();U.ppaForm=clone(P);U.ppaForm.pas=U.ppaForm.pas||[];if(!U.ppaForm.pas.length)U.ppaForm.pas.push({id:null,nombre:'',producto:'',campos:[],disc:'',discs:[]});render();irA('ppa-form')},
   pfCampo(b){const f=U.ppaForm,k=b.dataset.k;f.campos=f.campos.includes(k)?f.campos.filter(x=>x!==k):[...f.campos,k];render()},
   pfPACampo(b){const pa=U.ppaForm.pas[+b.dataset.i],k=b.dataset.k;pa.campos=pa.campos||[];pa.campos=pa.campos.includes(k)?pa.campos.filter(x=>x!==k):[...pa.campos,k];render()},
-  pfAddPA(){if(U.ppaForm.pas.length<3)U.ppaForm.pas.push({id:null,nombre:'',producto:'',campos:[],disc:''});render()},
+  pfPADisc(b){const pa=U.ppaForm.pas[+b.dataset.i],k=b.dataset.k,l=paDs(pa);pa.discs=l.includes(k)?l.filter(x=>x!==k):[...l,k];pa.disc=pa.discs[0]||'';render()},
+  pfAddPA(){if(U.ppaForm.pas.length<3)U.ppaForm.pas.push({id:null,nombre:'',producto:'',campos:[],disc:'',discs:[]});render()},
   pfDelPA(b){U.ppaForm.pas.splice(+b.dataset.i,1);render()},
   pfCancel(){U.ppaForm=null;render()},
   async pfSave(){const f=U.ppaForm;if(!f)return;
     if(!f.nombre.trim()){toast('Escribe el número y nombre del PPA.');$('#pf-nombre')?.focus();return}
     if(!f.campos.length){toast('Elige el campo formativo del PPA.');return}
     const P={id:f.id||uid(),nombre:f.nombre.trim(),campos:f.campos.slice(),trim:+f.trim,inicio:f.inicio||'',fin:f.fin||'',contenido:(f.contenido||'').trim(),estado:f.estado||'curso',
-      pas:f.pas.slice(0,3).map((pa,i)=>({id:pa.id||uid(),nombre:(pa.nombre||'').trim()||`Proyecto académico ${i+1}`,producto:(pa.producto||'').trim(),campos:(pa.campos||[]).filter(k=>f.campos.includes(k)),disc:pa.disc||'',estado:pa.estado||'curso'}))};
+      pas:f.pas.slice(0,3).map((pa,i)=>({id:pa.id||uid(),nombre:(pa.nombre||'').trim()||`Proyecto académico ${i+1}`,producto:(pa.producto||'').trim(),campos:(pa.campos||[]).filter(k=>f.campos.includes(k)),discs:paDs(pa).slice(),disc:paDs(pa)[0]||'',estado:pa.estado||'curso'}))};
     const i=S.ppas.findIndex(x=>x.id===P.id);if(i>=0)S.ppas[i]=P;else S.ppas.push(P);
     U.ppaForm=null;U.ppaSel=P.id;U.paSel='resumen';if(P.trim!==U.trim){U.trim=P.trim;LS.set('tsf-trim',U.trim)}
     render();irA('detalle-ppa');
     try{await Store.ppa(P);toast(i>=0?'PPA actualizado':'PPA creado. Ya puedes registrar valoraciones.')}catch(e){}},
   verPPA(b){const id=b.dataset.k;U.ppaSel=U.ppaSel===id?null:id;U.paSel='resumen';limpiarModos();render();if(U.ppaSel)irA('detalle-ppa')},
   paSel(b){U.paSel=b.dataset.k;limpiarModos();render();irA('detalle-ppa')},
+  decimal(){U.decimal=!U.decimal;render();if(U.decimal)setTimeout(()=>{const e=document.querySelector("#detalle-ppa input.cin");if(e)e.focus()},40)},
   regPPA(b){U.draft={...newDraft(),ppa:b.dataset.k,pa:null};LS.set('tsf-draft',U.draft);U.view='registrar';LS.set('tsf-view','registrar');limpiarModos();render();window.scrollTo(0,0)},
   regPA(b){U.draft={...newDraft(),ppa:b.dataset.k,pa:b.dataset.pa||''};LS.set('tsf-draft',U.draft);U.view='registrar';LS.set('tsf-view','registrar');limpiarModos();render();window.scrollTo(0,0)},
   async finPPA(b){const P=ppaById(b.dataset.k);if(!P)return;P.estado=P.estado==='concluido'?'curso':'concluido';if(P.estado==='concluido')P.concluido=hoy();render();await Store.ppa(P);toast(P.estado==='concluido'?'PPA concluido. Descarga su registro en Word o Excel.':'PPA reabierto')},
@@ -1946,9 +1964,19 @@ const INP={
   ifDesc(e){const c=U.instForm&&U.instForm.criterios[+e.target.dataset.i];if(c){c.d=c.d||[];c.d[+e.target.dataset.j]=e.target.value}}
 };
 const CHG={
+  celda(e){ // calificación escrita en la matriz del proyecto académico (admite decimales)
+    const t=e.target,r=regById(t.dataset.r),aid=t.dataset.aid;if(!r)return;
+    const s=t.value.trim().toUpperCase().replace(',','.');let v;
+    if(s==='')v=null;else if(s==='NE')v='ne';else if(s==='J')v='j';
+    else{const n=+s;if(!isFinite(n)||n<5||n>10){t.classList.add('bad');toast('Escribe una calificación de 5 a 10 (puedes usar decimales), NE o J.');return}v=Math.round(n*10)/10}
+    t.classList.remove('bad');r.valores=r.valores||{};
+    if(v==null)delete r.valores[aid];else r.valores[aid]=v;
+    guardarReg(r);
+    setTimeout(()=>{const a=document.activeElement,id=a&&a.id,y=window.scrollY;render();window.scrollTo(0,y);if(id){const n=document.getElementById(id);if(n){n.focus();if(n.select)n.select()}}},0);
+  },
   dPPA(e){U.draft.ppa=e.target.value;U.draft.pa=null;U.draft.disc='';resolveDraft();LS.set('tsf-draft',U.draft);render()},
   pfTrim(e){U.ppaForm.trim=+e.target.value},
-  pfPADisc(e){U.ppaForm.pas[+e.target.dataset.i].disc=e.target.value},
+
   ifVinc(e){const f=U.instForm;if(!f)return;f.vinc=e.target.value;render()},
   ifVt(e){if(U.instForm)U.instForm.vt=e.target.value},
   instAlumno(e){U.instAid=e.target.value;render()},
@@ -1984,7 +2012,7 @@ function ejemploData(){
       {id:'ejpa21',nombre:'Proyecto 4 – Germinación y cuidado de las plantas',producto:'Bitácora de observación',campos:[],disc:'Ciencias: Biología',estado:'curso'},
       {id:'ejpa22',nombre:'Proyecto 5 – Medimos y calculamos el huerto',producto:'Plano a escala con áreas y perímetros',campos:[],disc:'Matemáticas',estado:'curso'}]},
     {id:'ejppa3',nombre:'PPA 3 – Convivimos, nos cuidamos y conocemos nuestros derechos',campos:['ENS','HYC'],trim:1,inicio:'2026-09-28',fin:'2026-10-23',contenido:'',estado:'curso',pas:[
-      {id:'ejpa31',nombre:'Proyecto 6 – Me cuido y cuido a los demás',producto:'Plan personal de hábitos saludables',campos:['HYC'],disc:'Educación Física',estado:'curso'},
+      {id:'ejpa31',nombre:'Proyecto 6 – Me cuido y cuido a los demás',producto:'Plan personal de hábitos saludables',campos:['HYC'],disc:'Educación Física',discs:['Educación Física','Tutoría y Educación Socioemocional'],estado:'curso'},
       {id:'ejpa32',nombre:'Proyecto 7 – Nuestros derechos como adolescentes',producto:'Tríptico informativo',campos:['ENS'],disc:'Formación Cívica y Ética',estado:'curso'}]}];
   const camposDe=(pp,pa)=>{const P=ppas.find(p=>p.id===pp),x=pa&&P.pas.find(q=>q.id===pa);return x&&x.campos.length?x.campos:P.campos};
   const ev=[
