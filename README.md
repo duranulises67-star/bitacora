@@ -1,4 +1,4 @@
-# Bitácora Formativa Telesecundaria: app instalable
+# Valoración formativa: app instalable
 
 App para registrar valoraciones, proyectos (PPA) y fichas descriptivas.
 
