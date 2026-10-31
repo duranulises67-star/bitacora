@@ -2325,6 +2325,11 @@ async function geminiModelo(k,evitar,conLite){ // el «flash» más reciente que
   const malo=new RegExp('image|tts|live|audio|embed|vision|exp|thinking|computer|robotics|nano|learnlm'+(conLite?'':'|lite'),'i'),ver=n=>+((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);
   const orden=l=>l.sort((a,b)=>/lite/.test(a)-/lite/.test(b)||ver(b)-ver(a)||/preview/.test(a)-/preview/.test(b));
   return !conLite&&ms.includes('gemini-flash-latest')?'gemini-flash-latest':(orden(ms.filter(n=>/flash/.test(n)&&!malo.test(n)))[0]||(conLite?null:orden(ms.filter(n=>!malo.test(n)))[0]||ms[0])||null)}
+async function geminiRespaldo(k){ // modelos de texto de la cuenta, en orden de respaldo: lite estables, flash estables, lite y flash en vista previa, pro
+  if(!gemLista&&!(await geminiModelo(k)))return [];
+  const malo=/image|tts|live|audio|embed|vision|exp|thinking|computer|robotics|nano|learnlm|gemma/i,ver=n=>+((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);
+  const grupo=n=>{const pv=/preview|latest/.test(n)?2:0;return /flash-lite/.test(n)?0+pv:/flash/.test(n)?1+pv:5};
+  return gemLista.filter(n=>!malo.test(n)).sort((a,b)=>grupo(a)-grupo(b)||ver(b)-ver(a)||a.length-b.length)}
 /* Llamada a cada servicio. msgs = [{r:'u'|'a',t}] ya anonimizados */
 async function iaLlamar(sys,msgs,o={}){
   const p=o.prov||IA.prov(),k=IA.clave(p),m=IA.modelo(p);
@@ -2339,16 +2344,19 @@ async function iaLlamar(sys,msgs,o={}){
   try{
     if(p==='gemini'){const gen=mm=>fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(mm.replace(/^models\//,''))}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
       body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:msgs.map(x=>({role:x.r==='u'?'user':'model',parts:[{text:x.t}]})),generationConfig:{temperature:.4,...(o.json?{responseMimeType:'application/json'}:{})}})});
-      const pausa=ms=>new Promise(r=>setTimeout(r,ms)),otros=[];let j,mm=m;
+      const pausa=ms=>new Promise(r=>setTimeout(r,ms)),probados=[];let j,mm=m,cola=null,ult=null,noExisteM=false,saturado=null;
+      const noExiste=e=>e.code==='modelo'||(e.code==='http'&&/not found|not supported|deprecated|no longer/i.test(e.message));
       for(let intento=0;!j;intento++){
-        try{j=await http(await gen(mm))}
-        catch(e){
-          if(e.code==='modelo'||(e.code==='http'&&/not found|not supported|deprecated|no longer/i.test(e.message))){ // el modelo ya no existe: se elige uno vigente y se recuerda
-            const nv=await geminiModelo(k,mm);if(!nv||intento>3)throw e;IA.c.modelos=IA.c.modelos||{};IA.c.modelos.gemini=nv;IA.guardar();mm=nv;continue}
-          if(e.code!=='ocupado'||intento>=4)throw e;
-          // modelo saturado: un reintento breve y después otro modelo de la lista (sin recordarlo)
-          if(intento===0){o.onEstado&&o.onEstado('Gemini está saturado; reintentando…');await pausa(2500);continue}
-          otros.push(mm);const alt=await geminiModelo(k,otros,true);if(!alt)throw e;o.onEstado&&o.onEstado('Probando con '+alt+'…');mm=alt}}
+        try{j=await http(await gen(mm));if(noExisteM&&mm!==m){IA.c.modelos=IA.c.modelos||{};IA.c.modelos.gemini=mm;IA.guardar()}} // el modelo guardado ya no existía: se recuerda el que sí respondió
+        catch(e){ult=e;probados.push(mm);if(e.code==='ocupado')saturado=e;
+          if(!cola&&!noExiste(e)&&e.code!=='ocupado')throw e; // clave, red, etc.: no tiene caso probar otros modelos
+          if(intento===0&&e.code==='ocupado'){o.onEstado&&o.onEstado('Gemini está saturado; reintentando…');await pausa(2500);probados.pop();continue}
+          if(noExiste(e)&&mm===m)noExisteM=true;
+          // saturado o inexistente: se prueban otros modelos de la cuenta, primero los «lite» (suelen tener menos demanda)
+          if(!cola)cola=await geminiRespaldo(k);
+          const sig=(cola||[]).find(n=>!probados.includes(n));
+          if(!sig||probados.length>=7){const f=saturado||ult;f.probados=[...new Set(probados)];throw f}
+          o.onEstado&&o.onEstado('Probando con '+sig+'…');await pausa(700);mm=sig}}
       return ((j.candidates||[])[0]?.content?.parts||[]).map(x=>x.text||'').join('').trim()}
     if(p==='claude'){r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:m,max_tokens:o.max||2000,system:sys,messages:msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}))})});
@@ -2359,7 +2367,7 @@ async function iaLlamar(sys,msgs,o={}){
   }catch(e){if(e.code)throw e;throw err('red','Sin conexión')}
   throw err('prov','Servicio no disponible');
 }
-const iaErrTxt=e=>({ocupado:'Los servidores de Gemini están saturados en este momento (es pasajero). Espera uno o dos minutos e inténtalo de nuevo, o usa «Copiar consulta» mientras tanto.',clave:'La clave no es válida o falta. Revísala en Conexión.',limite:'Se alcanzó el límite de consultas. Espera un minuto e inténtalo de nuevo.',modelo:'Ese modelo no está disponible. Cámbialo en Conexión → Opciones avanzadas.',saldo:'La cuenta de ese servicio no tiene saldo.',red:'No hay conexión a internet o el servicio no respondió.',integrada:'La IA incluida solo funciona dentro de claude.ai.'})[e&&e.code]||('No se pudo obtener respuesta'+(e&&e.message?': '+e.message:'.'));
+const iaErrTxt=e=>(({ocupado:'Los servidores de Gemini están saturados en este momento (es pasajero). Espera uno o dos minutos e inténtalo de nuevo, o usa «Copiar consulta» mientras tanto.',clave:'La clave no es válida o falta. Revísala en Conexión.',limite:'Se alcanzó el límite de consultas. Espera un minuto e inténtalo de nuevo.',modelo:'Ese modelo no está disponible. Cámbialo en Conexión → Opciones avanzadas.',saldo:'La cuenta de ese servicio no tiene saldo.',red:'No hay conexión a internet o el servicio no respondió.',integrada:'La IA incluida solo funciona dentro de claude.ai.'})[e&&e.code]||('No se pudo obtener respuesta'+(e&&e.message?': '+e.message:'.')))+(e&&e.probados&&e.probados.length?' Modelos probados: '+e.probados.join(', ')+'.':'');
 /* Texto con formato ligero (negritas, títulos y viñetas) */
 function md(s){const L=esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split('\n');let h='',ul=false;
   for(const l of L){const li=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/),hd=l.match(/^\s*#{1,4}\s+(.*)/);
