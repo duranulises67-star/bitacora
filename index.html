@@ -2579,12 +2579,23 @@ function vozPintar(){const e=$('#voz-bar');if(e)e.innerHTML=vozBarHTML();const b
 function vozIniciar(){
   if(!SR){toast('Tu navegador no tiene dictado por voz. Usa Chrome o Edge.');return}
   if(U.draft.tipo==='participacion'){toast('El dictado es para calificaciones; elige otro tipo de evidencia.');return}
-  const r=new SR();r.lang='es-MX';r.continuous=true;r.interimResults=true;r.maxAlternatives=3;
-  r.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];VOZ.txt=res[0].transcript.trim();if(res.isFinal)vozProcesar([...res].map(x=>x.transcript))}vozPintar()};
+  // En Android el modo continuo repite resultados: allí se escucha frase por frase y se reinicia solo
+  const r=new SR();r.lang='es-MX';r.continuous=!/Android/i.test(navigator.userAgent);r.interimResults=true;r.maxAlternatives=1;
+  r.onresult=e=>{let fin='',inter='';for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];if(res.isFinal)fin+=' '+res[0].transcript;else inter+=' '+res[0].transcript}
+    VOZ.txt=(fin||inter).trim();clearTimeout(VOZ.tm);VOZ.pend='';
+    if(fin.trim())vozFrase(fin);else if(inter.trim()){VOZ.pend=inter;VOZ.tm=setTimeout(()=>{VOZ.pend='';vozFrase(inter)},1400)} // si el navegador no cierra la frase, se toma tras una pausa
+    vozPintar()};
   r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VOZ.on=false;VOZ.msg='No hay permiso para usar el micrófono. Actívalo en el candado de la barra de direcciones.';vozPintar()}else if(e.error==='network'){VOZ.msg='El dictado necesita internet.';vozPintar()}};
-  r.onend=()=>{if(VOZ.on&&U.view==='registrar'){try{r.start()}catch(x){}}else{VOZ.on=false;vozPintar()}};
-  VOZ.rec=r;VOZ.on=true;VOZ.msg='';VOZ.txt='';try{r.start()}catch(x){}vozPintar();
+  r.onend=()=>{clearTimeout(VOZ.tm);if(VOZ.pend){const p=VOZ.pend;VOZ.pend='';vozFrase(p)}VOZ.prev='';
+    if(VOZ.on&&U.view==='registrar'){setTimeout(()=>{if(VOZ.on){try{r.start()}catch(x){}}},150)}else{VOZ.on=false;vozPintar()}};
+  VOZ.rec=r;VOZ.on=true;VOZ.msg='';VOZ.txt='';VOZ.prev='';try{r.start()}catch(x){}vozPintar();
 }
+function vozFrase(t){ // evita procesar dos veces la misma frase (vista primero como provisional y luego como final)
+  t=String(t||'').trim();if(!t)return;const n=normTx(t),reciente=Date.now()-(VOZ.prevT||0)<5000,p=reciente?VOZ.prev||'':'';
+  if(n===p)return;
+  // si la frase anterior ya registró algo y esta solo la amplía, se procesa únicamente lo nuevo
+  const nuevo=p&&VOZ.prevOk&&n.startsWith(p)?t.slice(p.length).trim():t;VOZ.prev=n;VOZ.prevT=Date.now();
+  if(nuevo){VOZ.prevOk=vozProcesar([nuevo])>0;vozPintar()}}
 function vozDetener(){VOZ.on=false;try{VOZ.rec&&VOZ.rec.stop()}catch(x){}vozPintar()}
 function vozGrado(tk,i){ // calificación al final de la frase → {v,n:tokens usados}
   const num=t=>/^\d+([.,]\d)?$/.test(t)?+t.replace(',','.'):NUMW[t];
@@ -2607,10 +2618,11 @@ function vozPoner(aid,v){const d=U.draft;VOZ.ultimo.push({aid,prev:d.valores[aid
   const row=$('#st-'+aid);if(row){row.classList.add('voz-hit');row.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(()=>row.classList.remove('voz-hit'),1600)}
   VOZ.msg=`✓ ${esc(al(aid).nombre)}: <b>${v==='ne'?'NE':v==='j'?'J':fg(v)}</b>`}
 function vozProcesar(alts){
-  const txt=normTx(alts[0]).replace(/[¿?¡!]/g,' ');VOZ.msg='';VOZ.dudas=null;
-  if(/\b(alto|detente|deten|terminar|para de escuchar)\b/.test(txt)){vozDetener();return}
-  if(/\b(corregir|corrige|deshacer|borra(r)? (la )?ultima)\b/.test(txt)){const u=VOZ.ultimo.pop();if(u){if(u.prev==null)delete U.draft.valores[u.aid];else U.draft.valores[u.aid]=u.prev;refreshList();VOZ.msg='Se deshizo la calificación de '+esc(al(u.aid).nombre)}else VOZ.msg='No hay nada que deshacer.';return}
-  const tk=txt.replace(/(\d)\s*[.,]\s*(\d)/g,'$1.$2').replace(/[,;:]/g,' ').split(/\s+/).filter(Boolean);
+  // signos fuera: «Fernanda, 9.» → «fernanda 9»; se conserva el punto decimal entre dígitos («8.5», «8,5»)
+  const txt=normTx(alts[0]).replace(/(\d)\s*[.,]\s*(\d)(?!\d)/g,'$1§$2').replace(/[.,;:¿?¡!"'«»()\-]/g,' ').replace(/§/g,'.').replace(/\s+/g,' ').trim();VOZ.msg='';VOZ.dudas=null;
+  if(/\b(alto|detente|deten|terminar|para de escuchar)\b/.test(txt)){vozDetener();return 1}
+  if(/\b(corregir|corrige|corrijo|correccion|deshacer|deshaz|borra(r)? (la )?ultima)\b/.test(txt)){const u=VOZ.ultimo.pop();if(u){if(u.prev==null)delete U.draft.valores[u.aid];else U.draft.valores[u.aid]=u.prev;refreshList();VOZ.msg='Se deshizo la calificación de '+esc(al(u.aid).nombre)}else VOZ.msg='No hay nada que deshacer.';return 1}
+  const tk=txt.split(' ').filter(Boolean);
   let nombre=[],hechos=0,i=0;
   while(i<tk.length){const g=vozGrado(tk,i);
     if(g&&nombre.length){const c=vozCand(nombre);
@@ -2620,6 +2632,7 @@ function vozProcesar(alts){
       nombre=[];i+=g.n;continue}
     nombre.push(tk[i]);i++}
   if(!hechos&&nombre.length&&!VOZ.dudas&&!/No reconocí/.test(VOZ.msg))VOZ.msg=`Escuché «${esc(nombre.join(' '))}» pero sin calificación.`;
+  return hechos+(VOZ.dudas?1:0);
 }
 
 /* ---------- Estado, acciones y eventos ---------- */
