@@ -2316,18 +2316,21 @@ const IA_SYS='Eres un asistente pedagógico para un docente de telesecundaria en
 function iaContexto(){const u=U.ia,ts=tsDe(u.per);
   return u.aid==='grupo'?{que:'grupo',datos:datosGrupoIA(ts)}:{que:'alumno',datos:datosAlumnoIA(u.aid,ts)}}
 function iaSistema(){const c=iaContexto();return IA_SYS+'\n\nDatos actuales ('+(c.que==='grupo'?'del grupo':'de un alumno')+', en JSON):\n'+anonTx(JSON.stringify(c.datos))}
-async function geminiModelo(k,actual){ // el «flash» más reciente que acepte generateContent
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000',{headers:{'x-goog-api-key':k}});if(!r.ok)return null;
-  const ms=((await r.json()).models||[]).filter(x=>(x.supportedGenerationMethods||[]).includes('generateContent')).map(x=>x.name.replace(/^models\//,'')).filter(n=>n!==actual&&/^gemini/.test(n));
-  const malo=/lite|image|tts|live|audio|embed|vision|exp|thinking|computer|robotics|nano|learnlm/i,ver=n=>+((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);
-  const orden=l=>l.sort((a,b)=>ver(b)-ver(a)||/preview/.test(a)-/preview/.test(b));
-  return ms.includes('gemini-flash-latest')&&actual!=='gemini-flash-latest'?'gemini-flash-latest':(orden(ms.filter(n=>/flash/.test(n)&&!malo.test(n)))[0]||orden(ms.filter(n=>!malo.test(n)))[0]||ms[0]||null)}
+let gemLista=null;
+async function geminiModelo(k,evitar,conLite){ // el «flash» más reciente que acepte generateContent (con conLite también los «lite», como respaldo)
+  evitar=[].concat(evitar||[]);
+  if(!gemLista){const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000',{headers:{'x-goog-api-key':k}});if(!r.ok)return null;
+    gemLista=((await r.json()).models||[]).filter(x=>(x.supportedGenerationMethods||[]).includes('generateContent')).map(x=>x.name.replace(/^models\//,'')).filter(n=>/^gemini/.test(n))}
+  const ms=gemLista.filter(n=>!evitar.includes(n));
+  const malo=new RegExp('image|tts|live|audio|embed|vision|exp|thinking|computer|robotics|nano|learnlm'+(conLite?'':'|lite'),'i'),ver=n=>+((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);
+  const orden=l=>l.sort((a,b)=>/lite/.test(a)-/lite/.test(b)||ver(b)-ver(a)||/preview/.test(a)-/preview/.test(b));
+  return !conLite&&ms.includes('gemini-flash-latest')?'gemini-flash-latest':(orden(ms.filter(n=>/flash/.test(n)&&!malo.test(n)))[0]||(conLite?null:orden(ms.filter(n=>!malo.test(n)))[0]||ms[0])||null)}
 /* Llamada a cada servicio. msgs = [{r:'u'|'a',t}] ya anonimizados */
 async function iaLlamar(sys,msgs,o={}){
   const p=o.prov||IA.prov(),k=IA.clave(p),m=IA.modelo(p);
   const err=(c,t)=>{const e=new Error(t);e.code=c;return e};
   const http=async r=>{if(r.ok)return r.json();let t='';try{const j=await r.json();t=(j.error&&(j.error.message||j.error.type))||''}catch(e){}
-    throw err(r.status===401||r.status===403||(r.status===400&&/key|api_key|API key/i.test(t))?'clave':r.status===429?'limite':r.status===404?'modelo':r.status===402?'saldo':'http',t||('Error '+r.status))};
+    throw err(r.status===401||r.status===403||(r.status===400&&/key|api_key|API key/i.test(t))?'clave':r.status===503||r.status===500||r.status===529||/high demand|overloaded|unavailable/i.test(t)?'ocupado':r.status===429?'limite':r.status===404?'modelo':r.status===402?'saldo':'http',t||('Error '+r.status))};
   if(p==='integrada'){if(!SAMPLE)throw err('integrada','No disponible');
     const txt=sys+'\n\n'+msgs.map(x=>(x.r==='u'?'Docente: ':'Asistente: ')+x.t).join('\n\n')+'\n\nAsistente:';
     const r=await SAMPLE(txt,o.onText?{onText:({text})=>o.onText(text)}:undefined);return r.text.trim()}
@@ -2336,10 +2339,16 @@ async function iaLlamar(sys,msgs,o={}){
   try{
     if(p==='gemini'){const gen=mm=>fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(mm.replace(/^models\//,''))}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
       body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:msgs.map(x=>({role:x.r==='u'?'user':'model',parts:[{text:x.t}]})),generationConfig:{temperature:.4,...(o.json?{responseMimeType:'application/json'}:{})}})});
-      let j;try{j=await http(await gen(m))}
-      catch(e){if(!(e.code==='modelo'||(e.code==='http'&&/not found|not supported|deprecated|no longer/i.test(e.message))))throw e;
-        const nv=await geminiModelo(k,m);if(!nv)throw e; // el modelo ya no existe: se elige uno vigente de la lista de Google y se recuerda
-        IA.c.modelos=IA.c.modelos||{};IA.c.modelos.gemini=nv;IA.guardar();j=await http(await gen(nv))}
+      const pausa=ms=>new Promise(r=>setTimeout(r,ms)),otros=[];let j,mm=m;
+      for(let intento=0;!j;intento++){
+        try{j=await http(await gen(mm))}
+        catch(e){
+          if(e.code==='modelo'||(e.code==='http'&&/not found|not supported|deprecated|no longer/i.test(e.message))){ // el modelo ya no existe: se elige uno vigente y se recuerda
+            const nv=await geminiModelo(k,mm);if(!nv||intento>3)throw e;IA.c.modelos=IA.c.modelos||{};IA.c.modelos.gemini=nv;IA.guardar();mm=nv;continue}
+          if(e.code!=='ocupado'||intento>=4)throw e;
+          // modelo saturado: un reintento breve y después otro modelo de la lista (sin recordarlo)
+          if(intento===0){o.onEstado&&o.onEstado('Gemini está saturado; reintentando…');await pausa(2500);continue}
+          otros.push(mm);const alt=await geminiModelo(k,otros,true);if(!alt)throw e;o.onEstado&&o.onEstado('Probando con '+alt+'…');mm=alt}}
       return ((j.candidates||[])[0]?.content?.parts||[]).map(x=>x.text||'').join('').trim()}
     if(p==='claude'){r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:m,max_tokens:o.max||2000,system:sys,messages:msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}))})});
@@ -2350,7 +2359,7 @@ async function iaLlamar(sys,msgs,o={}){
   }catch(e){if(e.code)throw e;throw err('red','Sin conexión')}
   throw err('prov','Servicio no disponible');
 }
-const iaErrTxt=e=>({clave:'La clave no es válida o falta. Revísala en Conexión.',limite:'Se alcanzó el límite de consultas. Espera un minuto e inténtalo de nuevo.',modelo:'Ese modelo no está disponible. Cámbialo en Conexión → Opciones avanzadas.',saldo:'La cuenta de ese servicio no tiene saldo.',red:'No hay conexión a internet o el servicio no respondió.',integrada:'La IA incluida solo funciona dentro de claude.ai.'})[e&&e.code]||('No se pudo obtener respuesta'+(e&&e.message?': '+e.message:'.'));
+const iaErrTxt=e=>({ocupado:'Los servidores de Gemini están saturados en este momento (es pasajero). Espera uno o dos minutos e inténtalo de nuevo, o usa «Copiar consulta» mientras tanto.',clave:'La clave no es válida o falta. Revísala en Conexión.',limite:'Se alcanzó el límite de consultas. Espera un minuto e inténtalo de nuevo.',modelo:'Ese modelo no está disponible. Cámbialo en Conexión → Opciones avanzadas.',saldo:'La cuenta de ese servicio no tiene saldo.',red:'No hay conexión a internet o el servicio no respondió.',integrada:'La IA incluida solo funciona dentro de claude.ai.'})[e&&e.code]||('No se pudo obtener respuesta'+(e&&e.message?': '+e.message:'.'));
 /* Texto con formato ligero (negritas, títulos y viñetas) */
 function md(s){const L=esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split('\n');let h='',ul=false;
   for(const l of L){const li=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/),hd=l.match(/^\s*#{1,4}\s+(.*)/);
@@ -2389,7 +2398,7 @@ function iaPintar(){
           ${m.listo?'':`<textarea id="ia-pega-${i}" placeholder="Pega aquí la respuesta…"></textarea><div class="row"><button class="btn sm" data-act="iaPegar" data-i="${i}">Agregar respuesta</button></div>`}</div>`
       :m.r==='e'?`<div class="ia-m err">${esc(m.t)}${/clave|Conexión/.test(m.t)?' <button class="btn sm" data-act="iaCfg">Abrir conexión</button>':''}</div>`
       :`<div class="ia-m a">${md(m.t)}<div class="ia-acc"><button data-act="iaCopTxt" data-i="${i}">Copiar</button><button data-act="iaWord" data-i="${i}">Word</button>${m.aid&&m.aid!=='grupo'?`<button data-act="iaAFicha" data-i="${i}">Añadir a la ficha</button>`:''}</div></div>`).join('');
-    cuerpo=`${ctxSel}<div class="ia-msgs" id="ia-msgs">${u.msgs.length?msgs:vacio}${u.busy?'<div class="ia-m a"><span class="ia-dots"><i></i><i></i><i></i></span></div>':''}</div>
+    cuerpo=`${ctxSel}<div class="ia-msgs" id="ia-msgs">${u.msgs.length?msgs:vacio}${u.busy?`<div class="ia-m a"><span class="ia-dots"><i></i><i></i><i></i></span>${u.estado?` <small class="muted">${esc(u.estado)}</small>`:''}</div>`:''}</div>
       <div class="ia-rap">${IA_RAP.filter(r=>u.aid==='grupo'||r[0]!=='Alumnos en riesgo').map((r,i)=>`<button data-act="iaRap" data-i="${IA_RAP.indexOf(r)}" ${u.busy?'disabled':''}>${r[0]}</button>`).join('')}</div>
       <div class="ia-in"><textarea id="ia-q" data-inp="iaQ" rows="1" placeholder="Escribe tu pregunta…" ${u.busy?'disabled':''}>${esc(u.q||'')}</textarea><button class="ia-send" data-act="iaEnviar" aria-label="Enviar" ${u.busy?'disabled':''}><svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-2.5-6.5z" fill="currentColor"/></svg></button></div>`}
   root.innerHTML=fab+`<div class="ia-win" role="dialog" aria-label="Asistente de IA" ${st}>${cab}<div class="ia-b">${cuerpo}</div></div>`;
@@ -2416,9 +2425,9 @@ async function iaPreguntar(txt){
   if(!IA.directo()){u.msgs.push({r:'e',t:'Falta la clave del servicio. Ábrela en Conexión.'});iaPintar();return}
   u.busy=true;iaPintar();
   try{const hist=u.msgs.filter(m=>m.r==='u'||m.r==='a').slice(-10).map(m=>({r:m.r,t:m.anon||anonTx(m.t)}));
-    const r=await iaLlamar(iaSistema(),hist);u.msgs.push({r:'a',t:desanon(r),anon:r,aid:u.aid,per:u.per})}
+    const r=await iaLlamar(iaSistema(),hist,{onEstado:t=>{u.estado=t;iaPintar()}});u.msgs.push({r:'a',t:desanon(r),anon:r,aid:u.aid,per:u.per})}
   catch(e){console.warn(e);u.msgs.push({r:'e',t:iaErrTxt(e)})}
-  finally{u.busy=false;iaPintar();setTimeout(()=>$('#ia-q')?.focus(),30)}
+  finally{u.busy=false;u.estado='';iaPintar();setTimeout(()=>$('#ia-q')?.focus(),30)}
 }
 async function copiarTx(t){try{await navigator.clipboard.writeText(t);toast('Copiado')}catch(e){modal(`<h3>Copia el texto</h3><textarea id="cp-ta" style="min-height:240px">${esc(t)}</textarea><div class="row"><button class="btn primary" data-act="copiar">Copiar</button><button class="btn" data-act="cerrar">Cerrar</button></div>`)}}
 /* Arrastrar la ventana (computadora) */
@@ -2496,11 +2505,11 @@ async function fgGenerar(){
       <textarea id="fg-resp" style="min-height:160px" placeholder="Pega aquí la respuesta…"></textarea>
       <div class="row"><button class="btn primary" data-act="fgPegar">Aplicar a las fichas</button><button class="btn" data-act="cerrar">Cancelar</button></div>`);return}
   if(!IA.directo()){toast('Conecta primero el servicio de IA.');iaAbrir({cfg:true});return}
-  let ok=0,mal=0;
+  let ok=0,mal=0;g.esperas=0;
   for(let i=0;i<sel.length;i++){const aid=sel[i];g.prog=`Redactando ${i+1} de ${sel.length}…`;render();
     try{const r=await iaLlamar(PROMPT_BASE,[{r:'u',t:anonTx(`${FICHA_PIDE}\n${FICHA_JSON}\n\nDatos:\n${JSON.stringify(datosAlumnoIA(aid,[1,2,3]))}`)}],{json:true,max:2500});
       const o=jsonDe(r);FG_KEYS.forEach(k=>o[k]=desanon(o[k]||''));fgAplicar(aid,o);ok++}
-    catch(e){console.warn(e);mal++;if(e&&['clave','saldo','red','integrada'].includes(e.code)){toast(iaErrTxt(e));break}if(e&&e.code==='limite'){g.prog='Esperando el límite del servicio…';render();await new Promise(r=>setTimeout(r,20000));i--;mal--;continue}}}
+    catch(e){console.warn(e);mal++;if(e&&['clave','saldo','red','integrada'].includes(e.code)){toast(iaErrTxt(e));break}if(e&&(e.code==='limite'||e.code==='ocupado')&&(g.esperas++)<3){g.prog=e.code==='ocupado'?'Gemini está saturado; esperando…':'Esperando el límite del servicio…';render();await new Promise(r=>setTimeout(r,20000));i--;mal--;continue}}}
   g.prog=null;render();toast(mal?`Se redactaron ${ok}; ${mal} no se pudieron. Intenta de nuevo con esos alumnos.`:`Listo: ${pl(ok,'ficha redactada','fichas redactadas')}. Revísalas abajo.`);
 }
 /* Word de fichas (vertical, una por página) */
