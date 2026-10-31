@@ -361,7 +361,7 @@ ol.pasos{margin:0;padding-left:20px;display:grid;gap:4px}
 .btn.mic{display:inline-flex;align-items:center;gap:6px}.btn.mic svg{width:16px;height:16px}.btn.mic.on{background:var(--l0);color:#fff;border-color:var(--l0)}
 .voz{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}.voz.on{background:color-mix(in srgb,var(--l0) 8%,var(--surface));border-color:color-mix(in srgb,var(--l0) 35%,var(--line))}
 .voz-mic{width:14px;height:14px;border-radius:50%;background:var(--muted);flex:none}.voz.on .voz-mic{background:var(--l0);animation:vozP 1.2s infinite}@keyframes vozP{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--l0) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
-.voz-t{flex:1;min-width:0;font-size:.9rem}.voz-oido{font-size:1.05rem;font-weight:700;margin-top:4px}.voz-msg{margin-top:4px;color:var(--l3)}.voz-d{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.voz-t{flex:1;min-width:0;font-size:.9rem}.voz-oido{font-size:1.05rem;font-weight:700;margin-top:4px}.voz-msg{margin-top:4px;color:var(--l3)}.voz-diag{margin-top:4px;font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}.voz-d{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
 .st.voz-hit{background:color-mix(in srgb,var(--l3) 16%,transparent);border-radius:10px;transition:background .3s}
 </style>
 
@@ -2569,10 +2569,10 @@ async function fgWord(k,btn){const sel=fgSel();if(!sel.length)return;CACHE={};co
 /* ---------- Dictado por voz en Registrar ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const NUMW={cero:0,un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10};
-const VOZ={on:false,rec:null,txt:'',ultimo:[],dudas:null,msg:''};
+const VOZ={on:false,rec:null,txt:'',ultimo:[],dudas:null,msg:'',diag:''},VOZ_VER='3';
 function vozBarHTML(){if(!VOZ.on&&!VOZ.dudas&&!VOZ.msg)return '';
   return `<div class="voz${VOZ.on?' on':''}"><span class="voz-mic" aria-hidden="true"></span><div class="voz-t">${VOZ.on?`<b>Escuchando…</b> <span class="muted">Di: «Juan, nueve» · «María ocho punto cinco» · «corregir» · «alto»</span>`:'<b>Dictado en pausa</b>'}
-    ${VOZ.txt?`<div class="voz-oido">«${esc(VOZ.txt)}»</div>`:''}${VOZ.msg?`<div class="voz-msg">${VOZ.msg}</div>`:''}
+    ${VOZ.txt?`<div class="voz-oido">«${esc(VOZ.txt)}»</div>`:''}${VOZ.msg?`<div class="voz-msg">${VOZ.msg}</div>`:''}${VOZ.diag?`<div class="voz-diag">${esc(VOZ.diag)} · v${VOZ_VER}</div>`:''}
     ${VOZ.dudas?`<div class="voz-d">¿A quién le pongo <b>${esc(String(VOZ.dudas.v).toUpperCase())}</b>? ${VOZ.dudas.c.map(a=>`<button class="btn sm" data-act="vozElige" data-aid="${a.id}">${esc(a.nombre)}</button>`).join('')}<button class="btn sm ghost" data-act="vozNo">Ninguno</button></div>`:''}</div>
     <button class="btn sm${VOZ.on?' warn':''}" data-act="vozToggle">${VOZ.on?'Detener':'Reanudar'}</button></div>`}
 function vozPintar(){const e=$('#voz-bar');if(e)e.innerHTML=vozBarHTML();const b=$('#voz-btn');if(b){b.classList.toggle('on',VOZ.on);b.setAttribute('aria-pressed',VOZ.on)}}
@@ -2623,15 +2623,21 @@ function vozProcesar(alts){
   if(/\b(alto|detente|deten|terminar|para de escuchar)\b/.test(txt)){vozDetener();return 1}
   if(/\b(corregir|corrige|corrijo|correccion|deshacer|deshaz|borra(r)? (la )?ultima)\b/.test(txt)){const u=VOZ.ultimo.pop();if(u){if(u.prev==null)delete U.draft.valores[u.aid];else U.draft.valores[u.aid]=u.prev;refreshList();VOZ.msg='Se deshizo la calificación de '+esc(al(u.aid).nombre)}else VOZ.msg='No hay nada que deshacer.';return 1}
   const tk=txt.split(' ').filter(Boolean);
-  let nombre=[],hechos=0,i=0;
+  // se separa la frase en piezas «nombre + calificación»; también acepta la calificación antes del nombre («nueve Fernanda»)
+  const piezas=[];let nombre=[],i=0,suelta=null;
   while(i<tk.length){const g=vozGrado(tk,i);
-    if(g&&nombre.length){const c=vozCand(nombre);
-      if(c.length===1){vozPoner(c[0].id,g.v);hechos++}
-      else if(c.length>1){VOZ.dudas={v:g.v,c:c.slice(0,6)}}
-      else VOZ.msg=`No reconocí a «${esc(nombre.join(' '))}».`;
-      nombre=[];i+=g.n;continue}
+    if(g){if(nombre.length){piezas.push({n:nombre,g});nombre=[]}else suelta=g;i+=g.n;continue}
     nombre.push(tk[i]);i++}
-  if(!hechos&&nombre.length&&!VOZ.dudas&&!/No reconocí/.test(VOZ.msg))VOZ.msg=`Escuché «${esc(nombre.join(' '))}» pero sin calificación.`;
+  if(nombre.length&&suelta&&!piezas.length){piezas.push({n:nombre,g:suelta});nombre=[]}
+  let hechos=0;const diag=[];
+  piezas.forEach(({n,g})=>{const c=vozCand(n),gv=g.v==='ne'?'NE':g.v==='j'?'J':fg(g.v);
+    if(c.length===1){vozPoner(c[0].id,g.v);hechos++;diag.push(`«${n.join(' ')}» → ${c[0].nombre}: ${gv}`)}
+    else if(c.length>1){VOZ.dudas={v:g.v,c:c.slice(0,6)};diag.push(`«${n.join(' ')}» → ${c.length} alumnos posibles`)}
+    else diag.push(`«${n.join(' ')}» → ningún alumno coincide`)});
+  if(nombre.length)diag.push(`«${nombre.join(' ')}» → falta la calificación`);
+  if(!piezas.length&&!nombre.length&&suelta)diag.push('calificación sin nombre');
+  VOZ.diag=`Entendí «${txt}»: `+(diag.join(' · ')||'sin nombre ni calificación');
+  if(!hechos&&!VOZ.dudas)VOZ.msg=piezas.some(p=>!vozCand(p.n).length)?'No reconocí el nombre. Di el apellido o el nombre como está en tu lista.':'Di el nombre y después la calificación, por ejemplo «Fernanda nueve».';
   return hechos+(VOZ.dudas?1:0);
 }
 
