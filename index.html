@@ -316,6 +316,53 @@ textarea.fnota{min-height:64px;margin-top:6px}
 .prog{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}.prog i{display:block;height:100%;background:var(--primary);border-radius:99px}
 @media (max-width:520px){.prow{grid-template-columns:minmax(0,1fr) 52px}.prow .prog{grid-column:1/-1;grid-row:2}}
 .legend2{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}.legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* Asistente de IA: botón y ventana flotantes */
+:root{--ia1:#7f9cd8;--ia2:#b49ad6;--ia3:#e9a77e}
+.ia-fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:12px 18px 12px 14px;border-radius:999px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--ia1),var(--ia2) 55%,var(--ia3));box-shadow:0 6px 20px rgba(110,90,160,.35);transition:transform .15s}
+.ia-fab:hover{transform:translateY(-2px)}.ia-fab svg{width:22px;height:22px}.ia-fab.on{opacity:.0;pointer-events:none}
+@media (max-width:640px){.ia-fab span{display:none}.ia-fab{padding:14px}}
+.ia-win{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:46;width:410px;height:min(640px,calc(100vh - 120px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(40,30,60,.22);overflow:hidden;animation:iaIn .18s ease-out}
+@keyframes iaIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
+@media (max-width:640px){.ia-win{left:6px!important;right:6px!important;top:auto!important;bottom:6px!important;width:auto;height:82vh;border-radius:20px 20px 14px 14px}}
+.ia-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 12px 14px;background:linear-gradient(135deg,color-mix(in srgb,var(--ia1) 22%,var(--surface)),color-mix(in srgb,var(--ia2) 22%,var(--surface)) 60%,color-mix(in srgb,var(--ia3) 20%,var(--surface)));cursor:grab;user-select:none}
+.ia-ttl{display:flex;gap:10px;align-items:center;min-width:0}.ia-ttl b{display:block;font-family:var(--f-display)}.ia-ttl small{color:var(--muted);font-size:.78rem}
+.ia-orb{width:30px;height:30px;border-radius:50%;flex:none;background:radial-gradient(circle at 30% 30%,#fff 0 12%,transparent 13%),conic-gradient(from 200deg,var(--ia1),var(--ia2),var(--ia3),var(--ia1));box-shadow:0 0 0 3px color-mix(in srgb,var(--surface) 70%,transparent)}
+.ia-orb.big{width:54px;height:54px;animation:iaGira 8s linear infinite}@keyframes iaGira{to{filter:hue-rotate(360deg)}}
+.ia-hb{display:flex;gap:2px}
+.ia-ib{width:34px;height:34px;border:0;background:transparent;border-radius:10px;cursor:pointer;color:var(--ink);display:grid;place-items:center}.ia-ib:hover,.ia-ib.on{background:color-mix(in srgb,var(--surface) 70%,transparent)}.ia-ib svg{width:19px;height:19px}
+.ia-b{flex:1;display:flex;flex-direction:column;min-height:0}
+.ia-ctx{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}.ia-ctx select{padding:6px 8px;font-size:.88rem}.ia-ctx select:first-child{flex:1.6}.ia-ctx select:last-child{flex:1}
+.ia-msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px}
+.ia-hola{margin:auto;text-align:center;display:grid;justify-items:center;gap:6px;color:var(--muted);max-width:280px}.ia-hola b{color:var(--ink);font-family:var(--f-display);font-size:1.15rem}.ia-hola p{margin:0}.ia-priv{font-size:.8rem}
+.ia-m{max-width:92%;padding:10px 12px;border-radius:16px;font-size:.93rem;line-height:1.45;overflow-wrap:anywhere}
+.ia-m.u{align-self:flex-end;background:var(--primary);color:var(--primary-ink);border-bottom-right-radius:6px;white-space:pre-wrap}
+.ia-m.a{align-self:flex-start;background:var(--surface2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.ia-m.a p{margin:0 0 6px}.ia-m.a p:last-child{margin-bottom:0}.ia-m.a ul{margin:4px 0 6px;padding-left:20px}.ia-m.a li{margin:2px 0}.ia-m .mh{margin-top:8px}
+.ia-m.err{align-self:stretch;background:var(--l0bg);color:var(--l0);border-radius:12px}
+.ia-m.cp textarea{margin-top:8px;min-height:80px;background:var(--surface)}.ia-m.cp .row{margin-top:6px}
+.ia-acc{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)}.ia-acc button{border:0;background:none;color:var(--primary);font-weight:700;font-size:.8rem;cursor:pointer;padding:3px 6px;border-radius:6px}.ia-acc button:hover{background:var(--primary-soft)}
+.ia-dots{display:inline-flex;gap:4px}.ia-dots i{width:7px;height:7px;border-radius:50%;background:var(--ia2);animation:iaDot 1s infinite}.ia-dots i:nth-child(2){animation-delay:.15s;background:var(--ia1)}.ia-dots i:nth-child(3){animation-delay:.3s;background:var(--ia3)}@keyframes iaDot{50%{transform:translateY(-4px);opacity:.5}}
+.ia-rap{display:flex;gap:6px;overflow-x:auto;padding:8px 12px 2px;scrollbar-width:none}.ia-rap button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-size:.82rem;font-weight:700;color:var(--ink);cursor:pointer}.ia-rap button:hover{border-color:var(--ia2);background:color-mix(in srgb,var(--ia2) 12%,var(--surface))}
+.ia-in{display:flex;gap:8px;align-items:flex-end;padding:10px 12px 12px}.ia-in textarea{resize:none;min-height:42px;max-height:140px;border-radius:14px;padding:10px 12px}
+.ia-send{flex:none;width:42px;height:42px;border:0;border-radius:50%;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--ia1),var(--ia2));display:grid;place-items:center}.ia-send svg{width:19px;height:19px}.ia-send:disabled{opacity:.5}
+.ia-cfg{overflow-y:auto;padding:14px;display:grid;gap:12px}.ia-lead{margin:0;color:var(--muted)}
+.ia-pvs{display:grid;gap:8px}.ia-pv{position:relative;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:2px}.ia-pv small{color:var(--muted)}.ia-pv.on{border-color:var(--ia2);background:color-mix(in srgb,var(--ia2) 10%,var(--surface))}
+.ia-tag{position:absolute;right:10px;top:10px;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--l3bg);color:var(--l3)}
+.ia-box{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px}.ia-box p{margin:0;font-size:.9rem}.ia-box.priv{background:var(--primary-soft);border-color:transparent}.ia-box details summary{cursor:pointer;font-size:.85rem;color:var(--muted)}
+.btn.ai{background:linear-gradient(135deg,color-mix(in srgb,var(--ia1) 22%,var(--surface)),color-mix(in srgb,var(--ia2) 26%,var(--surface)));border-color:color-mix(in srgb,var(--ia2) 45%,var(--line))}
+/* Fichas: generador, comentarios y temas */
+.gen{border-color:color-mix(in srgb,var(--ia2) 35%,var(--line))}
+.fg-al{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;max-height:240px;overflow-y:auto;padding:2px}
+.fg-al label{display:flex;gap:8px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:.9rem;background:var(--surface2)}.fg-al label.on{border-color:var(--primary);background:var(--primary-soft)}.fg-al span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fg-al i{font-style:normal;color:var(--l3);font-weight:700}
+.fx .panel{align-content:start}.fx-t{display:grid;gap:6px}.fx-g{display:grid;gap:4px;padding-left:2px}
+.fx-i{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;padding:6px 8px;border-radius:8px;background:var(--surface)}.fx-i input{margin-top:3px}.fx-i.off{opacity:.5}.fx-i.off span{text-decoration:line-through}
+ol.pasos{margin:0;padding-left:20px;display:grid;gap:4px}
+/* Dictado por voz */
+.btn.mic{display:inline-flex;align-items:center;gap:6px}.btn.mic svg{width:16px;height:16px}.btn.mic.on{background:var(--l0);color:#fff;border-color:var(--l0)}
+.voz{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}.voz.on{background:color-mix(in srgb,var(--l0) 8%,var(--surface));border-color:color-mix(in srgb,var(--l0) 35%,var(--line))}
+.voz-mic{width:14px;height:14px;border-radius:50%;background:var(--muted);flex:none}.voz.on .voz-mic{background:var(--l0);animation:vozP 1.2s infinite}@keyframes vozP{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--l0) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+.voz-t{flex:1;min-width:0;font-size:.9rem}.voz-oido{font-size:1.05rem;font-weight:700;margin-top:4px}.voz-msg{margin-top:4px;color:var(--l3)}.voz-d{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.st.voz-hit{background:color-mix(in srgb,var(--l3) 16%,transparent);border-radius:10px;transition:background .3s}
 </style>
 
 </head>
@@ -967,7 +1014,7 @@ function parsePegado(txt,tp){
 }
 
 /* ---------- Redacción automática (borradores) ---------- */
-function notasDe(aid,ts,cats){return S.notas.filter(n=>n.aid===aid&&(!ts||ts.includes(n.trim))&&(!cats||cats.includes(n.cat))).sort((x,y)=>x.fecha<y.fecha?-1:1)}
+function notasDe(aid,ts,cats){return S.notas.filter(n=>n.aid===aid&&!n.fuera&&(!ts||ts.includes(n.trim))&&(!cats||cats.includes(n.cat))).sort((x,y)=>x.fecha<y.fecha?-1:1)}
 function borradorTrim(aid,t){
   const a=al(aid);const sc=CAMPOS.map(c=>({c,s:detalle(aid,c.k,t).score})).filter(x=>x.s!=null);
   if(!sc.length)return 'Aún no hay evidencias registradas en el '+ORD[t]+' trimestre para emitir una valoración.';
@@ -1078,6 +1125,8 @@ function fichaHTML(aid){
   <h2>Trayectoria por campo formativo y disciplina</h2><table><tr><th>Campo formativo / disciplina</th><th class="c">T1</th><th class="c">T2</th><th class="c">T3</th><th class="c">Promedio final</th></tr>${filas}<tr><th>Promedio general</th><td colspan="3"></td><td class="c"><b>${f1(finalAl(aid))}</b></td></tr></table>
   <table><tr><th>Indicador</th><th class="c">T1</th><th class="c">T2</th><th class="c">T3</th></tr><tr><td>Cumplimiento de evidencias</td>${ind}</tr><tr><td>Participaciones (ideas · exposiciones · voluntarias)</td>${par}</tr></table>
   ${sec('Síntesis descriptiva',f.sintesis)}${sec('Fortalezas',f.fortalezas)}${sec('Áreas de oportunidad',f.oportunidades)}${sec('Aspectos socioemocionales y de convivencia',f.socioemocional)}${sec('Intereses y formas de aprender',f.intereses)}${sec('Apoyos requeridos (BAP, USAER, salud, familia)',f.apoyos)}${sec('Recomendaciones para el docente del siguiente grado',f.recomendaciones)}
+  ${(({tm,ex})=>tm.length||ex.length?`<h2>Temas y contenidos trabajados en el ciclo</h2>${tm.map(x=>`<p><b>Trimestre ${x.t}.</b> ${x.gs.map(g=>`<b>${esc(g.n)}:</b> ${esc(g.it.join('; '))}`).join(' · ')}</p>`).join('')}${ex.length?`<p><b>Otros:</b> ${esc(ex.join('; '))}</p>`:''}`:'')(temasTxt(aid))}
+  ${(ns=>ns.length?`<h2>Observaciones registradas durante el ciclo</h2>${ns.map(n=>`<p><b>T${n.trim} · ${fmtF(n.fecha)}${etqNota(n)?' · '+esc(etqNota(n)):''}:</b> ${esc(n.texto)}</p>`).join('')}`:'')(comentariosFicha(aid))}
   <div class="firmas"><div>${esc(S.cfg.docente||'Docente de grupo')}<br>Docente</div><div>${esc(S.cfg.director||'')}<br>Dirección escolar</div><div>Madre, padre o tutor</div></div></div>`;
 }
 function reporteTrimHTML(t){
@@ -1488,7 +1537,8 @@ function vRegistrar(){
   </section>
   ${log?(ctx.ppa||ctx.campos.length?partPanelHTML(ctx,false):'<section class="panel"><p class="hint">Elige el campo formativo para registrar participaciones.</p></section>')
   :`<section class="panel">
-    <div class="sec-h"><h3>${part?'Toca para sumar participaciones':'Califica a cada alumno de 5 a 10'}</h3>${part?'':`<div class="seg mini" role="group" aria-label="Forma de calificar"><button class="${modoDec()?'':'on'}" data-act="modoDec" data-k="0" aria-pressed="${!modoDec()}">Botones 5–10</button><button class="${modoDec()?'on':''}" data-act="modoDec" data-k="1" aria-pressed="${modoDec()}">Decimales</button></div>`}<div class="row" id="tools">${tools()}</div></div>
+    <div class="sec-h"><h3>${part?'Toca para sumar participaciones':'Califica a cada alumno de 5 a 10'}</h3>${part?'':`<div class="seg mini" role="group" aria-label="Forma de calificar"><button class="${modoDec()?'':'on'}" data-act="modoDec" data-k="0" aria-pressed="${!modoDec()}">Botones 5–10</button><button class="${modoDec()?'on':''}" data-act="modoDec" data-k="1" aria-pressed="${modoDec()}">Decimales</button></div>`}<div class="row" id="tools">${tools()}</div>${part?'':`<button class="btn sm mic${VOZ.on?' on':''}" id="voz-btn" data-act="vozToggle" aria-pressed="${VOZ.on}" title="Dictar nombre y calificación"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Dictar</button>`}</div>
+    <div id="voz-bar">${part?'':vozBarHTML()}</div>
     ${part?`<div class="row"><span class="lbl">Calificación de cada participación</span><div class="chips">${[10,9,8,7,6].map(v=>`<button class="chip ${U.q===v?'on':''}" data-act="q" data-k="${v}">${v} · ${CALN[v]}</button>`).join('')}</div></div>`
       :`<div class="legend">${CALS.map(v=>`<span><b>${v}</b> ${CALN[v]}</span>`).join('')}<span><b>NE</b> No entregó (cuenta ${+S.cfg.ne||5})</span><span><b>J</b> Justificado (no cuenta)</span></div>`}
     <div id="stlist">${stList()}</div>
@@ -1865,8 +1915,9 @@ function vFichas(){
   const listos=A.filter(x=>{const ff=(S.fichas[x.id]||{}).final||{};return ff.sintesis&&ff.fortalezas&&ff.recomendaciones}).length;
   const tr=CAMPOS.map(c=>`<tr><td><span class="dot" style="--cc:var(--c-${c.k})"></span> ${c.n}</td>${[1,2,3].map(t=>`<td class="c">${cell(calif(aid,c.k,t))}</td>`).join('')}<td class="c">${gnum(finalCampo(aid,c.k))}</td></tr>`
     +dall.filter(x=>x.c===c.k).map(x=>`<tr class="sub"><td>${esc(x.n)}</td>${[1,2,3].map(t=>`<td class="c">${cellS(califD(aid,x.n,t))}</td>`).join('')}<td class="c">${gnum(finalDisc(aid,x.n))}</td></tr>`).join('')).join('');
-  return `<section class="panel flat"><div class="sec-h"><h2>Ficha pedagógica descriptiva</h2><div class="row"><span class="muted">${listos} de ${A.length} fichas completas</span><button class="btn sm" data-act="dlFichas">Descargar todas</button></div></div>
-    <p class="lead">Al cierre del ciclo, esta ficha resume la trayectoria de cada alumno para el docente del siguiente grado. Prellena los apartados desde tus registros y notas, y después revisa y completa con tu conocimiento del alumno.</p></section>
+  return `<section class="panel flat"><div class="sec-h"><h2>Ficha pedagógica descriptiva</h2><span class="muted">${listos} de ${A.length} fichas completas</span></div>
+    <p class="lead">Al cierre del ciclo, esta ficha resume la trayectoria de cada alumno para el docente del siguiente grado. Los comentarios que escribes al registrar y los temas vistos se juntan solos; genera una o varias fichas a la vez y después revisa cada una.</p></section>
+  ${generadorHTML()}
   <section class="panel"><div class="row"><select id="fsel" data-chg="fsel" style="max-width:420px">${A.map(x=>`<option value="${x.id}" ${x.id===aid?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select>
     <button class="btn sm" data-act="fMove" data-k="-1" ${ix<=0?'disabled':''}>← Anterior</button><button class="btn sm" data-act="fMove" data-k="1" ${ix>=A.length-1?'disabled':''}>Siguiente →</button></div>
     <div><div class="eyebrow">Trayectoria del ciclo ${esc(S.cfg.ciclo)}</div><h2>${esc(a.nombre)}</h2></div>
@@ -1874,11 +1925,11 @@ function vFichas(){
       <tr><td><b>Promedio general</b></td><td></td><td></td><td></td><td class="c">${gnum(finalAl(aid),'cal')}</td></tr>
       <tr><td class="muted">Cumplimiento de evidencias</td>${[1,2,3].map(t=>{const s=stats(aid,t);return `<td class="c">${s.pct==null?'—':s.pct+'%'}</td>`}).join('')}<td></td></tr>
       <tr><td class="muted">Participaciones registradas</td>${[1,2,3].map(t=>{const s=stats(aid,t);return `<td class="c">${s.part}${s.pk.i+s.pk.e+s.pk.v?`<br><small class="muted">I ${s.pk.i} · E ${s.pk.e} · V ${s.pk.v}</small>`:''}</td>`}).join('')}<td></td></tr></tbody></table></div>
-    <div class="row"><button class="btn" data-act="prellenar" data-aid="${aid}">Prellenar apartados vacíos</button><button class="btn sm ghost" data-act="nota" data-aid="${aid}">+ Nota</button><span class="spacer"></span><span class="status" data-status></span></div>
+    ${fichaExtrasHTML(aid)}
+    <div class="row"><button class="btn" data-act="prellenar" data-aid="${aid}">Prellenar apartados vacíos</button><button class="btn ai" data-act="fichaIA" data-aid="${aid}" ${U.fg.prog?'disabled':''}>✦ Redactar esta ficha con IA</button><button class="btn sm ghost" data-act="iaAbrirAl" data-aid="${aid}">Preguntar al asistente</button><span class="spacer"></span><span class="status" data-status></span></div>
     <label class="fld"><span>Síntesis descriptiva</span><textarea id="f-sintesis" data-inp="ficha" data-aid="${aid}" data-k="sintesis" placeholder="Párrafo que resume quién es el alumno como aprendiz: logros, retos y cómo aprende mejor.">${esc(f.sintesis||'')}</textarea></label>
-    ${SAMPLE?`<div class="row"><button class="btn" data-act="claudeFicha" data-aid="${aid}">Redactar síntesis con Claude</button><span class="muted" style="font-size:.85rem">Se envían calificaciones, indicadores y tus notas, sin el nombre del alumno.</span></div>`:''}
     <div class="grid2">${FSECS.map(([k,n])=>`<label class="fld"><span>${n}</span><textarea id="f-${k}" data-inp="ficha" data-aid="${aid}" data-k="${k}">${esc(f[k]||'')}</textarea></label>`).join('')}</div>
-    <div class="row"><button class="btn primary" data-act="dlFicha" data-aid="${aid}">Descargar esta ficha</button></div>
+    <div class="row"><button class="btn primary" data-act="fichaWord" data-aid="${aid}">Descargar esta ficha (Word)</button><button class="btn sm ghost" data-act="dlFicha" data-aid="${aid}">Versión para imprimir (HTML)</button></div>
   </section>`;
 }
 
@@ -1922,6 +1973,8 @@ function vAjustes(){
     <div class="grid2">${TIPOS.map(x=>`<label class="fld"><span>${x.n}</span><div class="row" style="flex-wrap:nowrap"><input type="number" min="0" max="100" id="peso-${x.k}" data-inp="peso" data-k="${x.k}" value="${pesoDe(x.k)}" style="max-width:110px"><span class="muted" id="pct-${x.k}">${sum?Math.round(100*pesoDe(x.k)/sum):0}%</span></div></label>`).join('')}</div></section>
   <section class="panel"><h2>Calificación de “No entregó”</h2><p class="lead">Valor con el que cuenta una evidencia marcada como NE en los promedios.</p>
     <label class="fld" style="max-width:200px"><span>Valor de NE</span><input type="number" min="0" max="10" step="0.5" id="cfg-ne" data-inp="ne" value="${+c.ne||5}"></label></section>
+  <section class="panel"><div class="sec-h"><h2>Asistente de IA</h2><span class="pill">${esc(IA_PROV[IA.prov()].n)}${IA.prov()!=='copiar'&&!IA.directo()?' · sin conectar':''}</span></div><p class="lead">Haz preguntas sobre el desempeño de un alumno o del grupo, pide recomendaciones y redacta fichas. Gemini es gratis con tu cuenta de Google; con «Copiar consulta» puedes usar ChatGPT o Perplexity gratis. Los nombres se envían como «Alumno N».</p>
+    <div class="row"><button class="btn primary" data-act="iaAbrirCfg">Configurar conexión</button></div></section>
   ${Sync.disponible()?panelDrive():''}
   <section class="panel"><h2>Respaldo</h2><p class="lead">${Store.mode==='db'?'Tus datos se guardan en tu cuenta y solo tú puedes verlos.':'Tus datos están en este navegador.'} Descarga un respaldo al cierre de cada trimestre. También puedes restaurar aquí el archivo «${ARCH_DRIVE}» de tu carpeta de Drive.</p>
     <div class="row"><button class="btn" data-act="backup">Descargar respaldo (JSON)</button><label class="btn" for="imp">Restaurar respaldo…</label><input type="file" id="imp" accept=".json,application/json" data-chg="import" hidden></div>
@@ -1930,6 +1983,7 @@ function vAjustes(){
 
 function render(){
   CACHE={};header();
+  if(U.view!=='registrar'&&VOZ.on)vozDetener();
   if(Store.mode==='loading'){$('#main').innerHTML='<div class="panel empty"><p class="muted">Cargando tu grupo…</p></div>';saveBar();return}
   const v={inicio:vInicio,registrar:vRegistrar,proyectos:vProyectos,bitacora:vBitacora,trimestre:vTrimestre,fichas:vFichas,grupo:vGrupo,ajustes:vAjustes}[U.view]||vRegistrar;
   $('#main').innerHTML=v();saveBar();
@@ -2052,6 +2106,7 @@ const A={
     setTimeout(()=>$('#n-texto')?.focus(),30)},
   async saveNota(b){const tx=$('#n-texto').value.trim();if(!tx){toast('Escribe la observación.');return}
     const n={id:uid(),aid:b.dataset.aid,trim:U.trim,fecha:hoy(),cat:$('#n-cat').value,campo:$('#n-campo').value,texto:tx};
+    if(U.view==='registrar'){const d=U.draft,P=d.ppa&&ppaById(d.ppa);if(P){n.ppa=P.id;n.trim=+P.trim;if(d.pa)n.pa=d.pa;if(d.fase)n.fase=d.fase}if(d.fecha)n.fecha=d.fecha;if((d.titulo||'').trim())n.act=d.titulo.trim()} // comentario ligado a la actividad que se registra
     S.notas.push(n);$('#modal').innerHTML='';if(U.view!=='registrar')render();await Store.nota(n);toast('Nota guardada')},
   cerrar(){$('#modal').innerHTML=''},
   bg(b,e){if(e.target===b)$('#modal').innerHTML=''},
@@ -2216,6 +2271,388 @@ const CHG={
   import(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();
     r.onload=()=>{try{let d=JSON.parse(r.result);if(d&&d.datos&&Array.isArray(d.datos.alumnos))d=d.datos;if(!Array.isArray(d.alumnos))throw 0;U.pendingImport=d;render()}catch(x){toast('El archivo no es un respaldo válido de esta aplicación.')}};r.readAsText(file)}
 };
+/* ---------- Asistente de IA (ventana flotante) ---------- */
+// La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
+const IA_PROV={
+  gemini:{n:'Google Gemini',d:'Gratis con tu cuenta de Google',clave:true,modelo:'gemini-2.5-flash',url:'https://aistudio.google.com/apikey',paso:'Entra a Google AI Studio con tu Gmail, toca «Create API key» y pega aquí la clave.'},
+  copiar:{n:'Copiar consulta',d:'Gratis · ChatGPT, Perplexity, Gemini o cualquier chat',clave:false},
+  claude:{n:'Claude (Anthropic)',d:'De pago · clave de console.anthropic.com',clave:true,modelo:'claude-sonnet-5-5',url:'https://console.anthropic.com/settings/keys',paso:'Crea una clave en la consola de Anthropic (requiere saldo) y pégala aquí.'},
+  openai:{n:'OpenAI (ChatGPT)',d:'De pago · clave de platform.openai.com',clave:true,modelo:'gpt-4.1-mini',url:'https://platform.openai.com/api-keys',paso:'Crea una clave en la plataforma de OpenAI (requiere saldo; la cuenta gratuita de chatgpt.com no sirve) y pégala aquí.'},
+  integrada:{n:'IA de Claude incluida',d:'Disponible al usar la app desde claude.ai',clave:false}
+};
+const IA={c:LS.get('tsf-ia',{prov:'',claves:{},modelos:{}}),
+  guardar(){LS.set('tsf-ia',this.c)},
+  prov(){let p=this.c.prov;if(p==='integrada'&&!SAMPLE)p='';if(!p||!IA_PROV[p])p=SAMPLE?'integrada':(this.c.claves.gemini?'gemini':'copiar');return p},
+  clave(p){return String((this.c.claves||{})[p]||'').trim()},
+  modelo(p){return String((this.c.modelos||{})[p]||'').trim()||IA_PROV[p].modelo},
+  lista(){return (p=>p.clave?!!this.clave(this.prov()):true)(IA_PROV[this.prov()])}, // ¿se puede llamar directo?
+  directo(){const p=this.prov();return p!=='copiar'&&(p==='integrada'||!!this.clave(p))}
+};
+/* Anonimizar: nombres reales ↔ «Alumno N» (N = número de lista) */
+const normTx=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const alias=aid=>'Alumno '+(S.alumnos.findIndex(a=>a.id===aid)+1);
+function anonTx(s){s=String(s??'');const L=[];
+  S.alumnos.forEach(a=>{const w=String(a.nombre||'').trim().split(/\s+/);if(!w[0])return;L.push([a.nombre.trim(),alias(a.id)]);if(w.length>=3)L.push([w.slice(2).join(' '),alias(a.id)]);});
+  L.sort((x,y)=>y[0].length-x[0].length).forEach(([n,r])=>{const rx=new RegExp('(^|[^\\p{L}])'+n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![\\p{L}])','giu');s=s.replace(rx,(m,p)=>p+r)});
+  return s}
+const desanon=s=>String(s??'').replace(/\bAlumno (\d{1,3})\b/g,(m,n)=>{const a=S.alumnos[+n-1];return a?a.nombre:m});
+/* Datos que se envían a la IA */
+function tsDe(per){return per==='ciclo'?[1,2,3]:[+per]}
+function datosAlumnoIA(aid,ts){
+  const r=resumenAl(aid,ts),tm=temasAl(aid).filter(x=>ts.includes(x.t)).map(x=>({trimestre:x.t,temas:x.grupos.map(g=>({proyecto:g.n,actividades:g.items.filter(i=>i.on).map(i=>i.txt)}))}));
+  r.notasDocente=notasDe(aid,ts).map(n=>({fecha:n.fecha,tipo:NOTA_CAT[n.cat]||n.cat,actividad:n.act||undefined,texto:n.texto}));
+  return {alumno:alias(aid),...r,temasTrabajados:tm};
+}
+function datosGrupoIA(ts){
+  const A=activos(),prev=ts.length===1&&ts[0]>1?ts[0]-1:null;
+  return {grupo:`${S.cfg.grado||''}° ${S.cfg.grupo||''}`.trim(),alumnosActivos:A.length,periodo:ts.length===1?'Trimestre '+ts[0]:'Ciclo escolar completo',
+    promedioPorCampo:CAMPOS.map(c=>({campo:c.n,promedio:(x=>x==null?null:+f1(x))(avg(A.map(a=>ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k)).filter(x=>x!=null)))})),
+    proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(P=>{const av=avanceTrabajo(P),pr=promTrabajo(P);return {nombre:P.nombre,tipo:nomTrabajo(P),trimestre:+P.trim,promedioGrupo:pr==null?null:+f1(pr),avance:`${av.n} de ${av.t} ${etqFase(P,true)} con evidencias`,estado:P.estado||'en curso'}}),
+    alumnos:A.map(a=>{const st=stats(a.id,ts),p=ts.length===1?promAl(a.id,ts[0]):finalAl(a.id),pp=prev?promAl(a.id,prev):null;
+      return {alumno:alias(a.id),promedio:p==null?null:+f1(p),promedioTrimestreAnterior:pp==null?undefined:+f1(pp),porCampo:Object.fromEntries(CAMPOS.map(c=>[c.c||c.k,(x=>x==null?null:+f1(x))(ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k))])),cumplimientoPct:st.pct,participaciones:st.part,notas:notasDe(a.id,ts).length}}),
+    requierenAtencion:ts.length===1?atencion(ts[0]).map(x=>({alumno:alias(x.a.id),motivos:x.r})):undefined};
+}
+const IA_SYS='Eres un asistente pedagógico para un docente de telesecundaria en México que trabaja con la Nueva Escuela Mexicana y la evaluación formativa. Las calificaciones van de 5 a 10 (6 es aprobatorio). Los estudiantes aparecen como «Alumno N»: refiérete a ellos siempre así y nunca inventes nombres. Usa solo los datos proporcionados; si algo no está en los datos, dilo con claridad. No inventes cifras. Responde en español de México, con tono profesional y cercano, en párrafos breves o viñetas cortas. Cuando des recomendaciones, que sean concretas y realizables en el aula de telesecundaria.';
+function iaContexto(){const u=U.ia,ts=tsDe(u.per);
+  return u.aid==='grupo'?{que:'grupo',datos:datosGrupoIA(ts)}:{que:'alumno',datos:datosAlumnoIA(u.aid,ts)}}
+function iaSistema(){const c=iaContexto();return IA_SYS+'\n\nDatos actuales ('+(c.que==='grupo'?'del grupo':'de un alumno')+', en JSON):\n'+anonTx(JSON.stringify(c.datos))}
+/* Llamada a cada servicio. msgs = [{r:'u'|'a',t}] ya anonimizados */
+async function iaLlamar(sys,msgs,o={}){
+  const p=o.prov||IA.prov(),k=IA.clave(p),m=IA.modelo(p);
+  const err=(c,t)=>{const e=new Error(t);e.code=c;return e};
+  const http=async r=>{if(r.ok)return r.json();let t='';try{const j=await r.json();t=(j.error&&(j.error.message||j.error.type))||''}catch(e){}
+    throw err(r.status===401||r.status===403||(r.status===400&&/key|api_key|API key/i.test(t))?'clave':r.status===429?'limite':r.status===404?'modelo':r.status===402?'saldo':'http',t||('Error '+r.status))};
+  if(p==='integrada'){if(!SAMPLE)throw err('integrada','No disponible');
+    const txt=sys+'\n\n'+msgs.map(x=>(x.r==='u'?'Docente: ':'Asistente: ')+x.t).join('\n\n')+'\n\nAsistente:';
+    const r=await SAMPLE(txt,o.onText?{onText:({text})=>o.onText(text)}:undefined);return r.text.trim()}
+  if(!k)throw err('clave','Falta la clave');
+  let r;
+  try{
+    if(p==='gemini'){r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
+      body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:msgs.map(x=>({role:x.r==='u'?'user':'model',parts:[{text:x.t}]})),generationConfig:{temperature:.4,...(o.json?{responseMimeType:'application/json'}:{})}})});
+      const j=await http(r);return ((j.candidates||[])[0]?.content?.parts||[]).map(x=>x.text||'').join('').trim()}
+    if(p==='claude'){r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:m,max_tokens:o.max||2000,system:sys,messages:msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}))})});
+      const j=await http(r);return (j.content||[]).map(x=>x.text||'').join('').trim()}
+    if(p==='openai'){r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+      body:JSON.stringify({model:m,temperature:.4,messages:[{role:'system',content:sys},...msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}))],...(o.json?{response_format:{type:'json_object'}}:{})})});
+      const j=await http(r);return (j.choices||[])[0]?.message?.content?.trim()||''}
+  }catch(e){if(e.code)throw e;throw err('red','Sin conexión')}
+  throw err('prov','Servicio no disponible');
+}
+const iaErrTxt=e=>({clave:'La clave no es válida o falta. Revísala en Conexión.',limite:'Se alcanzó el límite de consultas. Espera un minuto e inténtalo de nuevo.',modelo:'Ese modelo no está disponible. Cámbialo en Conexión → Opciones avanzadas.',saldo:'La cuenta de ese servicio no tiene saldo.',red:'No hay conexión a internet o el servicio no respondió.',integrada:'La IA incluida solo funciona dentro de claude.ai.'})[e&&e.code]||('No se pudo obtener respuesta'+(e&&e.message?': '+e.message:'.'));
+/* Texto con formato ligero (negritas, títulos y viñetas) */
+function md(s){const L=esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split('\n');let h='',ul=false;
+  for(const l of L){const li=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/),hd=l.match(/^\s*#{1,4}\s+(.*)/);
+    if(li){if(!ul){h+='<ul>';ul=true}h+='<li>'+li[1]+'</li>';continue}
+    if(ul){h+='</ul>';ul=false}
+    h+=hd?'<p class="mh"><b>'+hd[1]+'</b></p>':l.trim()?'<p>'+l+'</p>':''}
+  return h+(ul?'</ul>':'')}
+/* Ventana flotante */
+const IA_RAP=[['Reporte de desempeño','Elabora un reporte de desempeño del periodo: logros, áreas de oportunidad por campo formativo y disciplina, cumplimiento y participación, y la tendencia respecto al trimestre anterior si hay datos.'],
+  ['Recomendaciones evaluativas','Sugiere recomendaciones evaluativas concretas: qué evidencias e instrumentos conviene usar, qué retroalimentación dar y qué ajustar en la ponderación o en las actividades.'],
+  ['Alumnos en riesgo','Identifica quién requiere atención prioritaria y por qué, ordenado del caso más urgente al menos urgente, con una acción inmediata para cada uno.'],
+  ['Intervención sugerida','Propón un plan de intervención breve (2 a 3 semanas) con actividades realizables en telesecundaria para atender las áreas más débiles.'],
+  ['Comentario para padres','Redacta un comentario breve y respetuoso para la familia: logros, en qué apoyar en casa y un compromiso concreto.'],
+  ['Comparar trimestres','Compara el desempeño entre los trimestres disponibles y explica qué cambió y posibles causas según los datos.']];
+function iaAbrir(o={}){const u=U.ia;u.open=true;u.min=false;
+  if(o.cfg)u.cfg=true;
+  if(!u.fijo){const ctx=U.view==='fichas'?U.fsel:U.view==='trimestre'?U.sel:null;u.aid=ctx&&activos().some(a=>a.id===ctx)?ctx:'grupo';u.per=U.view==='fichas'?'ciclo':String(U.trim)}
+  iaPintar();setTimeout(()=>{const t=$('#ia-q');if(t&&!u.cfg)t.focus()},40)}
+function iaPintar(){
+  const root=$('#ia-root');if(!root)return;const u=U.ia,p=IA.prov(),P=IA_PROV[p];
+  const fab=`<button class="ia-fab${u.open&&!u.min?' on':''}" data-act="iaToggle" aria-label="Asistente de IA" title="Asistente de IA"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l1.7 4.6 4.6 1.7-4.6 1.7L12 15.4l-1.7-4.6-4.6-1.7 4.6-1.7z" fill="currentColor"/><path d="M18.5 14l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z" fill="currentColor" opacity=".75"/><path d="M6 15.5l.7 1.8 1.8.7-1.8.7L6 20.5l-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" opacity=".6"/></svg><span>Asistente</span></button>`;
+  if(!u.open||u.min){root.innerHTML=fab;return}
+  const A=activos(),pos=LS.get('tsf-ia-pos',null),st=pos&&innerWidth>640?`style="left:${Math.max(4,Math.min(innerWidth-300,pos.x))}px;top:${Math.max(4,Math.min(innerHeight-200,pos.y))}px;right:auto;bottom:auto"`:'';
+  const cab=`<div class="ia-h" data-drag><div class="ia-ttl"><span class="ia-orb" aria-hidden="true"></span><div><b>Asistente de IA</b><small>${esc(P.n)}${p!=='copiar'&&!IA.directo()?' · falta conectar':''}</small></div></div>
+    <div class="ia-hb"><button class="ia-ib${u.cfg?' on':''}" data-act="iaCfg" title="Conexión" aria-label="Conexión"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 4.6l1.6 1.2-1.8 3.2-1.9-.7a7.6 7.6 0 0 1-1.7 1l-.3 2H12.7l-.3-2a7.6 7.6 0 0 1-1.7-1l-1.9.7-1.8-3.2 1.6-1.2a7.5 7.5 0 0 1 0-2l-1.6-1.2 1.8-3.2 1.9.7a7.6 7.6 0 0 1 1.7-1l.3-2h3.6l.3 2a7.6 7.6 0 0 1 1.7 1l1.9-.7 1.8 3.2-1.6 1.2a7.5 7.5 0 0 1 0 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
+    ${u.msgs.length?`<button class="ia-ib" data-act="iaLimpiar" title="Nueva conversación" aria-label="Nueva conversación"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`:''}
+    <button class="ia-ib" data-act="iaMin" title="Minimizar" aria-label="Minimizar"><svg viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button class="ia-ib" data-act="iaCerrar" title="Cerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>`;
+  let cuerpo;
+  if(u.cfg)cuerpo=iaCfgHTML();
+  else{
+    const ctxSel=`<div class="ia-ctx"><select data-chg="iaAid" aria-label="Sobre quién preguntar"><option value="grupo" ${u.aid==='grupo'?'selected':''}>Todo el grupo</option>${A.map(a=>`<option value="${a.id}" ${u.aid===a.id?'selected':''}>${esc(a.nombre)}</option>`).join('')}</select>
+      <select data-chg="iaPer" aria-label="Periodo">${[1,2,3].map(t=>`<option value="${t}" ${u.per===String(t)?'selected':''}>Trimestre ${t}</option>`).join('')}<option value="ciclo" ${u.per==='ciclo'?'selected':''}>Ciclo completo</option></select></div>`;
+    const vacio=`<div class="ia-hola"><div class="ia-orb big" aria-hidden="true"></div><b>¿En qué te ayudo?</b><p>Pregunta sobre ${u.aid==='grupo'?'tu grupo':'este alumno'} o elige una opción. ${p==='copiar'?'Te armaré la consulta para pegarla en tu chat favorito.':''}</p><p class="ia-priv">🔒 Los nombres se envían como «Alumno N».</p></div>`;
+    const msgs=u.msgs.map((m,i)=>m.r==='u'?`<div class="ia-m u">${esc(m.t)}</div>`
+      :m.r==='c'?`<div class="ia-m a cp"><p><b>Consulta lista.</b> Cópiala y pégala en ChatGPT, Perplexity, Gemini u otro chat. Luego pega aquí la respuesta.</p><div class="row"><button class="btn sm primary" data-act="iaCopiar" data-i="${i}">Copiar consulta</button><a class="btn sm ghost" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a class="btn sm ghost" href="https://www.perplexity.ai/" target="_blank" rel="noopener">Perplexity</a><a class="btn sm ghost" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></div>
+          ${m.listo?'':`<textarea id="ia-pega-${i}" placeholder="Pega aquí la respuesta…"></textarea><div class="row"><button class="btn sm" data-act="iaPegar" data-i="${i}">Agregar respuesta</button></div>`}</div>`
+      :m.r==='e'?`<div class="ia-m err">${esc(m.t)}${/clave|Conexión/.test(m.t)?' <button class="btn sm" data-act="iaCfg">Abrir conexión</button>':''}</div>`
+      :`<div class="ia-m a">${md(m.t)}<div class="ia-acc"><button data-act="iaCopTxt" data-i="${i}">Copiar</button><button data-act="iaWord" data-i="${i}">Word</button>${m.aid&&m.aid!=='grupo'?`<button data-act="iaAFicha" data-i="${i}">Añadir a la ficha</button>`:''}</div></div>`).join('');
+    cuerpo=`${ctxSel}<div class="ia-msgs" id="ia-msgs">${u.msgs.length?msgs:vacio}${u.busy?'<div class="ia-m a"><span class="ia-dots"><i></i><i></i><i></i></span></div>':''}</div>
+      <div class="ia-rap">${IA_RAP.filter(r=>u.aid==='grupo'||r[0]!=='Alumnos en riesgo').map((r,i)=>`<button data-act="iaRap" data-i="${IA_RAP.indexOf(r)}" ${u.busy?'disabled':''}>${r[0]}</button>`).join('')}</div>
+      <div class="ia-in"><textarea id="ia-q" data-inp="iaQ" rows="1" placeholder="Escribe tu pregunta…" ${u.busy?'disabled':''}>${esc(u.q||'')}</textarea><button class="ia-send" data-act="iaEnviar" aria-label="Enviar" ${u.busy?'disabled':''}><svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-2.5-6.5z" fill="currentColor"/></svg></button></div>`}
+  root.innerHTML=fab+`<div class="ia-win" role="dialog" aria-label="Asistente de IA" ${st}>${cab}<div class="ia-b">${cuerpo}</div></div>`;
+  const ms=$('#ia-msgs');if(ms)ms.scrollTop=ms.scrollHeight;
+}
+function iaCfgHTML(){const p=IA.prov(),c=IA.c;
+  const tarj=Object.entries(IA_PROV).filter(([k])=>k!=='integrada'||SAMPLE).map(([k,v])=>`<button class="ia-pv${p===k?' on':''}" data-act="iaProv" data-k="${k}" aria-pressed="${p===k}"><b>${v.n}</b><small>${v.d}</small>${k==='gemini'?'<span class="ia-tag">Recomendado</span>':''}</button>`).join('');
+  const P=IA_PROV[p];
+  return `<div class="ia-cfg"><p class="ia-lead">Elige con qué servicio trabajará el asistente.</p><div class="ia-pvs">${tarj}</div>
+    ${P.clave?`<div class="ia-box"><p>${esc(P.paso)} <a href="${P.url}" target="_blank" rel="noopener">Obtener clave →</a></p>
+      <label class="fld"><span>Clave de ${esc(P.n)}</span><input type="password" id="ia-k" data-inp="iaClave" data-k="${p}" value="${esc(IA.clave(p))}" autocomplete="off" placeholder="Pega tu clave aquí"></label>
+      <details><summary>Opciones avanzadas</summary><label class="fld"><span>Modelo</span><input id="ia-mod" data-inp="iaModelo" data-k="${p}" value="${esc((c.modelos||{})[p]||'')}" placeholder="${esc(P.modelo)}"></label></details>
+      <div class="row"><button class="btn sm primary" data-act="iaProbar">Probar conexión</button>${IA.clave(p)?'<button class="btn sm ghost" data-act="iaOlvidar">Borrar clave</button>':''}<span class="muted" id="ia-prueba"></span></div></div>`
+    :p==='copiar'?`<div class="ia-box"><p>No necesitas clave. El asistente arma la consulta con los datos; tú la pegas en tu chat gratuito y luego pegas aquí la respuesta.</p></div>`
+    :`<div class="ia-box"><p>Usa la IA incluida en claude.ai, sin clave.</p></div>`}
+    <div class="ia-box priv"><b>🔒 Privacidad</b><p>Antes de enviar, la app cambia cada nombre por «Alumno N» (su número de lista) y vuelve a poner el nombre al recibir la respuesta. La clave se guarda solo en este dispositivo: no se sube a Drive ni a GitHub.</p></div>
+    <div class="row"><button class="btn primary" data-act="iaCfg">Listo</button></div></div>`}
+async function iaPreguntar(txt){
+  const u=U.ia;txt=String(txt||'').trim();if(!txt||u.busy)return;
+  const p=IA.prov();
+  u.msgs.push({r:'u',t:txt,anon:anonTx(txt)});u.q='';
+  if(p==='copiar'){const sys=iaSistema();
+    u.msgs.push({r:'c',aid:u.aid,prompt:sys+'\n\n'+u.msgs.filter(m=>m.r==='u'||m.r==='a').map(m=>(m.r==='u'?'Docente: ':'Asistente: ')+(m.anon||anonTx(m.t))).join('\n\n')});iaPintar();return}
+  if(!IA.directo()){u.msgs.push({r:'e',t:'Falta la clave del servicio. Ábrela en Conexión.'});iaPintar();return}
+  u.busy=true;iaPintar();
+  try{const hist=u.msgs.filter(m=>m.r==='u'||m.r==='a').slice(-10).map(m=>({r:m.r,t:m.anon||anonTx(m.t)}));
+    const r=await iaLlamar(iaSistema(),hist);u.msgs.push({r:'a',t:desanon(r),anon:r,aid:u.aid,per:u.per})}
+  catch(e){console.warn(e);u.msgs.push({r:'e',t:iaErrTxt(e)})}
+  finally{u.busy=false;iaPintar();setTimeout(()=>$('#ia-q')?.focus(),30)}
+}
+async function copiarTx(t){try{await navigator.clipboard.writeText(t);toast('Copiado')}catch(e){modal(`<h3>Copia el texto</h3><textarea id="cp-ta" style="min-height:240px">${esc(t)}</textarea><div class="row"><button class="btn primary" data-act="copiar">Copiar</button><button class="btn" data-act="cerrar">Cerrar</button></div>`)}}
+/* Arrastrar la ventana (computadora) */
+document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('[data-drag]');if(!h||e.target.closest('button')||innerWidth<=640)return;
+  const w=h.closest('.ia-win'),r=w.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top;e.preventDefault();
+  const mv=ev=>{const x=Math.max(4,Math.min(innerWidth-r.width-4,ev.clientX-dx)),y=Math.max(4,Math.min(innerHeight-60,ev.clientY-dy));Object.assign(w.style,{left:x+'px',top:y+'px',right:'auto',bottom:'auto'})};
+  const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);const b=w.getBoundingClientRect();LS.set('tsf-ia-pos',{x:b.left,y:b.top})};
+  addEventListener('pointermove',mv);addEventListener('pointerup',up)});
+document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='ia-q'&&e.key==='Enter'&&!e.shiftKey){e.preventDefault();iaPreguntar(e.target.value)}});
+
+/* ---------- Fichas: comentarios y temas vistos ---------- */
+const etqNota=n=>{const P=n.ppa&&ppaById(n.ppa),pa=P&&n.pa&&paDe(P,n.pa);return [n.act,pa?pa.nombre:P?P.nombre:''].filter(Boolean).join(' · ')};
+function temasAl(aid){ // actividades en las que el alumno tiene valoración, por trimestre y proyecto
+  const off=new Set((S.fichas[aid]||{}).temasOff||[]),T={};
+  S.registros.filter(r=>!r.log&&r.valores&&r.valores[aid]!=null&&r.valores[aid]!=='j').sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).forEach(r=>{
+    const t=rTrim(r),P=r.ppa&&ppaById(r.ppa),pa=P&&r.pa&&paDe(P,r.pa),g=pa?pa.nombre:P?P.nombre:rCampos(r).map(nombreCampo).join(', ')||'Otras actividades';
+    const txt=(r.titulo||tipo(r.tipo).n||'').trim();if(!txt)return;
+    const k=(r.ppa||'-')+'|'+(r.pa||'')+'|'+slug(txt);
+    const tt=T[t]||(T[t]={}),G=tt[g]||(tt[g]={n:g,sub:pa?P.nombre:'',items:[],ks:new Set()});
+    if(G.ks.has(k))return;G.ks.add(k);G.items.push({k,txt,desc:r.desc||'',on:!off.has(k)})});
+  return [1,2,3].filter(t=>T[t]).map(t=>({t,grupos:Object.values(T[t])}));
+}
+function fichaExtrasHTML(aid){
+  const f=fichaDe(aid),fin=f.final||{},ns=S.notas.filter(n=>n.aid===aid).sort((x,y)=>(x.fecha||'').localeCompare(y.fecha||'')),tm=temasAl(aid);
+  const com=[1,2,3].map(t=>{const l=ns.filter(n=>n.trim===t);if(!l.length)return '';
+    return `<div class="fx-t"><div class="eyebrow">Trimestre ${t}</div>${l.map(n=>`<label class="fx-i${n.fuera?' off':''}"><input type="checkbox" data-chg="notaIncl" data-k="${n.id}" ${n.fuera?'':'checked'}><span><span class="tag">${esc(NOTA_CAT[n.cat]||n.cat)}</span> <small class="muted">${fmtF(n.fecha)}${etqNota(n)?' · '+esc(etqNota(n)):''}</small><br>${esc(n.texto)}</span></label>`).join('')}</div>`}).join('');
+  const tms=tm.map(x=>`<div class="fx-t"><div class="eyebrow">Trimestre ${x.t}</div>${x.grupos.map(g=>`<div class="fx-g"><b>${esc(g.n)}</b>${g.sub?` <small class="muted">· ${esc(g.sub)}</small>`:''}${g.items.map(i=>`<label class="fx-i${i.on?'':' off'}"><input type="checkbox" data-chg="temaIncl" data-aid="${aid}" data-k="${esc(i.k)}" ${i.on?'checked':''}><span>${esc(i.txt)}${i.desc?` <small class="muted">· ${esc(i.desc)}</small>`:''}</span></label>`).join('')}</div>`).join('')}</div>`).join('');
+  return `<div class="grid2 fx">
+    <section class="panel"><div class="sec-h"><div><div class="eyebrow">Se juntan solos desde Registrar</div><h3>Comentarios del ciclo</h3></div><button class="btn sm ghost" data-act="nota" data-aid="${aid}">+ Nota</button></div>
+      ${com||'<p class="muted">Aún no hay comentarios. Usa «+ Nota» junto al nombre del alumno al registrar una actividad.</p>'}<p class="hint">Las palomeadas se incluyen en la ficha, los borradores y las consultas a la IA.</p></section>
+    <section class="panel"><div class="sec-h"><div><div class="eyebrow">Actividades donde tiene valoración</div><h3>Temas vistos en el ciclo</h3></div></div>
+      ${tms||'<p class="muted">Aparecerán cuando registres valoraciones con nombre de evidencia.</p>'}
+      <label class="fld"><span>Otros temas trabajados (opcional)</span><textarea id="f-temasExtra" data-inp="ficha" data-aid="${aid}" data-k="temasExtra" style="min-height:60px" placeholder="Uno por renglón">${esc(fin.temasExtra||'')}</textarea></label></section></div>`;
+}
+function temasTxt(aid){const tm=temasAl(aid).map(x=>({t:x.t,gs:x.grupos.map(g=>({n:g.n,it:g.items.filter(i=>i.on).map(i=>i.txt)})).filter(g=>g.it.length)})).filter(x=>x.gs.length);
+  const ex=String(((S.fichas[aid]||{}).final||{}).temasExtra||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  return {tm,ex}}
+const comentariosFicha=aid=>notasDe(aid,null);
+/* Generador de fichas (una o varias) */
+const FG_KEYS=['sintesis',...FSECS.map(x=>x[0])];
+function fgSel(){const A=activos();let s=U.fg.sel;if(!s){s=U.fg.sel=[U.fsel||(A[0]&&A[0].id)].filter(Boolean)}return s.filter(id=>A.some(a=>a.id===id))}
+function generadorHTML(){
+  const A=activos(),sel=fgSel(),g=U.fg,p=IA.prov();
+  return `<section class="panel gen"><div class="sec-h"><div><div class="eyebrow">Una o varias a la vez</div><h2>Generador de fichas</h2></div><span class="muted">${sel.length} de ${A.length} seleccionados</span></div>
+    <div class="row"><button class="btn sm" data-act="fgTodos">Todos</button><button class="btn sm ghost" data-act="fgNinguno">Ninguno</button></div>
+    <div class="fg-al">${A.map(a=>{const ff=(S.fichas[a.id]||{}).final||{},ok=ff.sintesis&&ff.fortalezas&&ff.recomendaciones;return `<label class="${sel.includes(a.id)?'on':''}"><input type="checkbox" data-chg="fgAl" data-k="${a.id}" ${sel.includes(a.id)?'checked':''}><span>${esc(a.nombre)}</span>${ok?'<i title="Ficha completa">✓</i>':''}</label>`}).join('')}</div>
+    <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div class="fld"><span>Redacción</span><div class="seg"><button class="${g.modo==='plantilla'?'on':''}" data-act="fgModo" data-k="plantilla">Plantilla (sin IA)</button><button class="${g.modo==='ia'?'on':''}" data-act="fgModo" data-k="ia">Con IA</button></div>
+        ${g.modo==='ia'?`<p class="hint">Con ${esc(IA_PROV[p].n)}. <button class="btn sm ghost" data-act="iaAbrirCfg">Cambiar</button>${p!=='copiar'&&!IA.directo()?' <b>Falta conectar el servicio.</b>':''}</p>`:'<p class="hint">Redacta con base en promedios, comentarios y temas vistos.</p>'}</div>
+      <label class="fld"><span>Textos que ya escribiste</span><select data-chg="fgReemp"><option value="0" ${g.reemp?'':'selected'}>Conservarlos (llenar solo vacíos)</option><option value="1" ${g.reemp?'selected':''}>Reemplazarlos</option></select></label>
+    </div>
+    <div class="row"><button class="btn primary" data-act="fgGenerar" ${sel.length&&!g.prog?'':'disabled'}>${g.prog?esc(g.prog):`Generar ${sel.length===1?'ficha':sel.length+' fichas'}`}</button></div>
+    <div class="row"><span class="lbl">Descargar en Word</span><button class="btn sm" data-act="fgWord" data-k="uno" ${sel.length?'':'disabled'}>Un archivo con ${sel.length===1?'la ficha':'todas'}</button>${sel.length>1?'<button class="btn sm" data-act="fgWord" data-k="varios">Un archivo por alumno (ZIP)</button>':''}<button class="btn sm ghost" data-act="dlFichas">Versión para imprimir (HTML)</button></div>
+  </section>`;
+}
+function fgAplicar(aid,o){const f=fichaDe(aid);f.final=f.final||{};let n=0;
+  FG_KEYS.forEach(k=>{const v=String(o[k]||'').trim();if(!v)return;if(U.fg.reemp||!(f.final[k]||'').trim()){f.final[k]=v;n++}});Store.ficha(aid);return n}
+function plantillaFicha(aid){const o=prellenarFicha(aid);const ts=[1,2,3].filter(t=>CAMPOS.some(c=>detalle(aid,c.k,t).score!=null));
+  if(ts.length)o.sintesis=borradorTrim(aid,ts[ts.length-1]);
+  const {tm}=temasTxt(aid);if(tm.length){const ult=tm[tm.length-1];o.sintesis=(o.sintesis||'')+` Durante el ciclo trabajó ${pl(tm.reduce((s,x)=>s+x.gs.length,0),'proyecto','proyectos')}, entre ellos ${lista(ult.gs.slice(0,3).map(g=>g.n))}.`}
+  return o}
+const FICHA_PIDE='Redacta la ficha pedagógica descriptiva de fin de ciclo, dirigida al docente que recibirá al estudiante el siguiente grado. Usa las calificaciones por trimestre, campo formativo y disciplina, el cumplimiento, la participación, los temas trabajados y los comentarios del docente. Interpreta los datos (tendencias, fortalezas, retos, cómo aprende mejor); no repitas tablas de números. No escribas el alias «Alumno N» dentro de los textos: usa construcciones neutras. Cada apartado de 2 a 5 oraciones; la síntesis de 120 a 200 palabras.';
+const FICHA_JSON='Devuelve únicamente JSON válido con estas claves de texto: "sintesis", "fortalezas", "oportunidades", "socioemocional", "intereses", "apoyos", "recomendaciones". Si no hay datos para un apartado, deja una cadena vacía.';
+function jsonDe(t){t=String(t||'').replace(/```(?:json)?/gi,'');const i=t.search(/[\[{]/),j=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));if(i<0||j<i)throw new Error('json');return JSON.parse(t.slice(i,j+1))}
+async function fgGenerar(){
+  const sel=fgSel();if(!sel.length)return;const g=U.fg;CACHE={};
+  if(g.modo==='plantilla'){let n=0;sel.forEach(aid=>n+=fgAplicar(aid,plantillaFicha(aid)));render();toast(n?`Listo: ${pl(sel.length,'ficha','fichas')}. Revisa cada una abajo.`:'Las fichas ya tenían texto; elige «Reemplazarlos» para rehacerlas.');return}
+  const p=IA.prov();
+  if(p==='copiar'){const datos=sel.map(aid=>datosAlumnoIA(aid,[1,2,3]));
+    const pr=anonTx(`${PROMPT_BASE}\n\n${FICHA_PIDE}\n\nDevuelve únicamente JSON válido: un objeto cuyas claves son los alias de cada estudiante («Alumno N») y cuyo valor es un objeto con las claves "sintesis", "fortalezas", "oportunidades", "socioemocional", "intereses", "apoyos", "recomendaciones".\n\nDatos:\n${JSON.stringify(datos)}`);
+    U.fgPrompt=pr;
+    modal(`<div><div class="eyebrow">Copiar consulta · ${pl(sel.length,'alumno','alumnos')}</div><h3>Genera las fichas en tu chat</h3></div>
+      <ol class="pasos"><li>Toca <b>Copiar consulta</b> y pégala en ChatGPT, Perplexity, Gemini u otro chat.</li><li>Copia toda la respuesta (es un bloque de texto que empieza con <code>{</code>).</li><li>Pégala abajo y toca <b>Aplicar a las fichas</b>.</li></ol>
+      <div class="row"><button class="btn primary" data-act="fgCopiar">Copiar consulta</button><a class="btn ghost" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a class="btn ghost" href="https://www.perplexity.ai/" target="_blank" rel="noopener">Perplexity</a><a class="btn ghost" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></div>
+      <textarea id="fg-resp" style="min-height:160px" placeholder="Pega aquí la respuesta…"></textarea>
+      <div class="row"><button class="btn primary" data-act="fgPegar">Aplicar a las fichas</button><button class="btn" data-act="cerrar">Cancelar</button></div>`);return}
+  if(!IA.directo()){toast('Conecta primero el servicio de IA.');iaAbrir({cfg:true});return}
+  let ok=0,mal=0;
+  for(let i=0;i<sel.length;i++){const aid=sel[i];g.prog=`Redactando ${i+1} de ${sel.length}…`;render();
+    try{const r=await iaLlamar(PROMPT_BASE,[{r:'u',t:anonTx(`${FICHA_PIDE}\n${FICHA_JSON}\n\nDatos:\n${JSON.stringify(datosAlumnoIA(aid,[1,2,3]))}`)}],{json:true,max:2500});
+      const o=jsonDe(r);FG_KEYS.forEach(k=>o[k]=desanon(o[k]||''));fgAplicar(aid,o);ok++}
+    catch(e){console.warn(e);mal++;if(e&&['clave','saldo','red','integrada'].includes(e.code)){toast(iaErrTxt(e));break}if(e&&e.code==='limite'){g.prog='Esperando el límite del servicio…';render();await new Promise(r=>setTimeout(r,20000));i--;mal--;continue}}}
+  g.prog=null;render();toast(mal?`Se redactaron ${ok}; ${mal} no se pudieron. Intenta de nuevo con esos alumnos.`:`Listo: ${pl(ok,'ficha redactada','fichas redactadas')}. Revísalas abajo.`);
+}
+/* Word de fichas (vertical, una por página) */
+function empaqDocx(body,o={}){return loadZip().then(Z=>{const z=new Z(),vert=o.vertical;
+  z.file('[Content_Types].xml',`${XML_H}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`);
+  z.file('_rels/.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('officeDocument')}" Target="word/document.xml"/></Relationships>`);
+  z.file('word/_rels/document.xml.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('styles')}" Target="styles.xml"/><Relationship Id="rId2" Type="${REL('footer')}" Target="footer1.xml"/></Relationships>`);
+  z.file('word/styles.xml',`${XML_H}<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="${vert?20:18}"/><w:szCs w:val="${vert?20:18}"/><w:lang w:val="es-MX" w:eastAsia="es-MX" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`);
+  const gris={c:'7F7F7F',sz:14},pie=`Valoración formativa · ${S.cfg.escuela||'Telesecundaria'} · ${S.cfg.grado||''}° ${S.cfg.grupo||''} · Página `;
+  z.file('word/footer1.xml',`${XML_H}<w:ftr ${W_NS}><w:p><w:pPr><w:jc w:val="right"/></w:pPr>${wR(pie,gris)}<w:fldSimple w:instr=" PAGE ">${wR('1',gris)}</w:fldSimple>${wR(' de ',gris)}<w:fldSimple w:instr=" NUMPAGES ">${wR('1',gris)}</w:fldSimple></w:p></w:ftr>`);
+  const pg=vert?'<w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1000" w:right="1000" w:bottom="1000" w:left="1000" w:header="400" w:footer="400" w:gutter="0"/>':'<w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>';
+  z.file('word/document.xml',`${XML_H}<w:document ${W_NS}><w:body>${body}<w:sectPr><w:footerReference w:type="default" r:id="rId2"/>${pg}</w:sectPr></w:body></w:document>`);
+  return z.generateAsync({type:'blob',compression:'DEFLATE',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})})}
+const FW=10240;
+function fichaDocxBody(aid,primera){
+  const a=al(aid),c=S.cfg,f=(S.fichas[aid]||{}).final||{},dall=discsEn(S.registros);let b='';
+  b+=wP(wR('FICHA PEDAGÓGICA DESCRIPTIVA',{b:true,c:'FFFFFF',sz:26}),{shd:AZ,jc:'center',after:120,pb:!primera});
+  const lab=t=>({t,b:true,c:AZ,bg:AZ3});
+  b+=wTbl([1900,3220,1900,3220],[{c:[lab('Alumno(a)'),{t:a.nombre,b:true,sp:3}]},{c:[lab('Escuela'),{t:c.escuela||'Telesecundaria'},lab('CCT'),{t:c.cct||''}]},{c:[lab('Grado y grupo'),{t:`${c.grado||''}° ${c.grupo||''}`},lab('Ciclo escolar'),{t:c.ciclo||''}]},{c:[lab('Docente'),{t:c.docente||''},lab('Periodo'),{t:'Fin de ciclo'}]}],{sz:18})+wP('',{after:100});
+  const h=t=>({t,b:true,c:'FFFFFF',bg:AZ,jc:'center'}),num=x=>({t:x==null?'—':String(x),jc:'center',c:x!=null&&x<6?ROJO:null});
+  const rows=[{h:true,c:[h('Campo formativo / disciplina'),h('T1'),h('T2'),h('T3'),h('Promedio final')]}];
+  CAMPOS.forEach(cp=>{rows.push({c:[{t:cp.n,b:true},...[1,2,3].map(t=>num(calif(aid,cp.k,t).cal)),{...num(finalCampo(aid,cp.k)==null?null:+f1(finalCampo(aid,cp.k))),b:true}]});
+    dall.filter(x=>x.c===cp.k).forEach(x=>rows.push({c:[{t:'   '+x.n,c:'595959'},...[1,2,3].map(t=>num(califD(aid,x.n,t).cal)),num(finalDisc(aid,x.n)==null?null:+f1(finalDisc(aid,x.n)))]}))});
+  rows.push({c:[{t:'Promedio general',b:true,bg:AZ3},{t:'',sp:3,bg:AZ3},{t:f1(finalAl(aid)),b:true,jc:'center',bg:AZ3}]});
+  rows.push({c:[{t:'Cumplimiento de evidencias'},...[1,2,3].map(t=>{const s=stats(aid,t);return {t:s.pct==null?'—':s.pct+'%',jc:'center'}}),{t:''}]});
+  rows.push({c:[{t:'Participaciones'},...[1,2,3].map(t=>({t:String(stats(aid,t).part),jc:'center'})),{t:''}]});
+  b+=wP(wR('Trayectoria por campo formativo y disciplina',{b:true,c:AZ,sz:22}),{before:120,after:60,keep:true})+wTbl([4240,1400,1400,1400,1800],rows,{sz:18});
+  const sec=(t,v)=>{if(!String(v||'').trim())return;b+=wP(wR(t,{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});String(v).split(/\n+/).forEach(p=>{if(p.trim())b+=wP(wR(p.trim()),{after:60,jc:'both'})})};
+  sec('Síntesis descriptiva',f.sintesis);FSECS.forEach(([k,n])=>sec(n,f[k]));
+  const {tm,ex}=temasTxt(aid);
+  if(tm.length||ex.length){b+=wP(wR('Temas y contenidos trabajados en el ciclo',{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});
+    tm.forEach(x=>{b+=wP(wR(`Trimestre ${x.t}`,{b:true,sz:19}),{before:60,after:20,keep:true});x.gs.forEach(g=>b+=wP(wR(g.n+': ',{b:true})+wR(g.it.join('; ')),{after:30}))});
+    if(ex.length)b+=wP(wR('Otros: ',{b:true})+wR(ex.join('; ')),{after:30})}
+  const ns=comentariosFicha(aid);
+  if(ns.length){b+=wP(wR('Observaciones registradas durante el ciclo',{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});
+    ns.forEach(n=>b+=wP(wR(`T${n.trim} · ${fmtF(n.fecha)}${etqNota(n)?' · '+etqNota(n):''} — `,{b:true,c:'595959',sz:18})+wR(n.texto,{sz:18}),{after:40}))}
+  const L='__________________________';
+  b+=wP('',{before:500,after:0})+wTbl([3413,3413,3414],[{c:[{t:L,jc:'center'},{t:L,jc:'center'},{t:L,jc:'center'}]},{c:[{t:c.docente||'',jc:'center'},{t:c.director||'',jc:'center'},{t:'',jc:'center'}]},{c:[{t:'DOCENTE DE GRUPO',b:true,jc:'center'},{t:'DIRECCIÓN ESCOLAR',b:true,jc:'center'},{t:'MADRE, PADRE O TUTOR',b:true,jc:'center'}]}],{nob:true,sz:17});
+  return b;
+}
+async function fgWord(k,btn){const sel=fgSel();if(!sel.length)return;CACHE={};const prev=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Preparando…'}
+  try{if(k==='uno'||sel.length===1){const blob=await empaqDocx(sel.map((aid,i)=>fichaDocxBody(aid,i===0)).join(''),{vertical:true});
+      await bajarBin(sel.length===1?`Ficha_${fname(al(sel[0]).nombre)}.docx`:`Fichas_descriptivas_${grupoTag()}.docx`,blob)}
+    else{const Z=await loadZip(),z=new Z();for(const aid of sel)z.file(`Ficha_${fname(al(aid).nombre)}.docx`,await empaqDocx(fichaDocxBody(aid,true),{vertical:true}));
+      await bajarBin(`Fichas_por_alumno_${grupoTag()}.zip`,await z.generateAsync({type:'blob',mimeType:'application/zip'}))}}
+  catch(e){console.warn(e);toast('No se pudo preparar el archivo.')}
+  finally{if(btn){btn.disabled=false;btn.textContent=prev}}}
+
+/* ---------- Dictado por voz en Registrar ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const NUMW={cero:0,un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10};
+const VOZ={on:false,rec:null,txt:'',ultimo:[],dudas:null,msg:''};
+function vozBarHTML(){if(!VOZ.on&&!VOZ.dudas&&!VOZ.msg)return '';
+  return `<div class="voz${VOZ.on?' on':''}"><span class="voz-mic" aria-hidden="true"></span><div class="voz-t">${VOZ.on?`<b>Escuchando…</b> <span class="muted">Di: «Juan, nueve» · «María ocho punto cinco» · «corregir» · «alto»</span>`:'<b>Dictado en pausa</b>'}
+    ${VOZ.txt?`<div class="voz-oido">«${esc(VOZ.txt)}»</div>`:''}${VOZ.msg?`<div class="voz-msg">${VOZ.msg}</div>`:''}
+    ${VOZ.dudas?`<div class="voz-d">¿A quién le pongo <b>${esc(String(VOZ.dudas.v).toUpperCase())}</b>? ${VOZ.dudas.c.map(a=>`<button class="btn sm" data-act="vozElige" data-aid="${a.id}">${esc(a.nombre)}</button>`).join('')}<button class="btn sm ghost" data-act="vozNo">Ninguno</button></div>`:''}</div>
+    <button class="btn sm${VOZ.on?' warn':''}" data-act="vozToggle">${VOZ.on?'Detener':'Reanudar'}</button></div>`}
+function vozPintar(){const e=$('#voz-bar');if(e)e.innerHTML=vozBarHTML();const b=$('#voz-btn');if(b){b.classList.toggle('on',VOZ.on);b.setAttribute('aria-pressed',VOZ.on)}}
+function vozIniciar(){
+  if(!SR){toast('Tu navegador no tiene dictado por voz. Usa Chrome o Edge.');return}
+  if(U.draft.tipo==='participacion'){toast('El dictado es para calificaciones; elige otro tipo de evidencia.');return}
+  const r=new SR();r.lang='es-MX';r.continuous=true;r.interimResults=true;r.maxAlternatives=3;
+  r.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];VOZ.txt=res[0].transcript.trim();if(res.isFinal)vozProcesar([...res].map(x=>x.transcript))}vozPintar()};
+  r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VOZ.on=false;VOZ.msg='No hay permiso para usar el micrófono. Actívalo en el candado de la barra de direcciones.';vozPintar()}else if(e.error==='network'){VOZ.msg='El dictado necesita internet.';vozPintar()}};
+  r.onend=()=>{if(VOZ.on&&U.view==='registrar'){try{r.start()}catch(x){}}else{VOZ.on=false;vozPintar()}};
+  VOZ.rec=r;VOZ.on=true;VOZ.msg='';VOZ.txt='';try{r.start()}catch(x){}vozPintar();
+}
+function vozDetener(){VOZ.on=false;try{VOZ.rec&&VOZ.rec.stop()}catch(x){}vozPintar()}
+function vozGrado(tk,i){ // calificación al final de la frase → {v,n:tokens usados}
+  const num=t=>/^\d+([.,]\d)?$/.test(t)?+t.replace(',','.'):NUMW[t];
+  const t=tk[i];if(t==null)return null;
+  if(t==='ne'||t==='n.e.'||(t==='no'&&/^entreg/.test(tk[i+1]||'')))return {v:'ne',n:t==='no'?2:1};
+  if(/^falt/.test(t))return {v:'ne',n:1};
+  if(/^justific/.test(t))return {v:'j',n:1};
+  let v=num(t);if(v==null||isNaN(v))return null;let n=1;
+  if((tk[i+1]==='punto'||tk[i+1]==='coma')&&num(tk[i+2])!=null&&num(tk[i+2])<10){v=v+num(tk[i+2])/10;n=3}
+  else if(tk[i+1]==='y'&&/^medi/.test(tk[i+2]||'')){v+=.5;n=3}
+  if(v<5||v>10)return null;return {v:Math.round(v*10)/10,n}}
+function vozCand(words){ // alumnos que mejor coinciden con las palabras dichas
+  const ws=words.filter(w=>w.length>1&&!['el','la','los','de','del','y','a','al','para','le','ponle','pon','calificacion','alumno','alumna'].includes(w));if(!ws.length)return [];
+  const lev=(a,b)=>{if(Math.abs(a.length-b.length)>1)return 9;const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]};
+  const sc=activos().map(a=>{const nt=normTx(a.nombre).split(/\s+/);let s=0;ws.forEach(w=>{if(nt.includes(w))s+=2;else if(w.length>3&&nt.some(x=>x.length>3&&lev(w,x)<=1))s+=1});return {a,s}}).filter(x=>x.s>0);
+  const m=Math.max(0,...sc.map(x=>x.s));return sc.filter(x=>x.s===m).map(x=>x.a)}
+function vozPoner(aid,v){const d=U.draft;VOZ.ultimo.push({aid,prev:d.valores[aid]});
+  if(typeof v==='number'&&!Number.isInteger(v)&&!modoDec()){LS.set('tsf-dec',true);render()}
+  d.valores[aid]=v;refreshList();if(modoDec()){$('#tools')&&($('#tools').innerHTML=tools())}
+  const row=$('#st-'+aid);if(row){row.classList.add('voz-hit');row.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(()=>row.classList.remove('voz-hit'),1600)}
+  VOZ.msg=`✓ ${esc(al(aid).nombre)}: <b>${v==='ne'?'NE':v==='j'?'J':fg(v)}</b>`}
+function vozProcesar(alts){
+  const txt=normTx(alts[0]).replace(/[¿?¡!]/g,' ');VOZ.msg='';VOZ.dudas=null;
+  if(/\b(alto|detente|deten|terminar|para de escuchar)\b/.test(txt)){vozDetener();return}
+  if(/\b(corregir|corrige|deshacer|borra(r)? (la )?ultima)\b/.test(txt)){const u=VOZ.ultimo.pop();if(u){if(u.prev==null)delete U.draft.valores[u.aid];else U.draft.valores[u.aid]=u.prev;refreshList();VOZ.msg='Se deshizo la calificación de '+esc(al(u.aid).nombre)}else VOZ.msg='No hay nada que deshacer.';return}
+  const tk=txt.replace(/(\d)\s*[.,]\s*(\d)/g,'$1.$2').replace(/[,;:]/g,' ').split(/\s+/).filter(Boolean);
+  let nombre=[],hechos=0,i=0;
+  while(i<tk.length){const g=vozGrado(tk,i);
+    if(g&&nombre.length){const c=vozCand(nombre);
+      if(c.length===1){vozPoner(c[0].id,g.v);hechos++}
+      else if(c.length>1){VOZ.dudas={v:g.v,c:c.slice(0,6)}}
+      else VOZ.msg=`No reconocí a «${esc(nombre.join(' '))}».`;
+      nombre=[];i+=g.n;continue}
+    nombre.push(tk[i]);i++}
+  if(!hechos&&nombre.length&&!VOZ.dudas&&!/No reconocí/.test(VOZ.msg))VOZ.msg=`Escuché «${esc(nombre.join(' '))}» pero sin calificación.`;
+}
+
+/* ---------- Estado, acciones y eventos ---------- */
+U.ia={open:false,min:false,cfg:false,msgs:[],aid:'grupo',per:String(U.trim),q:'',busy:false};
+U.fg={sel:null,modo:'plantilla',reemp:false,prog:null};
+Object.assign(A,{
+  iaToggle(){const u=U.ia;if(u.open&&!u.min){u.min=true;iaPintar()}else iaAbrir()},
+  iaMin(){U.ia.min=true;iaPintar()},
+  iaCerrar(){U.ia.open=false;U.ia.fijo=false;iaPintar()},
+  iaCfg(){U.ia.cfg=!U.ia.cfg;iaPintar()},
+  iaAbrirCfg(){iaAbrir({cfg:true})},
+  iaProv(b){IA.c.prov=b.dataset.k;IA.guardar();iaPintar();if(U.view==='fichas')render()},
+  iaOlvidar(){const p=IA.prov();delete IA.c.claves[p];IA.guardar();iaPintar();toast('Clave borrada de este dispositivo')},
+  async iaProbar(b){const o=$('#ia-prueba');b.disabled=true;o.textContent='Probando…';
+    try{const r=await iaLlamar('Responde solo con la palabra: listo',[{r:'u',t:'Prueba de conexión'}],{max:20});o.textContent=r?'✓ Conectado':'Sin respuesta';o.style.color='var(--l3)'}
+    catch(e){o.textContent=iaErrTxt(e);o.style.color='var(--l0)'}finally{b.disabled=false}},
+  iaLimpiar(){U.ia.msgs=[];iaPintar()},
+  iaEnviar(){const t=$('#ia-q');iaPreguntar(t?t.value:'')},
+  iaRap(b){iaPreguntar(IA_RAP[+b.dataset.i][1])},
+  iaCopiar(b){const m=U.ia.msgs[+b.dataset.i];if(m)copiarTx(m.prompt)},
+  iaPegar(b){const i=+b.dataset.i,m=U.ia.msgs[i],t=$('#ia-pega-'+i),v=t&&t.value.trim();if(!v){toast('Pega primero la respuesta.');return}m.listo=true;U.ia.msgs.push({r:'a',t:desanon(v),anon:v,aid:m.aid,per:U.ia.per});iaPintar()},
+  iaCopTxt(b){const m=U.ia.msgs[+b.dataset.i];if(m)copiarTx(m.t)},
+  async iaWord(b){const m=U.ia.msgs[+b.dataset.i];if(!m)return;const quien=m.aid&&m.aid!=='grupo'?al(m.aid).nombre:`Grupo ${S.cfg.grado||''}° ${S.cfg.grupo||''}`;
+    const per=m.per==='ciclo'?'Ciclo escolar':'Trimestre '+m.per;let body=wP(wR('REPORTE DEL ASISTENTE',{b:true,c:'FFFFFF',sz:26}),{shd:AZ,jc:'center',after:120})+wP(wR(quien,{b:true,sz:24})+wR('  ·  '+per+'  ·  '+fmtF(hoy()),{c:'595959'}),{after:160});
+    m.t.split('\n').forEach(l=>{const li=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/),hd=l.match(/^\s*#{1,4}\s+(.*)/),s=(li?li[1]:hd?hd[1]:l).replace(/\*\*/g,'');if(!s.trim())return;body+=wP((li?wR('•  '):'')+wR(s,{b:!!hd,c:hd?AZ:null}),{after:60,jc:'both'})});
+    try{await bajarBin(`Reporte_${fname(quien)}_${hoy()}.docx`,await empaqDocx(body,{vertical:true}))}catch(e){toast('No se pudo preparar el archivo.')}},
+  iaAFicha(b){const m=U.ia.msgs[+b.dataset.i];if(!m||!m.aid)return;const f=fichaDe(m.aid);f.final=f.final||{};const t=m.t.replace(/\*\*/g,'').replace(/^\s*#{1,4}\s+/gm,'').trim();
+    f.final.recomendaciones=(f.final.recomendaciones?f.final.recomendaciones.trim()+'\n\n':'')+t;Store.ficha(m.aid);if(U.view==='fichas')render();toast('Se añadió a «Recomendaciones» de la ficha de '+al(m.aid).nombre)},
+  fgTodos(){U.fg.sel=activos().map(a=>a.id);render()},
+  fgNinguno(){U.fg.sel=[];render()},
+  fgModo(b){U.fg.modo=b.dataset.k;render()},
+  fgGenerar(){fgGenerar()},
+  fgWord(b){fgWord(b.dataset.k,b)},
+  fgCopiar(){copiarTx(U.fgPrompt||'')},
+  fgPegar(){const v=$('#fg-resp').value;let o;try{o=jsonDe(v)}catch(e){toast('No reconocí la respuesta. Copia todo el bloque que empieza con «{».');return}
+    let n=0;Object.entries(o).forEach(([k,x])=>{const m=k.match(/(\d+)/),a=m&&S.alumnos[+m[1]-1];if(!a||!x||typeof x!=='object')return;FG_KEYS.forEach(q=>x[q]=desanon(x[q]||''));fgAplicar(a.id,x);n++});
+    $('#modal').innerHTML='';render();toast(n?`Se aplicaron ${pl(n,'ficha','fichas')}. Revísalas abajo.`:'La respuesta no traía fichas reconocibles.')},
+  async fichaIA(b){const g=U.fg,prev={sel:g.sel,modo:g.modo,reemp:g.reemp};Object.assign(g,{sel:[b.dataset.aid],modo:'ia',reemp:true});
+    try{await fgGenerar()}finally{Object.assign(g,prev)}},
+  fichaWord(b){const g=U.fg,prev=g.sel;g.sel=[b.dataset.aid];fgWord('uno',b).finally(()=>{g.sel=prev})},
+  iaAbrirAl(b){Object.assign(U.ia,{aid:b.dataset.aid,per:'ciclo',fijo:true});iaAbrir()},
+  vozToggle(){VOZ.on?vozDetener():vozIniciar()},
+  vozElige(b){const d=VOZ.dudas;if(!d)return;VOZ.dudas=null;vozPoner(b.dataset.aid,d.v);vozPintar()},
+  vozNo(){VOZ.dudas=null;VOZ.msg='';vozPintar()}
+});
+Object.assign(INP,{
+  iaQ(e){U.ia.q=e.target.value;e.target.style.height='auto';e.target.style.height=Math.min(140,e.target.scrollHeight)+'px'},
+  iaClave(e){IA.c.claves=IA.c.claves||{};IA.c.claves[e.target.dataset.k]=e.target.value.trim();IA.guardar()},
+  iaModelo(e){IA.c.modelos=IA.c.modelos||{};IA.c.modelos[e.target.dataset.k]=e.target.value.trim();IA.guardar()}
+});
+Object.assign(CHG,{
+  iaAid(e){U.ia.aid=e.target.value;U.ia.fijo=true;iaPintar()},
+  iaPer(e){U.ia.per=e.target.value;U.ia.fijo=true;iaPintar()},
+  fgAl(e){const s=fgSel(),k=e.target.dataset.k;U.fg.sel=e.target.checked?[...new Set([...s,k])]:s.filter(x=>x!==k);render()},
+  fgReemp(e){U.fg.reemp=e.target.value==='1'},
+  notaIncl(e){const n=S.notas.find(x=>x.id===e.target.dataset.k);if(!n)return;n.fuera=!e.target.checked;e.target.closest('.fx-i').classList.toggle('off',n.fuera);Store.nota(n)},
+  temaIncl(e){const f=fichaDe(e.target.dataset.aid),k=e.target.dataset.k,s=new Set(f.temasOff||[]);e.target.checked?s.delete(k):s.add(k);f.temasOff=[...s];e.target.closest('.fx-i').classList.toggle('off',!e.target.checked);Store.ficha(e.target.dataset.aid)}
+});
+document.body.insertAdjacentHTML('beforeend','<div id="ia-root"></div>');iaPintar();
+
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const f=A[b.dataset.act];if(f)f(b,e)});
 document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.inp;if(k&&INP[k])INP[k](e)});
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.chg;if(k&&CHG[k])CHG[k](e)});
