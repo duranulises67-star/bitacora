@@ -2274,7 +2274,7 @@ const CHG={
 /* ---------- Asistente de IA (ventana flotante) ---------- */
 // La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
 const IA_PROV={
-  gemini:{n:'Google Gemini',d:'Gratis con tu cuenta de Google',clave:true,modelo:'gemini-2.5-flash',url:'https://aistudio.google.com/apikey',paso:'Entra a Google AI Studio con tu Gmail, toca «Create API key» y pega aquí la clave.'},
+  gemini:{n:'Google Gemini',d:'Gratis con tu cuenta de Google',clave:true,modelo:'gemini-flash-latest',url:'https://aistudio.google.com/apikey',paso:'Entra a Google AI Studio con tu Gmail, toca «Create API key» y pega aquí la clave.'},
   copiar:{n:'Copiar consulta',d:'Gratis · ChatGPT, Perplexity, Gemini o cualquier chat',clave:false},
   claude:{n:'Claude (Anthropic)',d:'De pago · clave de console.anthropic.com',clave:true,modelo:'claude-sonnet-5-5',url:'https://console.anthropic.com/settings/keys',paso:'Crea una clave en la consola de Anthropic (requiere saldo) y pégala aquí.'},
   openai:{n:'OpenAI (ChatGPT)',d:'De pago · clave de platform.openai.com',clave:true,modelo:'gpt-4.1-mini',url:'https://platform.openai.com/api-keys',paso:'Crea una clave en la plataforma de OpenAI (requiere saldo; la cuenta gratuita de chatgpt.com no sirve) y pégala aquí.'},
@@ -2316,6 +2316,12 @@ const IA_SYS='Eres un asistente pedagógico para un docente de telesecundaria en
 function iaContexto(){const u=U.ia,ts=tsDe(u.per);
   return u.aid==='grupo'?{que:'grupo',datos:datosGrupoIA(ts)}:{que:'alumno',datos:datosAlumnoIA(u.aid,ts)}}
 function iaSistema(){const c=iaContexto();return IA_SYS+'\n\nDatos actuales ('+(c.que==='grupo'?'del grupo':'de un alumno')+', en JSON):\n'+anonTx(JSON.stringify(c.datos))}
+async function geminiModelo(k,actual){ // el «flash» más reciente que acepte generateContent
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000',{headers:{'x-goog-api-key':k}});if(!r.ok)return null;
+  const ms=((await r.json()).models||[]).filter(x=>(x.supportedGenerationMethods||[]).includes('generateContent')).map(x=>x.name.replace(/^models\//,'')).filter(n=>n!==actual&&/^gemini/.test(n));
+  const malo=/lite|image|tts|live|audio|embed|vision|exp|thinking|computer|robotics|nano|learnlm/i,ver=n=>+((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);
+  const orden=l=>l.sort((a,b)=>ver(b)-ver(a)||/preview/.test(a)-/preview/.test(b));
+  return ms.includes('gemini-flash-latest')&&actual!=='gemini-flash-latest'?'gemini-flash-latest':(orden(ms.filter(n=>/flash/.test(n)&&!malo.test(n)))[0]||orden(ms.filter(n=>!malo.test(n)))[0]||ms[0]||null)}
 /* Llamada a cada servicio. msgs = [{r:'u'|'a',t}] ya anonimizados */
 async function iaLlamar(sys,msgs,o={}){
   const p=o.prov||IA.prov(),k=IA.clave(p),m=IA.modelo(p);
@@ -2328,9 +2334,13 @@ async function iaLlamar(sys,msgs,o={}){
   if(!k)throw err('clave','Falta la clave');
   let r;
   try{
-    if(p==='gemini'){r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
+    if(p==='gemini'){const gen=mm=>fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(mm.replace(/^models\//,''))}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},
       body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:msgs.map(x=>({role:x.r==='u'?'user':'model',parts:[{text:x.t}]})),generationConfig:{temperature:.4,...(o.json?{responseMimeType:'application/json'}:{})}})});
-      const j=await http(r);return ((j.candidates||[])[0]?.content?.parts||[]).map(x=>x.text||'').join('').trim()}
+      let j;try{j=await http(await gen(m))}
+      catch(e){if(!(e.code==='modelo'||(e.code==='http'&&/not found|not supported|deprecated|no longer/i.test(e.message))))throw e;
+        const nv=await geminiModelo(k,m);if(!nv)throw e; // el modelo ya no existe: se elige uno vigente de la lista de Google y se recuerda
+        IA.c.modelos=IA.c.modelos||{};IA.c.modelos.gemini=nv;IA.guardar();j=await http(await gen(nv))}
+      return ((j.candidates||[])[0]?.content?.parts||[]).map(x=>x.text||'').join('').trim()}
     if(p==='claude'){r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:m,max_tokens:o.max||2000,system:sys,messages:msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}))})});
       const j=await http(r);return (j.content||[]).map(x=>x.text||'').join('').trim()}
