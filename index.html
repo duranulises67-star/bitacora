@@ -316,6 +316,35 @@ textarea.fnota{min-height:64px;margin-top:6px}
 .prog{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}.prog i{display:block;height:100%;background:var(--primary);border-radius:99px}
 @media (max-width:520px){.prow{grid-template-columns:minmax(0,1fr) 52px}.prow .prog{grid-column:1/-1;grid-row:2}}
 .legend2{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}.legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* Hoja de calificaciones */
+.hj-top .chips{flex-wrap:wrap}
+.hj-fils{gap:8px 14px;align-items:end}.hj-f{display:grid;gap:3px;font-size:.74rem;font-weight:700;color:var(--muted)}.hj-f select{padding:6px 8px;font-size:.88rem;font-weight:400;color:var(--ink);max-width:190px}
+.hj-chk{display:flex;gap:6px;align-items:center;font-size:.9rem;padding-bottom:6px}
+.hj-uno{justify-content:center;gap:14px}
+.hj-tw{max-height:calc(100vh - 150px);overflow:auto}
+.hj-t{border-collapse:separate;border-spacing:0}
+.hj-t thead th{position:sticky;background:var(--surface2);z-index:3}
+.hj-t thead tr.hj-g th{top:0;height:30px}.hj-t thead tr.hj-c th{top:30px;vertical-align:top;border-bottom:2px solid var(--line)}
+.hj-t thead th.nm{top:0;z-index:5;background:var(--surface2)}
+.hj-t thead th.grp{background:var(--primary-soft);white-space:nowrap;border-left:2px solid var(--surface)}
+.hj-t td,.hj-t th{padding:4px 5px}
+.hj-t tbody td.nm,.hj-t tfoot td.nm{z-index:2}
+.hj-t tbody tr:focus-within td.nm{background:var(--primary-soft);font-weight:700}
+.hj-t tfoot td{position:sticky;bottom:0;z-index:3;background:var(--primary-soft)}.hj-t tfoot td.nm{z-index:4;background:var(--primary-soft)}
+.hj-t .hj-p{position:sticky;right:0;z-index:2;background:var(--surface2);box-shadow:-1px 0 0 var(--line);min-width:74px}
+.hj-t thead th.hj-p{top:0;z-index:5}.hj-t tfoot td.hj-p{z-index:4;background:var(--primary-soft)}.hj-t th.hj-p small{display:block;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)}
+.hj-h{display:grid;gap:2px;width:108px;border:0;background:none;padding:2px;cursor:pointer;text-align:center;white-space:normal;color:var(--ink);text-transform:none;letter-spacing:0;border-radius:6px}
+.hj-h:hover{background:var(--primary-soft)}.hj-h b{font-size:.76rem;line-height:1.15;color:var(--primary);text-decoration:underline dotted;text-underline-offset:3px;overflow-wrap:anywhere}.hj-h small{font-size:.68rem;font-weight:400;color:var(--muted);line-height:1.15}
+.hj-cel{display:flex;gap:4px;justify-content:center;align-items:center}
+input.cin.hj{width:64px;height:34px;padding:2px;text-align:center;font-weight:700;border-radius:7px;border:1px solid var(--line)}
+input.cin.hj:focus{outline:2px solid var(--primary);outline-offset:0}
+input.cin.hj.vac{background:var(--surface);border-style:dashed}
+input.cin.hj.kj{background:var(--ljbg);color:var(--lj)}
+input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
+.hj-lock{border:0;background:none;cursor:pointer;padding:2px 4px;font-size:.8rem;white-space:nowrap;color:var(--muted);border-radius:6px}.hj-lock:hover{background:var(--primary-soft)}
+.hj-sep{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px}
+#hc-fill{width:80px;text-align:center}
+@media (max-width:640px){.hj-t .hj-p{right:auto;box-shadow:none}.hj-t th.nm,.hj-t td.nm{min-width:118px;max-width:132px;font-size:.84rem}.hj-tw{max-height:calc(100vh - 110px)}}
 /* Asistente de IA: botón y ventana flotantes */
 :root{--ia1:#7f9cd8;--ia2:#b49ad6;--ia3:#e9a77e}
 .ia-fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:12px 18px 12px 14px;border-radius:999px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--ia1),var(--ia2) 55%,var(--ia3));box-shadow:0 6px 20px rgba(110,90,160,.35);transition:transform .15s}
@@ -1587,6 +1616,7 @@ function refreshList(){const l=$('#stlist');if(l)l.innerHTML=stList();const c=$(
 
 /* Proyectos (PPA) */
 function vProyectos(){
+  if(U.hoja&&ppaById(U.hoja.ppa))return vHoja();
   const t=U.trim,ps=S.ppas.filter(p=>+p.trim===t).sort(ordPPA);
   const sueltos=S.registros.filter(r=>!r.ppa&&rTrim(r)===t).length;
   const P=U.ppaSel&&ppaById(U.ppaSel);
@@ -1612,7 +1642,7 @@ function ppaCard(P){
     ${esMet(P)?metResumen(P,regs):''}<div class="palist" ${esMet(P)?'hidden':''}>${pas.map((pa,i)=>{const rs=regs.filter(r=>r.pa===pa.id),n=rs.length,ni=rs.filter(r=>r.inst).length,pr=avg(A.map(a=>scorePA(a.id,P,pa).score).filter(x=>x!=null));
       return `<div class="parow"><span class="k">${i+1}</span><span style="min-width:0"><b>${esc(pa.nombre)}</b>${paDs(pa).length?' '+tagsDisc(paDs(pa)):''}${pa.estado==='concluido'?' <span class="badge fin">Concluido</span>':''}${pa.producto?`<br><span class="muted" style="font-size:.85rem">Producto final: ${esc(pa.producto)}</span>`:''}</span><span class="stat muted" style="font-size:.85rem">${pl(n,'valoración','valoraciones')}${ni?' · '+pl(ni,'instrumento','instrumentos'):''}<br>${(()=>{const a=avanceFases(P,pa);return `<span title="Etapas con evidencias">${barraFases(P,pa,true)} ${a.n}/${a.t} etapas</span>`})()}</span>${gnum(pr)}</div>`}).join('')||'<p class="hint">Sin proyectos académicos. Edita el PPA para agregar hasta tres.</p>'}
       ${todo?`<p class="hint">${todo===1?'1 valoración aplica':todo+' valoraciones aplican'} a todo el PPA.</p>`:''}</div>
-    <div class="row"><button class="btn sm ${sel?'primary':''}" data-act="verPPA" data-k="${P.id}">${sel?'Ocultar valoraciones':'Ver valoraciones'}</button><button class="btn sm" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><button class="btn sm" data-act="editPPA" data-k="${P.id}">Editar</button><button class="btn sm" data-act="finPPA" data-k="${P.id}">${fin?'Reabrir':'Concluir'}</button><span class="spacer"></span><button class="btn sm" data-act="docx" data-k="${P.id}">Descargar Word</button><button class="btn sm" data-act="xlsx" data-k="${P.id}">Descargar Excel</button>${confirmBtn('delPPA',P.id,regs.length?`Eliminar (${pl(regs.length,'valoración','valoraciones')})`:'Eliminar')}</div>
+    <div class="row"><button class="btn sm ${sel?'primary':''}" data-act="verPPA" data-k="${P.id}">${sel?'Ocultar valoraciones':'Ver valoraciones'}</button><button class="btn sm primary" data-act="hoja" data-k="${P.id}">Hoja de calificaciones</button><button class="btn sm" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><button class="btn sm" data-act="editPPA" data-k="${P.id}">Editar</button><button class="btn sm" data-act="finPPA" data-k="${P.id}">${fin?'Reabrir':'Concluir'}</button><span class="spacer"></span><button class="btn sm" data-act="docx" data-k="${P.id}">Descargar Word</button><button class="btn sm" data-act="xlsx" data-k="${P.id}">Descargar Excel</button>${confirmBtn('delPPA',P.id,regs.length?`Eliminar (${pl(regs.length,'valoración','valoraciones')})`:'Eliminar')}</div>
   </section>`;
 }
 function ppaDetalle(P){
@@ -1643,7 +1673,7 @@ function resumenPPA(P){
   <tfoot><tr><td class="nm">Promedio del grupo</td>${pas.map((pa,j)=>`<td>${av(sp.map(x=>x[j]))}</td>`).join('')}${ds.map((d,j)=>`<td>${av(sd.map(x=>x[j]))}</td>`).join('')}<td>${av(sf)}</td><td>${av(sf.map(calOf))}</td></tr></tfoot></table></div>
   <div class="evs">${pas.map((pa,i)=>`<div class="ev"><b>P${i+1}</b><span style="min-width:0">${esc(pa.nombre)}${paDs(pa).length?' · '+esc(paDs(pa).join(', ')):''}${pa.producto?` <span class="muted">· ${esc(pa.producto)}</span>`:''}</span><span></span><button class="btn sm ed" data-act="paSel" data-k="${pa.id}">Ver detalle</button></div>`).join('')}</div>
   <p class="hint">El promedio del PPA es el promedio de sus proyectos académicos.${ds.length?' El promedio por disciplina considera solo las valoraciones de cada asignatura.':''}</p>
-  <div class="row"><button class="btn" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><span class="spacer"></span><button class="btn primary" data-act="docx" data-k="${P.id}">Descargar PPA en Word</button><button class="btn primary" data-act="xlsx" data-k="${P.id}">Descargar PPA en Excel</button></div>`;
+  <div class="row"><button class="btn" data-act="hoja" data-k="${P.id}">Hoja de calificaciones</button><button class="btn" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><span class="spacer"></span><button class="btn primary" data-act="docx" data-k="${P.id}">Descargar PPA en Word</button><button class="btn primary" data-act="xlsx" data-k="${P.id}">Descargar PPA en Excel</button></div>`;
 }
 function instLista(P,pa){
   const A=activos(),rs=S.registros.filter(r=>r.inst&&r.ppa===P.id&&(pa?r.pa===pa.id:!r.pa));
@@ -1655,7 +1685,7 @@ function matrizPA(P,pa){
   const A=activos(),cols=columnas(P,pa);
   const tp=TIPOS.filter(t=>cols.some(c=>c.t===t.k)).concat(cols.some(c=>tipo(c.t).oculto)?[TMAP.disciplina]:[]);
   const k_=`data-k="${P.id}" data-pa="${pa?pa.id:''}"`;
-  const acciones=`<div class="row"><button class="btn" data-act="${pa?'regPA':'regPPA'}" ${k_}>Registrar valoración</button><button class="btn" data-act="partOpen" ${k_}>Registrar participaciones</button><button class="btn" data-act="instNew" ${k_}>+ Rúbrica o lista de cotejo</button></div>`;
+  const acciones=`<div class="row"><button class="btn primary" data-act="hoja" ${k_}>Hoja de calificaciones</button><button class="btn" data-act="${pa?'regPA':'regPPA'}" ${k_}>Registrar valoración</button><button class="btn" data-act="partOpen" ${k_}>Registrar participaciones</button><button class="btn" data-act="instNew" ${k_}>+ Rúbrica o lista de cotejo</button></div>`;
   const fin=pa?`<button class="btn" data-act="finPA" ${k_}>${pa.estado==='concluido'?'Reabrir proyecto académico':'Concluir proyecto académico'}</button>`:'';
   const head=pa?`<div class="row"><div style="min-width:0"><b>${esc(pa.nombre)}</b> ${tagsDisc(paDs(pa))}${pa.producto?`<br><span class="muted" style="font-size:.88rem">Producto final: ${esc(pa.producto)}</span>`:''}</div>${pa.estado==='concluido'?'<span class="badge fin">Concluido</span>':''}</div>`:esMet(P)?`<div class="row"><div style="min-width:0"><span class="tag met">${esc(nomMet(P))}</span> ${tagsDisc(P.discs||[])}${P.contenido?`<br><span class="muted" style="font-size:.88rem">${esc(P.contenido)}</span>`:''}</div></div>`:'';
   if(!cols.length)return `${head}${acciones}<div class="empty"><p class="lead">Aún no hay valoraciones${pa?' en este proyecto académico':' en este PPA'}.</p></div>${instLista(P,pa)}`;
@@ -1666,10 +1696,7 @@ function matrizPA(P,pa){
   const runs=[];cols.forEach(c=>{const g=tipo(c.t).pl;if(runs.length&&runs[runs.length-1].g===g)runs[runs.length-1].n++;else runs.push({g,n:1})});
   const av=fn=>{const v=A.map((a,i)=>fn(a,i)).filter(x=>x!=null);return v.length?f1(avg(v)):'—'};
   const pond=t=>pesoDe(t.k)>0;
-  const dec=U.decimal&&(pa||esMet(P)),editable=r=>!r.inst&&!r.log&&r.tipo!=='participacion';
-  const vCel=v=>v==null?'':v==='ne'?'NE':v==='j'?'J':typeof v==='object'?'':fg(gradeOf(v));
-  const celdaDe=(c,a)=>{const v=c.r.valores&&c.r.valores[a.id];
-    return dec&&editable(c.r)&&(v==null||typeof v!=='object')?`<input class="cin" id="c-${c.r.id}-${a.id}" data-chg="celda" data-r="${c.r.id}" data-aid="${a.id}" value="${vCel(v)}" inputmode="decimal" autocomplete="off" aria-label="${esc(a.nombre)}, ${esc(c.code)}">`:celda(v)};
+  const celdaDe=(c,a)=>celda(c.r.valores&&c.r.valores[a.id]);
   const ords=cols.slice().sort((x,y)=>(x.r.fecha||'').localeCompare(y.r.fecha||'')||cols.indexOf(x)-cols.indexOf(y));
   const filaAct=c=>{const dd=dOf(c.r),dt=detalleReg(c.r);return `<div class="ev act"><span class="fch">${fmtF(c.r.fecha)}</span><span style="min-width:0"><b>${esc(c.r.titulo)}</b> <span class="muted">· ${c.code}${c.todo?'•':''} · ${esc(tipo(c.t).n)}${c.todo?' · todo el PPA':''}${dd.length?' · '+esc(dd.join(', ')):''}${dt?' · '+esc(dt):''}</span></span>${gnum(promReg(c.r))}<button class="btn sm ed" data-act="editReg" data-k="${c.r.id}">${c.r.inst?'Evaluar':c.r.log?'Participaciones':'Abrir'}</button></div>`};
   const fs=(pa||esMet(P))?fasesDe(P):[],notas=P.faseNotas||{};
@@ -1680,8 +1707,7 @@ function matrizPA(P,pa){
       <details class="fnd" ${nt?'open':''}><summary>Notas de la ${etqFase(P)}</summary><textarea class="fnota" id="fn-${esc(k)}" data-inp="faseNota" data-p="${P.id}" data-k="${esc(k)}" placeholder="Qué se hizo, acuerdos con el grupo, ajustes o pendientes…">${esc(nt)}</textarea></details></div>`};
   const lst=`<details class="acts" open><summary><b>Actividades registradas</b> <span class="muted">· ${pl(cols.length,'evidencia','evidencias')}${ords.length?` · del ${fmtF(ords[0].r.fecha)} al ${fmtF(ords[ords.length-1].r.fecha)}`:''}${fs.length?` · ${avanceFases(P,pa).n} de ${fs.length} ${etqFase(P,true)} con evidencias`:''}</span></summary>
     ${fs.length?barraFases(P,pa):''}${grupos.map(grupoHTML).join('')}</details>`;
-  const decBtn=(pa||esMet(P))?`<div class="row"><button class="btn sm ${dec?'primary':''}" data-act="decimal" aria-pressed="${!!dec}">${dec?'Terminar de calificar':'Calificar con decimales'}</button>${dec?'<span class="hint">Escribe de 5 a 10 (por ejemplo 8.5), NE o J. Se guarda al salir de cada casilla. Las evidencias con rúbrica o participaciones se califican desde su propia pantalla.</span>':''}</div>`:'';
-  return `${head}${acciones}${lst}${decBtn}${kpisDe(sc.map(x=>x.score),`<div class="kpi"><b>${cols.length}</b><span>Evidencias valoradas</span></div>`)}
+  return `${head}${acciones}${lst}${kpisDe(sc.map(x=>x.score),`<div class="kpi"><b>${cols.length}</b><span>Evidencias valoradas</span></div>`)}
   <div class="tw"><table class="mx"><thead>
     <tr><th class="nm" rowspan="2">Alumno(a)</th>${runs.map(x=>`<th class="grp" colspan="${x.n}">${esc(x.g)}</th>`).join('')}<th class="grp" colspan="${tp.length}">Promedio por tipo</th>${ds.length?`<th class="grp" colspan="${ds.length}">Promedio por disciplina</th>`:''}${fz.length?`<th class="grp" colspan="${fz.length}">Promedio por ${etqFase(P)}</th>`:''}<th class="grp" colspan="2">Resultado</th></tr>
     <tr>${cols.map(c=>`<th><button class="code" data-act="editReg" data-k="${c.r.id}" title="${esc(c.r.titulo)} · ${fmtF(c.r.fecha)}${c.todo?' · todo el PPA':''}${c.r.inst?' · '+instNom(c.r.inst):''}. Toca para ${c.r.inst?'evaluar':'editar'}.">${c.code}${c.todo?'•':''}${c.r.inst?'ᴿ':''}</button></th>`).join('')}${tp.map(t=>`<th title="${esc(t.pl)}${pond(t)?'':' · no pondera'}">${t.p}${pond(t)?'':'°'}</th>`).join('')}${ds.map(d=>`<th class="dn">${esc(d.n)}</th>`).join('')}${fz.map(f=>`<th class="dn" title="${esc(f.n)}">${fasesDe(P).indexOf(f)+1}. ${esc(corto(f.n,22))}</th>`).join('')}<th>Promedio</th><th>Calif.</th></tr></thead>
@@ -1990,7 +2016,7 @@ function render(){
 }
 function modal(h){$('#modal').innerHTML=`<div class="modal" data-act="bg"><div class="box" role="dialog" aria-modal="true">${h}</div></div>`}
 function irA(id){setTimeout(()=>{const e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},30)}
-const limpiarModos=()=>{U.part=null;U.instForm=null;U.instEval=null;U.decimal=false};
+const limpiarModos=()=>{U.part=null;U.instForm=null;U.instEval=null;U.hoja=null};
 
 /* ---------- Acciones ---------- */
 function fichaDe(aid){return S.fichas[aid]||(S.fichas[aid]={})}
@@ -2211,7 +2237,6 @@ const A={
   irTrabajo(b){const P=ppaById(b.dataset.k);if(!P)return;U.view='proyectos';LS.set('tsf-view','proyectos');U.ppaSel=P.id;U.paSel='resumen';limpiarModos();render();irA('detalle-ppa')},
   verPPA(b){const id=b.dataset.k;U.ppaSel=U.ppaSel===id?null:id;U.paSel='resumen';limpiarModos();render();if(U.ppaSel)irA('detalle-ppa')},
   paSel(b){U.paSel=b.dataset.k;limpiarModos();render();irA('detalle-ppa')},
-  decimal(){U.decimal=!U.decimal;render();if(U.decimal)setTimeout(()=>{const e=document.querySelector("#detalle-ppa input.cin");if(e)e.focus()},40)},
   regPPA(b){U.draft={...newDraft(),ppa:b.dataset.k,pa:null};LS.set('tsf-draft',U.draft);U.view='registrar';LS.set('tsf-view','registrar');limpiarModos();render();window.scrollTo(0,0)},
   regPA(b){U.draft={...newDraft(),ppa:b.dataset.k,pa:b.dataset.pa||''};LS.set('tsf-draft',U.draft);U.view='registrar';LS.set('tsf-view','registrar');limpiarModos();render();window.scrollTo(0,0)},
   async finPPA(b){const P=ppaById(b.dataset.k);if(!P)return;P.estado=P.estado==='concluido'?'curso':'concluido';if(P.estado==='concluido')P.concluido=hoy();render();await Store.ppa(P);toast(P.estado==='concluido'?'PPA concluido. Descarga su registro en Word o Excel.':'PPA reabierto')},
@@ -2246,16 +2271,6 @@ const INP={
   ifDesc(e){const c=U.instForm&&U.instForm.criterios[+e.target.dataset.i];if(c){c.d=c.d||[];c.d[+e.target.dataset.j]=e.target.value}}
 };
 const CHG={
-  celda(e){ // calificación escrita en la matriz del proyecto académico (admite decimales)
-    const t=e.target,r=regById(t.dataset.r),aid=t.dataset.aid;if(!r)return;
-    const s=t.value.trim().toUpperCase().replace(',','.');let v;
-    if(s==='')v=null;else if(s==='NE')v='ne';else if(s==='J')v='j';
-    else{const n=+s;if(!isFinite(n)||n<5||n>10){t.classList.add('bad');toast('Escribe una calificación de 5 a 10 (puedes usar decimales), NE o J.');return}v=Math.round(n*10)/10}
-    t.classList.remove('bad');r.valores=r.valores||{};
-    if(v==null)delete r.valores[aid];else r.valores[aid]=v;
-    guardarReg(r);
-    setTimeout(()=>{const a=document.activeElement,id=a&&a.id,y=window.scrollY;render();window.scrollTo(0,y);if(id){const n=document.getElementById(id);if(n){n.focus();if(n.select)n.select()}}},0);
-  },
   dPPA(e){U.draft.ppa=e.target.value;U.draft.pa=null;U.draft.disc='';U.draft.fase=null;resolveDraft();LS.set('tsf-draft',U.draft);render()},
   pfTrim(e){U.ppaForm.trim=+e.target.value},
 
@@ -2271,6 +2286,149 @@ const CHG={
   import(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();
     r.onload=()=>{try{let d=JSON.parse(r.result);if(d&&d.datos&&Array.isArray(d.datos.alumnos))d=d.datos;if(!Array.isArray(d.alumnos))throw 0;U.pendingImport=d;render()}catch(x){toast('El archivo no es un respaldo válido de esta aplicación.')}};r.readAsText(file)}
 };
+/* ---------- Hoja de calificaciones ---------- */
+// Vista tipo hoja de cálculo de un PPA, proyecto académico o metodología: alumnos en filas, actividades en columnas
+const hjEditable=r=>!r.inst&&!r.log&&r.tipo!=='participacion';
+const hjTxt=v=>v==null?'':v==='ne'?'NE':v==='j'?'J':typeof v==='object'?'':fg(v);
+const hjCls=v=>v==null?'vac':v==='j'?'kj':v==='ne'?'k5':kcls(v);
+const hjLeer=s=>{s=String(s||'').trim().toUpperCase();return leerCalif(s==='N'?'NE':s)};
+function hjGrupos(P,h){ // actividades agrupadas: por proyecto académico en todo el PPA; por fase o etapa en los demás casos
+  const pas=P.pas||[],pa=h.pa!=='todo'&&paDe(P,h.pa),L=activos();
+  const ord=l=>l.slice().sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||tipo(a.tipo).i-tipo(b.tipo).i);
+  const pasa=r=>(!h.tipo||r.tipo===h.tipo)&&(!h.disc||rDiscs(r).includes(h.disc))&&(!h.fase||r.fase===h.fase)&&(!h.pend||(hjEditable(r)&&L.some(a=>(r.valores||{})[a.id]==null)));
+  let gs;
+  if(pas.length&&!pa)gs=pas.map((x,i)=>({n:`P${i+1} · ${x.nombre}`,rs:regsPPA(P).filter(r=>r.pa===x.id)})).concat([{n:'Todo el PPA',rs:regsPPA(P).filter(r=>!pas.some(x=>x.id===r.pa))}]);
+  else{const base=pa?regsPA(P,pa):regsPPA(P),fs=fasesDe(P);
+    gs=fs.map((f,i)=>({n:`${i+1}. ${f.n}`,rs:base.filter(r=>r.fase===f.id)})).concat([{n:fs.length?'Sin '+etqFase(P):'Evidencias',rs:base.filter(r=>!r.fase||!faseDe(P,r.fase))}])}
+  return gs.map(g=>({n:g.n,rs:ord(g.rs.filter(pasa))})).filter(g=>g.rs.length);
+}
+function hjProm(aid,P,h){const pa=h.pa!=='todo'&&paDe(P,h.pa);return pa?scorePA(aid,P,pa).score:scorePPA(aid,P)}
+function vHoja(){
+  const h=U.hoja,P=ppaById(h.ppa),L=activos(),pas=P.pas||[];
+  if(!L.length)return sinAlumnos();
+  if(h.pa!=='todo'&&!paDe(P,h.pa))h.pa='todo';
+  const sinFiltro=hjGrupos(P,{pa:h.pa}).flatMap(g=>g.rs);
+  let gs=hjGrupos(P,h),cols=gs.flatMap(g=>g.rs);const total=cols.length;
+  if(h.uno!=null&&total){h.uno=Math.max(0,Math.min(total-1,h.uno));const r=cols[h.uno];gs=gs.map(g=>({n:g.n,rs:g.rs.filter(x=>x===r)})).filter(g=>g.rs.length);cols=[r]}
+  const vacias=sinFiltro.filter(hjEditable).reduce((s,r)=>s+L.filter(a=>(r.valores||{})[a.id]==null).length,0);
+  const opt=(k,lbl,ops)=>ops.length>1||h[k]?`<label class="hj-f"><span>${lbl}</span><select data-chg="hjFil" data-k="${k}"><option value="">Todos</option>${ops.map(([v,n])=>`<option value="${esc(v)}" ${h[k]===v?'selected':''}>${esc(n)}</option>`).join('')}</select></label>`:'';
+  const oTipo=[...new Set(sinFiltro.map(r=>r.tipo))].map(k=>[k,tipo(k).n]);
+  const oDisc=[...new Set(sinFiltro.flatMap(r=>rDiscs(r)))].map(n=>[n,n]);
+  const oFase=fasesDe(P).filter(f=>sinFiltro.some(r=>r.fase===f.id)).map(f=>[f.id,f.n]);
+  const tabs=pas.length?`<div class="chips"><button class="chip ${h.pa==='todo'?'on':''}" data-act="hjPA" data-k="todo">Todo el PPA</button>${pas.map((x,i)=>`<button class="chip ${h.pa===x.id?'on':''}" data-act="hjPA" data-k="${x.id}"><b>${i+1}</b> ${esc(corto(x.nombre,34))}</button>`).join('')}</div>`:'';
+  const barra=`<section class="panel hj-top">
+    <div class="sec-h"><div style="min-width:0"><button class="btn sm ghost" data-act="hjCerrar">← Volver a proyectos</button><div class="eyebrow" style="margin-top:8px">Hoja de calificaciones · ${esc(nomMet(P))}</div><h2>${esc(P.nombre)}</h2></div>
+      <div class="row"><span class="status" data-status></span><button class="btn sm" id="hj-undo" data-act="hjDeshacer" ${h.undo.length?'':'disabled'}>↶ Deshacer</button><button class="btn sm" data-act="hjUno">${h.uno!=null?'Ver hoja completa':'Una actividad a la vez'}</button><button class="btn sm primary" data-act="hjNueva">+ Nueva actividad</button></div></div>
+    ${tabs}
+    <div class="row hj-fils">${opt('tipo','Tipo',oTipo)}${opt('fase',etqFase(P)==='etapa'?'Etapa':'Fase',oFase)}${opt('disc','Disciplina',oDisc)}
+      <label class="hj-chk"><input type="checkbox" data-chg="hjPend" ${h.pend?'checked':''}> Solo actividades con pendientes</label><span class="spacer"></span><span class="muted" id="hj-vac">${pl(vacias,'casilla sin calificar','casillas sin calificar')}</span></div>
+    ${h.uno!=null&&total?`<div class="row hj-uno"><button class="btn sm" data-act="hjMv" data-k="-1" ${h.uno<=0?'disabled':''}>← Anterior</button><b>Actividad ${h.uno+1} de ${total}</b><button class="btn sm" data-act="hjMv" data-k="1" ${h.uno>=total-1?'disabled':''}>Siguiente →</button></div>`:''}
+  </section>`;
+  if(!cols.length)return `${barra}<section class="panel empty"><h3>${sinFiltro.length?'Ninguna actividad con estos filtros':'Aún no hay actividades'}</h3><p class="lead">${sinFiltro.length?'Cambia los filtros para verlas.':'Agrega la primera actividad y empieza a calificar aquí mismo.'}</p></section>`;
+  const fila=(a,f)=>`<tr><td class="nm"><span class="muted">${f+1}.</span> ${esc(a.nombre)}</td>${cols.map((r,c)=>{const v=(r.valores||{})[a.id];
+      if(!hjEditable(r)||(v!=null&&typeof v==='object'))return `<td><button class="hj-lock" data-act="hjAbrir" data-k="${r.id}" title="${r.inst?'Se califica con su '+instNom(r.inst):'Se registra en Participaciones'}. Toca para abrir.">🔒 ${celda(v)}</button></td>`;
+      return `<td><div class="hj-cel"><input class="cin hj ${hjCls(v)}" id="hj-${r.id}-${a.id}" data-chg="hjCel" data-r="${r.id}" data-aid="${a.id}" data-f="${f}" data-c="${c}" value="${hjTxt(v)}" inputmode="decimal" autocomplete="off" aria-label="${esc(a.nombre)}, ${esc(r.titulo)}">${h.uno!=null?`<button class="btn sm" data-act="hjVal" data-r="${r.id}" data-aid="${a.id}" data-k="ne">NE</button><button class="btn sm" data-act="hjVal" data-r="${r.id}" data-aid="${a.id}" data-k="j">J</button>`:''}</div></td>`}).join('')}<td class="hj-p" id="hp-${a.id}">${gnum(hjProm(a.id,P,h))}</td></tr>`;
+  return `${barra}<div class="hj-tw tw"><table class="mx hj-t"><thead>
+    <tr class="hj-g"><th class="nm" rowspan="2">Alumno(a)</th>${gs.map(g=>`<th class="grp" colspan="${g.rs.length}" title="${esc(g.n)}">${esc(corto(g.n,g.rs.length*20))}</th>`).join('')}<th class="hj-p" rowspan="2">Promedio<small>${h.pa==='todo'&&pas.length?'del PPA':esMet(P)?'del trabajo':'del proyecto'}</small></th></tr>
+    <tr class="hj-c">${cols.map(r=>`<th><button class="hj-h" data-act="hjCol" data-k="${r.id}" title="${esc(r.titulo)}${r.desc?' · '+esc(r.desc):''}. Toca para editar."><b>${hjEditable(r)?'':'🔒 '}${esc(corto(r.titulo,34))}</b><small>${r.fecha?esc(fmtF(r.fecha).replace(/ \d{4}$/,''))+' · ':''}${esc(tipo(r.tipo).n)}${!r.pa&&pas.length&&h.pa!=='todo'?' · todo el PPA':''}</small></button></th>`).join('')}</tr></thead>
+    <tbody>${L.map(fila).join('')}</tbody>
+    <tfoot><tr><td class="nm">Promedio del grupo</td>${cols.map(r=>`<td id="hc-${r.id}">${gnum(promReg(r))}</td>`).join('')}<td class="hj-p" id="hp-grupo">${gnum(avg(L.map(a=>hjProm(a.id,P,h)).filter(x=>x!=null)))}</td></tr></tfoot></table></div>
+  <p class="hint">Escribe de 5 a 10 (admite decimales), NE (o N) o J; se guarda solo. <b>Enter</b> baja al siguiente alumno, <b>Tab</b> y las flechas te mueven, <b>Ctrl+Z</b> deshace. Para pasar calificaciones de Excel, copia las celdas y pégalas en la primera casilla. Toca el nombre de una actividad para editarla o llenar las vacías. 🔒 = se califica con rúbrica, lista de cotejo o participaciones: tócala para abrir su pantalla. El promedio de la derecha considera todo ${h.pa==='todo'&&pas.length?'el PPA':'el proyecto'} con tu ponderación, aunque uses filtros.</p>`;
+}
+function hjRender(){const t=$('.hj-tw'),x=t?t.scrollLeft:0,y=t?t.scrollTop:0,sy=window.scrollY;render();const n=$('.hj-tw');if(n){n.scrollLeft=x;n.scrollTop=y}window.scrollTo(0,sy)}
+function hjPintar(rids,aids){ // actualiza casillas y promedios sin volver a dibujar la hoja, para no perder el lugar al escribir
+  const h=U.hoja,P=h&&ppaById(h.ppa);if(!P)return;CACHE={};const L=activos();
+  rids.forEach(id=>{const r=regById(id);if(!r)return;const c=$('#hc-'+id);if(c)c.innerHTML=gnum(promReg(r));
+    aids.forEach(aid=>{const e=document.getElementById(`hj-${id}-${aid}`);if(!e)return;const v=(r.valores||{})[aid];if(document.activeElement!==e||e.value.toUpperCase()!==hjTxt(v))e.value=hjTxt(v);e.className=`cin hj ${hjCls(v)}`})});
+  aids.forEach(aid=>{const e=$('#hp-'+aid);if(e)e.innerHTML=gnum(hjProm(aid,P,h))});
+  const g=$('#hp-grupo');if(g)g.innerHTML=gnum(avg(L.map(a=>hjProm(a.id,P,h)).filter(x=>x!=null)));
+  const n=hjGrupos(P,{pa:h.pa}).flatMap(x=>x.rs).filter(hjEditable).reduce((s,r)=>s+L.filter(a=>(r.valores||{})[a.id]==null).length,0),vc=$('#hj-vac');if(vc)vc.textContent=pl(n,'casilla sin calificar','casillas sin calificar');
+  const u=$('#hj-undo');if(u)u.disabled=!h.undo.length;
+}
+function hjSet(cambios,conUndo=true){ // cambios=[{r,aid,v}]; v null borra la calificación
+  const h=U.hoja,lote=[],rs=new Set(),as=new Set();
+  cambios.forEach(({r,aid,v})=>{r.valores=r.valores||{};const prev=r.valores[aid];if(prev===v||(prev==null&&v==null))return;lote.push({rid:r.id,aid,prev});
+    if(v==null)delete r.valores[aid];else r.valores[aid]=v;rs.add(r.id);as.add(aid);guardarReg(r)});
+  if(!lote.length)return 0;
+  if(conUndo&&h){h.undo.push(lote);if(h.undo.length>200)h.undo.shift()}
+  hjPintar([...rs],[...as]);return lote.length;
+}
+function hjIr(f,c,df,dc){ // mueve el cursor a la siguiente casilla editable en esa dirección
+  for(let i=1;i<200;i++){const nf=f+df*i,nc=c+dc*i;const t=document.querySelector(`input.hj[data-f="${nf}"][data-c="${nc}"]`);if(t){t.focus();t.scrollIntoView({block:'nearest',inline:'nearest'});return true}
+    if(nf<0||nc<0||nf>=activos().length)return false}return false}
+function hjModalCampos(P,o){ // campos comunes de actividad: tipo, proyecto académico y fase
+  const pas=P.pas||[],fs=fasesDe(P),tps=TIPOS.filter(t=>t.k!=='participacion');if(o.tipo&&!tps.some(t=>t.k===o.tipo))tps.push(tipo(o.tipo));
+  return `<label class="fld"><span>Nombre de la actividad</span><input id="hc-tit" value="${esc(o.titulo||'')}" placeholder="Ej. Lectura comentada de leyendas"></label>
+    <div class="grid2"><label class="fld"><span>Tipo de evidencia</span><select id="hc-tip">${tps.map(t=>`<option value="${t.k}" ${o.tipo===t.k?'selected':''}>${esc(t.n)}</option>`).join('')}</select></label>
+      <label class="fld"><span>Fecha</span><input type="date" id="hc-fec" value="${esc(o.fecha||hoy())}"></label></div>
+    ${pas.length?`<label class="fld"><span>Proyecto académico</span><select id="hc-pa">${pas.map((x,i)=>`<option value="${x.id}" ${o.pa===x.id?'selected':''}>${i+1}. ${esc(x.nombre)}</option>`).join('')}<option value="" ${!o.pa?'selected':''}>Todo el PPA</option></select></label>`:''}
+    ${fs.length?`<label class="fld"><span>${etqFase(P)==='etapa'?'Etapa':'Fase'} (opcional)</span><select id="hc-fas"><option value="">Sin ${etqFase(P)}</option>${fs.map((f,i)=>`<option value="${f.id}" ${o.fase===f.id?'selected':''}>${i+1}. ${esc(f.n)}</option>`).join('')}</select></label>`:''}
+    <label class="fld"><span>Descripción, PDA o criterio (opcional)</span><input id="hc-des" value="${esc(o.desc||'')}"></label>`;
+}
+function hjLeerCampos(P){const t=$('#hc-tit').value.trim();if(!t){toast('Escribe el nombre de la actividad.');$('#hc-tit').focus();return null}
+  const p=$('#hc-pa'),f=$('#hc-fas');return {titulo:t,tipo:$('#hc-tip').value,fecha:$('#hc-fec').value||hoy(),pa:p?(p.value||null):null,fase:f&&f.value&&faseDe(P,f.value)?f.value:null,desc:$('#hc-des').value.trim()}}
+Object.assign(A,{
+  hoja(b){const id=b.dataset.k,pa=b.dataset.pa;limpiarModos();U.hoja={ppa:id,pa:pa||'todo',tipo:'',disc:'',fase:'',pend:false,uno:null,undo:[]};render();window.scrollTo(0,0)},
+  hjCerrar(){const P=U.hoja&&U.hoja.ppa;U.hoja=null;if(P)U.ppaSel=P;render();irA('detalle-ppa')},
+  hjPA(b){const h=U.hoja;h.pa=b.dataset.k;h.tipo=h.disc=h.fase='';if(h.uno!=null)h.uno=0;render()},
+  hjUno(){const h=U.hoja;h.uno=h.uno==null?0:null;render()},
+  hjMv(b){U.hoja.uno+= +b.dataset.k;hjRender();const e=$('input.hj');if(e)e.focus()},
+  hjVal(b){const r=regById(b.dataset.r);if(r)hjSet([{r,aid:b.dataset.aid,v:b.dataset.k}])},
+  hjDeshacer(){const h=U.hoja;if(!h)return;const a=document.activeElement;
+    if(a&&a.matches&&a.matches('input.hj')){const r=regById(a.dataset.r);if(r&&a.value.trim().toUpperCase()!==hjTxt((r.valores||{})[a.dataset.aid])){a.value=hjTxt((r.valores||{})[a.dataset.aid]);a.classList.remove('bad');a.select();return}}
+    const lote=h.undo.pop();if(!lote){hjPintar([],[]);return}const rs=new Set(),as=new Set();
+    lote.forEach(({rid,aid,prev})=>{const r=regById(rid);if(!r)return;r.valores=r.valores||{};if(prev==null)delete r.valores[aid];else r.valores[aid]=prev;rs.add(rid);as.add(aid);guardarReg(r)});
+    hjPintar([...rs],[...as]);toast(lote.length>1?`Se deshicieron ${lote.length} calificaciones`:'Se deshizo el cambio')},
+  hjAbrir(b){U.hoja=null;A.editReg(b)},
+  hjCol(b){const r=regById(b.dataset.k),P=r&&ppaById(r.ppa);if(!r||!P)return;
+    if(!hjEditable(r)){modal(`<div><div class="eyebrow">${r.inst?esc(instNom(r.inst)):'Participaciones'}</div><h3>${esc(r.titulo)}</h3></div><p class="lead">${r.inst?'Esta calificación sale de los criterios de su instrumento.':'Esta calificación sale del conteo de participaciones.'} Para modificarla, abre su pantalla.</p>
+      <div class="row"><button class="btn primary" data-act="hjAbrirM" data-k="${r.id}">Abrir</button><button class="btn" data-act="cerrar">Cerrar</button></div>`);return}
+    const n=Object.keys(r.valores||{}).length;
+    modal(`<div><div class="eyebrow">Editar actividad</div><h3>${esc(r.titulo)}</h3></div>${hjModalCampos(P,r)}
+      <div class="row"><button class="btn primary" data-act="hjColOk" data-k="${r.id}">Guardar cambios</button><button class="btn" data-act="cerrar">Cancelar</button></div>
+      <div class="hj-sep"><span class="lbl">Llenar las casillas vacías de esta actividad</span><div class="row"><input class="cin" id="hc-fill" inputmode="decimal" placeholder="8.5" aria-label="Calificación para las vacías"><button class="btn sm" data-act="hjFill" data-k="${r.id}">Aplicar</button><button class="btn sm" data-act="hjFill" data-k="${r.id}" data-v="ne">NE</button></div></div>
+      <div class="hj-sep"><button class="btn sm ghost" data-act="hjColDel" data-k="${r.id}" data-n="${n}">Eliminar esta actividad</button></div>`)},
+  hjAbrirM(b){$('#modal').innerHTML='';U.hoja=null;A.editReg(b)},
+  async hjColOk(b){const r=regById(b.dataset.k),P=r&&ppaById(r.ppa);if(!r)return;const o=hjLeerCampos(P);if(!o)return;Object.assign(r,o);$('#modal').innerHTML='';hjRender();await Store.reg(r);toast('Actividad actualizada')},
+  hjFill(b){const r=regById(b.dataset.k);if(!r)return;const x=b.dataset.v?{v:b.dataset.v}:hjLeer($('#hc-fill').value);if(x.bad||x.v==null){toast('Escribe una calificación de 5 a 10, NE o J.');return}
+    const n=hjSet(activos().filter(a=>(r.valores||{})[a.id]==null).map(a=>({r,aid:a.id,v:x.v})));$('#modal').innerHTML='';toast(n?`Se llenaron ${pl(n,'casilla','casillas')}`:'Esta actividad no tiene casillas vacías')},
+  async hjColDel(b){if(!b.dataset.sure){b.dataset.sure='1';b.classList.remove('ghost');b.classList.add('warn');b.textContent=+b.dataset.n?`Confirmar: se borran ${pl(+b.dataset.n,'calificación','calificaciones')}`:'Confirmar eliminación';return}
+    const id=b.dataset.k;S.registros=S.registros.filter(x=>x.id!==id);(U.hoja.undo||[]).forEach((l,i,a)=>{a[i]=l.filter(c=>c.rid!==id)});U.hoja.undo=U.hoja.undo.filter(l=>l.length);$('#modal').innerHTML='';hjRender();await Store.delReg(id);toast('Actividad eliminada')},
+  hjNueva(){const h=U.hoja,P=ppaById(h.ppa),pas=P.pas||[];
+    modal(`<div><div class="eyebrow">${esc(P.nombre)}</div><h3>Nueva actividad</h3></div>${hjModalCampos(P,{tipo:h.tipo&&h.tipo!=='participacion'?h.tipo:'actividad',fecha:hoy(),pa:h.pa!=='todo'?h.pa:(pas[0]&&pas[0].id)||null,fase:h.fase||null})}
+      <div class="row"><button class="btn primary" data-act="hjNuevaOk">Agregar y calificar</button><button class="btn" data-act="cerrar">Cancelar</button></div>`);setTimeout(()=>$('#hc-tit')?.focus(),30)},
+  async hjNuevaOk(){const h=U.hoja,P=ppaById(h.ppa),o=hjLeerCampos(P);if(!o)return;const pa=o.pa&&paDe(P,o.pa);
+    const r={id:uid(),trim:+P.trim,ppa:P.id,campos:ctxPA(P,pa).campos||[],disc:'',valores:{},...o};S.registros.push(r);
+    Object.assign(h,{tipo:'',disc:'',fase:'',pend:false});if(h.pa!=='todo'&&r.pa&&r.pa!==h.pa)h.pa='todo';
+    if(h.uno!=null){const l=hjGrupos(P,h).flatMap(g=>g.rs);h.uno=Math.max(0,l.indexOf(r))}
+    $('#modal').innerHTML='';hjRender();const e=$(`input.hj[data-r="${r.id}"]`);if(e){e.focus();e.scrollIntoView({block:'nearest',inline:'center'})}await Store.reg(r)}
+});
+Object.assign(CHG,{
+  hjCel(e){const t=e.target,r=regById(t.dataset.r);if(!r)return;const x=hjLeer(t.value);
+    if(x.bad){t.classList.add('bad');toast('Escribe una calificación de 5 a 10 (puedes usar decimales), NE o J.');return}
+    t.classList.remove('bad');hjSet([{r,aid:t.dataset.aid,v:x.v??null}])},
+  hjFil(e){const h=U.hoja;h[e.target.dataset.k]=e.target.value;if(h.uno!=null)h.uno=0;hjRender()},
+  hjPend(e){const h=U.hoja;h.pend=e.target.checked;if(h.uno!=null)h.uno=0;hjRender()}
+});
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('input.hj'))e.target.select()});
+document.addEventListener('keydown',e=>{
+  if(!U.hoja||U.view!=='proyectos')return;
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'&&!$('#modal').innerHTML){e.preventDefault();A.hjDeshacer();return}
+  const t=e.target;if(!t.matches||!t.matches('input.hj'))return;
+  const f=+t.dataset.f,c=+t.dataset.c,n=t.value.length,a=t.selectionStart,z=t.selectionEnd;let df=0,dc=0;
+  if(e.key==='Enter')df=e.shiftKey?-1:1;else if(e.key==='ArrowDown')df=1;else if(e.key==='ArrowUp')df=-1;
+  else if(e.key==='ArrowLeft'&&a===0&&(z===0||z===n))dc=-1;else if(e.key==='ArrowRight'&&z===n&&(a===n||a===0))dc=1;
+  else if(e.key==='Escape'){const r=regById(t.dataset.r);if(r){t.value=hjTxt((r.valores||{})[t.dataset.aid]);t.classList.remove('bad');t.select()}return}
+  else return;
+  e.preventDefault();hjIr(f,c,df,dc)});
+document.addEventListener('paste',e=>{ // pegar un bloque copiado de Excel a partir de la casilla actual
+  const t=e.target;if(!t.matches||!t.matches('input.hj'))return;const txt=(e.clipboardData||window.clipboardData).getData('text');
+  if(!/[\n\t]/.test(txt.trim()))return;e.preventDefault();
+  const filas=txt.replace(/\r/g,'').replace(/\n+$/,'').split('\n').map(l=>l.split('\t')),f=+t.dataset.f,c=+t.dataset.c,cambios=[];let mal=0,fuera=0;
+  filas.forEach((cs,i)=>cs.forEach((s,j)=>{if(!s.trim())return;const inp=document.querySelector(`input.hj[data-f="${f+i}"][data-c="${c+j}"]`);if(!inp){fuera++;return}
+    const x=hjLeer(s);if(x.bad||x.v==null){mal++;return}cambios.push({r:regById(inp.dataset.r),aid:inp.dataset.aid,v:x.v})}));
+  hjSet(cambios);toast(`Se pegaron ${pl(cambios.length,'calificación','calificaciones')}`+(mal?` · ${mal} no válidas`:'')+(fuera?` · ${fuera} fuera de la hoja o con 🔒`:''))});
+
 /* ---------- Asistente de IA (ventana flotante) ---------- */
 // La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
 const IA_PROV={
@@ -2703,7 +2861,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
 document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.inp;if(k&&INP[k])INP[k](e)});
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.chg;if(k&&CHG[k])CHG[k](e)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').innerHTML='';
-  if(e.key==='Enter'&&e.target.matches&&e.target.matches('input.dv, input.cin[data-chg=celda]')){e.preventDefault();const l=[...document.querySelectorAll(e.target.matches('input.dv')?'input.dv':'input.cin[data-chg=celda]')];const i=l.indexOf(e.target);if(e.target.matches('input.cin[data-chg=celda]'))e.target.dispatchEvent(new Event('change',{bubbles:true}));const n=l[i+1];if(n){n.focus();n.select()}}
+  if(e.key==='Enter'&&e.target.matches&&e.target.matches('input.dv')){e.preventDefault();const l=[...document.querySelectorAll('input.dv')];const n=l[l.indexOf(e.target)+1];if(n){n.focus();n.select()}}
   if(e.key==='Enter'&&e.target.id==='fill-dec'){e.preventDefault();A.fillDec()}});
 
 /* ---------- Grupo de ejemplo (datos ficticios) ---------- */
