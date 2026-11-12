@@ -361,11 +361,19 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .as-c.a{color:var(--l3);background:var(--l3bg);border-color:transparent}.as-c.f{color:var(--l0);background:var(--l0bg);border-color:var(--l0)}.as-c.j{color:var(--l2);background:var(--l2bg);border-color:var(--l2)}
 .as-c.p{border-style:dashed;background:transparent}.as-c.fut{opacity:.45}
 .as-lista .st{grid-template-columns:28px minmax(0,1fr) auto}
-@media (max-width:640px){.as-lista .st{grid-template-columns:24px minmax(0,1fr)}.as-lista .st .seg{grid-column:1/-1;justify-self:stretch;display:grid;grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.as-lista .st{grid-template-columns:24px minmax(0,1fr)}.as-lista .st .seg{grid-column:1/-1;justify-self:stretch;display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr))}}
 .seg button.as-a{background:var(--l3);color:#fff}.seg button.as-f{background:var(--l0);color:#fff}.seg button.as-j{background:var(--l2);color:#fff}
 .banner.warn{background:var(--l0bg);color:var(--l0);border-color:transparent}
 .rep-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px}
-.rep-ops label{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);cursor:pointer;font-size:.92rem}.rep-ops label.off{opacity:.55}/* Asistente de IA: botón y ventana flotantes */
+.rep-ops label{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);cursor:pointer;font-size:.92rem}.rep-ops label.off{opacity:.55}
+.as-c.r{color:var(--l4);background:var(--l4bg);border-color:var(--l4)}.seg button.as-r{background:var(--l4);color:#fff}
+input[type=time]{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.cal-l{display:grid;gap:12px}.cal-i{display:grid;grid-template-columns:110px auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;background:var(--surface2);font-size:.92rem}.cal-i b{text-transform:capitalize}
+@media (max-width:560px){.cal-i{grid-template-columns:auto auto minmax(0,1fr)}.cal-i .cal-n{grid-column:1/-1}.cal-i button{grid-column:1/-1;justify-self:start}}
+.pill.warn{background:var(--l0bg);color:var(--l0);border-color:transparent}
+.ini-as.pend{border-color:var(--accent)}.ini-as h3{font-size:1.1rem}
+.cit-al{max-height:210px}.cit-al label small{flex:none}
+/* Asistente de IA: botón y ventana flotantes */
 :root{--ia1:#7f9cd8;--ia2:#b49ad6;--ia3:#e9a77e}
 .ia-fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:12px 18px 12px 14px;border-radius:999px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--ia1),var(--ia2) 55%,var(--ia3));box-shadow:0 6px 20px rgba(110,90,160,.35);transition:transform .15s}
 .ia-fab:hover{transform:translateY(-2px)}.ia-fab svg{width:22px;height:22px}.ia-fab.on{opacity:.0;pointer-events:none}
@@ -466,7 +474,7 @@ const SUG={
   HYC:'trabajo colaborativo con roles definidos, rutinas de autorregulación y actividades de proyecto de vida'};
 const PH={actividad:'Ej. Lectura comentada de leyendas',tarea:'Ej. Investigar una leyenda con la familia',participacion:'Ej. Plenaria sobre el ciclo del agua',parcial:'Ej. Borrador del guion',producto:'Ej. Antología ilustrada de leyendas',evaluacion:'Ej. Rúbrica de exposición oral',auto:'Ej. Coevaluación del equipo',diagnostica:'Ej. Evaluación diagnóstica'};
 const OLD_PESOS={actividad:25,participacion:15,producto:30,tarea:10,evaluacion:10,auto:10,diagnostica:0};
-const DEF_CFG={escuela:'',cct:'',docente:'',director:'',grado:'',grupo:'',ciclo:'2026-2027',localidad:'',municipio:'',estado:'',zona:'',sector:'',trims:null,ne:5,disciplinas:null,
+const DEF_CFG={escuela:'',cct:'',docente:'',director:'',grado:'',grupo:'',ciclo:'2026-2027',localidad:'',municipio:'',estado:'',zona:'',sector:'',trims:null,cal:null,retardos:false,nomFmt:'',ne:5,disciplinas:null,
   pesos:{actividad:20,tarea:10,participacion:10,parcial:15,producto:25,evaluacion:10,auto:10,diagnostica:0},
   escala:{1:6,2:7.5,3:9,4:10}};
 function discDefault(){
@@ -561,6 +569,7 @@ function normalize(){
   for(const k of ['alumnos','ppas','registros','notas'])S[k]=S[k]||[];
   S.fichas=S.fichas||{};S.grupoTexto=S.grupoTexto||{};S.asis=S.asis||{};
   if(!Array.isArray(S.cfg.trims))S.cfg.trims=[{},{},{}];
+  if(!S.cfg.cal||typeof S.cfg.cal!=='object')S.cfg.cal={};
   S.ppas.forEach(p=>{p.pas=p.pas||[];p.campos=p.campos||[];p.pas.forEach(pa=>{if(!Array.isArray(pa.discs))pa.discs=pa.disc?[pa.disc]:[]})});
   S.notas.forEach(n=>{if(!NOTA_CAT[n.cat])n.cat='socioemocional'});
   CACHE={};
@@ -1911,6 +1920,7 @@ function vInicio(){
     <div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="kpi"><b>${f1(avg(proms))}</b><span>Promedio del grupo · trimestre ${t}</span></div><div class="kpi"><b>${regsT.length}</b><span>Valoraciones del trimestre</span></div>
       <div class="kpi"><b>${A.length}</b><span>Alumnos activos</span></div><div class="kpi"><b>${at.length}</b><span>${at.length?`<button class="btn sm ghost" data-act="nav" data-k="trimestre" style="padding:0;border:0">Requieren atención →</button>`:'Requieren atención'}</span></div></div>
   </section>
+  ${inicioAsisHTML()}
   <section class="panel"><div class="sec-h"><div><div class="eyebrow">Trimestre ${t}</div><h2>Avance de proyectos y secuencias</h2></div><button class="btn sm" data-act="nav" data-k="proyectos">Ver todos</button></div>
     ${ps.length?`<div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start">
       <div>${filas}<p class="hint" style="margin-top:8px">La barra muestra cuántas ${'fases o etapas'} ya tienen evidencias; el número es el promedio del grupo.</p></div>
@@ -2020,6 +2030,7 @@ function vAjustes(){
     <div class="grid2" style="grid-template-columns:minmax(0,220px)">${inp('ciclo','Ciclo escolar','2026-2027')}</div>
     <div class="grid2">${[0,1,2].map(i=>{const x=(c.trims||[])[i]||{};return `<div class="fld"><span>${['Primer','Segundo','Tercer'][i]} trimestre</span><div class="row" style="flex-wrap:nowrap"><input type="date" id="tr-${i}-ini" data-chg="trimF" data-i="${i}" data-k="ini" value="${esc(x.ini||'')}" aria-label="Inicio del ${ORD[i+1]} trimestre"><span class="muted">a</span><input type="date" id="tr-${i}-fin" data-chg="trimF" data-i="${i}" data-k="fin" value="${esc(x.fin||'')}" aria-label="Fin del ${ORD[i+1]} trimestre"></div></div>`}).join('')}</div>
     <div class="hj-sep"><b>Al terminar el ciclo</b><p class="lead">Descarga un respaldo completo del ciclo actual y deja la app lista para el siguiente con los mismos alumnos y datos de la escuela; borra proyectos, valoraciones, notas, fichas y asistencia. Después puedes ajustar el grado y la lista de alumnos.</p><div class="row">${confirmBtn('nuevoCiclo','x','Cerrar ciclo e iniciar el siguiente')}</div></div></section>
+  ${ajustesExtraHTML()}
   <section class="panel"><div class="sec-h"><h2>Alumnos</h2><button class="btn sm" data-act="ordenar">Ordenar A–Z</button></div>
     <label class="fld"><span>Agregar alumnos · uno por renglón (Apellido paterno, materno, nombre)</span><textarea id="nuevos" style="min-height:90px" placeholder="García López Ana Sofía&#10;Hernández Cruz Luis Ángel"></textarea></label>
     <div class="row"><button class="btn primary" data-act="addAl">Agregar</button>${!S.alumnos.length?'<button class="btn" data-act="ejemplo">Cargar grupo de ejemplo</button>':''}</div>
@@ -2238,7 +2249,7 @@ const A={
   async ejemplo(){if(S.alumnos.length||U.busy)return;U.busy=true;toast('Cargando grupo de ejemplo…');await Store.replaceAll(ejemploData());U.busy=false;U.view='proyectos';U.trim=1;U.ppaSel='ejppa1';U.paSel='resumen';limpiarModos();U.draft=newDraft();LS.set('tsf-draft',U.draft);render();toast('Grupo de ejemplo listo')},
   async nuevoCiclo(){U.confirm=null;const c=S.cfg,act=c.ciclo||'',m=act.match(/(\d{4})\D+(\d{4})/),sig=m?(+m[1]+1)+'-'+(+m[2]+1):act;
     await bajar(`Respaldo_ciclo_${fname(act||'anterior')}_${grupoTag()}.json`,JSON.stringify({app:'bitacora-telesecundaria',version:5,fecha:hoy(),...S},null,1));
-    await Store.replaceAll({cfg:{...clone(c),ciclo:sig,trims:[{},{},{}]},alumnos:S.alumnos,ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:!!S.ejemplo});
+    await Store.replaceAll({cfg:{...clone(c),ciclo:sig,trims:[{},{},{}],cal:{}},alumnos:S.alumnos,ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:!!S.ejemplo});
     U.trim=1;LS.set('tsf-trim',1);U.sel=U.fsel=U.ppaSel=null;limpiarModos();U.draft=newDraft();LS.set('tsf-draft',U.draft);render();toast('Ciclo '+sig+' listo. Se descargó el respaldo del ciclo '+act+'.')},
   async borrarTodo(){U.confirm=null;toast('Quitando datos de ejemplo…');await Store.replaceAll({cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:false});U.draft=newDraft();LS.set('tsf-draft',U.draft);U.sel=null;U.fsel=null;U.ppaSel=null;limpiarModos();render();toast('Listo. Agrega a tus alumnos para comenzar.')},
   /* proyectos */
@@ -2468,42 +2479,49 @@ document.addEventListener('paste',e=>{ // pegar un bloque copiado de Excel a par
   hjSet(cambios);toast(`Se pegaron ${pl(cambios.length,'calificación','calificaciones')}`+(mal?` · ${mal} no válidas`:'')+(fuera?` · ${fuera} fuera de la hoja o con 🔒`:''))});
 
 /* ---------- Asistencia ---------- */
-// S.asis['AAAA-MM']['DD'] = {t:1, v:{aid:'F'|'J'}} (lista tomada; sin entrada = asistencia) o {s:'CTE', n:'nota'} (día sin lista)
-const AS_MOT={AO:'Asueto oficial',CTE:'Consejo Técnico Escolar',PE:'Permiso económico del docente',AE:'Actividad escolar fuera del aula',SU:'Suspensión de clases'};
+// S.asis['AAAA-MM']['DD'] = {t:1, v:{aid:'F'|'J'|'R'}} (lista tomada; sin entrada = asistencia) o {s:'CTE', n:'nota'} (día sin lista)
+// S.cfg.cal['AAAA-MM-DD'] = {s,n}: días sin clases marcados una vez en el calendario del ciclo; un registro del día en S.asis tiene prioridad
+const AS_MOT={AO:'Asueto oficial',CTE:'Consejo Técnico Escolar',VA:'Vacaciones',PE:'Permiso económico del docente',AE:'Actividad escolar fuera del aula',SU:'Suspensión de clases'};
+const DIASL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const nomRep=a=>{const n=String(a.nombre||'').trim().toUpperCase();if(S.cfg.nomFmt!=='sep')return n;const w=n.split(/\s+/);return w.length>=3?w[0]+'/'+w[1]+'*'+w.slice(2).join(' '):w.join('*')}; // nombre en documentos; 'sep' = APELLIDO/APELLIDO*NOMBRE
 const MESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],DSEM=['D','L','M','M','J','V','S'];
 const ymDe=f=>f.slice(0,7),nomMes=ym=>{const [y,m]=ym.split('-').map(Number);return MESL[m-1]+' '+y};
 const mesLargo=ym=>{const s=nomMes(ym);return s[0].toUpperCase()+s.slice(1)};
 const fechaLarga=f=>{const [y,m,d]=f.split('-').map(Number);return `${d} de ${MESL[m-1]} de ${y}`};
 const diaSem=f=>{const [y,m,d]=f.split('-').map(Number);return new Date(y,m-1,d).getDay()};
 function diasMes(ym){const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),o=[];for(let d=1;d<=n;d++){const w=new Date(y,m-1,d).getDay();if(w>0&&w<6)o.push(ym+'-'+String(d).padStart(2,'0'))}return o}
-const asDia=f=>(S.asis[ymDe(f)]||{})[f.slice(8)]||null;
+const asReg=f=>(S.asis[ymDe(f)]||{})[f.slice(8)]||null;
+const asDia=f=>asReg(f)||((S.cfg.cal||{})[f]?{...S.cfg.cal[f],cal:1}:null);
 const asTomado=f=>{const r=asDia(f);return !!(r&&r.t&&!r.s)};
 const asVal=(aid,f)=>asTomado(f)?((asDia(f).v||{})[aid]||'A'):null;
-function asTot(aid,fechas){const o={A:0,F:0,J:0,hab:0};fechas.forEach(f=>{const v=asVal(aid,f);if(!v)return;o.hab++;o[v]++});o.pct=o.hab?Math.round(100*o.A/o.hab):null;return o}
+const asPres=v=>v==='A'||v==='R';
+function asTot(aid,fechas){const o={A:0,F:0,J:0,R:0,hab:0};fechas.forEach(f=>{const v=asVal(aid,f);if(!v)return;o.hab++;if(v==='R'){o.R++;o.A++}else o[v]++});o.pct=o.hab?Math.round(100*o.A/o.hab):null;return o} // A incluye los retardos (R)
 function asFechas(filtro){const o=[];for(const ym of Object.keys(S.asis||{}))for(const dd of Object.keys(S.asis[ym]||{})){const f=ym+'-'+dd;if(!filtro||filtro(f))o.push(f)}return o.sort()}
 const asFechasTrim=t=>asFechas(f=>trimDe(f)===t);
 function asRacha(aid){ // faltas seguidas más recientes (sin contar justificadas)
-  let n=0;const fs=asFechas(asTomado);for(let i=fs.length-1;i>=0;i--){const v=asVal(aid,fs[i]);if(v==='F')n++;else if(v==='A')break}return n}
+  let n=0;const fs=asFechas(asTomado);for(let i=fs.length-1;i>=0;i--){const v=asVal(aid,fs[i]);if(v==='F')n++;else if(asPres(v))break}return n}
+function asLimpia(f){if(asReg(f))asSet(f,null);if((S.cfg.cal||{})[f]){delete S.cfg.cal[f];Store.grupo()}} // deja el día libre: quita su registro y su marca en el calendario
 function asSet(f,rec){const ym=ymDe(f),dd=f.slice(8);S.asis[ym]=S.asis[ym]||{};if(rec)S.asis[ym][dd]=rec;else delete S.asis[ym][dd];if(!Object.keys(S.asis[ym]).length)delete S.asis[ym];Store.asis(ym)}
 function vAsistencia(){
   const L=activos();if(!L.length)return sinAlumnos();
   const u=U.asis||(U.asis={mes:ymDe(hoy()),dia:null});
+  if(u.cal)return asCalHTML();
   if(u.dia)return asDiaHTML(u.dia);
-  const fs=diasMes(u.mes),tom=fs.filter(asTomado),sinL=fs.filter(f=>asDia(f)&&asDia(f).s),pend=fs.filter(f=>f<=hoy()&&!asDia(f));
+  const ret=!!S.cfg.retardos,fs=diasMes(u.mes),tom=fs.filter(asTomado),sinL=fs.filter(f=>asDia(f)&&asDia(f).s),pend=fs.filter(f=>f<=hoy()&&!asDia(f));
   const tots=L.map(a=>asTot(a.id,fs)),pg=avg(tots.map(x=>x.pct).filter(x=>x!=null));
   const alertas=L.map(a=>({a,n:asRacha(a.id)})).filter(x=>x.n>=3);
   const hoyMes=ymDe(hoy())===u.mes&&diaSem(hoy())%6!==0;
   const celda=(a,f)=>{const r=asDia(f);if(r&&r.s)return '<td class="as-sin"></td>';const v=asVal(a.id,f);
-    return `<td><button class="as-c ${v?v.toLowerCase():'p'}${f>hoy()?' fut':''}" data-act="asCel" data-aid="${a.id}" data-k="${f}" aria-label="${esc(a.nombre)}, ${fechaLarga(f)}: ${v==='F'?'falta':v==='J'?'justificada':v?'asistencia':'sin lista'}">${v==='A'?'•':v||''}</button></td>`};
+    return `<td><button class="as-c ${v?v.toLowerCase():'p'}${f>hoy()?' fut':''}" data-act="asCel" data-aid="${a.id}" data-k="${f}" aria-label="${esc(a.nombre)}, ${fechaLarga(f)}: ${v==='F'?'falta':v==='J'?'justificada':v==='R'?'retardo':v?'asistencia':'sin lista'}">${v==='A'?'•':v||''}</button></td>`};
   return `<section class="panel flat"><div class="sec-h"><div><div class="eyebrow">Control de asistencia</div><h2>${mesLargo(u.mes)}</h2></div>
-      <div class="row"><button class="btn sm" data-act="asMes" data-k="-1" aria-label="Mes anterior">← ${esc(MESL[(+u.mes.slice(5)+10)%12])}</button><button class="btn sm" data-act="asMes" data-k="1" aria-label="Mes siguiente">${esc(MESL[(+u.mes.slice(5))%12])} →</button>${hoyMes?'<button class="btn sm primary" data-act="asHoy">Pasar lista de hoy</button>':''}<button class="btn sm" data-act="asWord" ${tom.length||sinL.length?'':'disabled'}>Reporte del mes (Word)</button></div></div>
-    <p class="lead">Toca a quien faltó: la primera vez se pasa lista del día con todos presentes y esa casilla queda como falta; vuelve a tocar para cambiar a justificada y luego a asistencia. Toca el número del día para pasar lista alumno por alumno o marcarlo como día sin lista (asueto, CTE, económico, actividad fuera del aula).</p></section>
+      <div class="row"><button class="btn sm" data-act="asMes" data-k="-1" aria-label="Mes anterior">← ${esc(MESL[(+u.mes.slice(5)+10)%12])}</button><button class="btn sm" data-act="asMes" data-k="1" aria-label="Mes siguiente">${esc(MESL[(+u.mes.slice(5))%12])} →</button>${hoyMes?'<button class="btn sm primary" data-act="asHoy">Pasar lista de hoy</button>':''}<button class="btn sm" data-act="asWord" ${tom.length||sinL.length?'':'disabled'}>Reporte del mes (Word)</button><button class="btn sm" data-act="asCalAbrir">Calendario del ciclo</button></div></div>
+    <p class="lead">Toca a quien faltó: la primera vez se pasa lista del día con todos presentes y esa casilla queda como falta; vuelve a tocar para cambiar a justificada${ret?', a retardo':''} y luego a asistencia. Toca el número del día para pasar lista alumno por alumno o marcarlo como día sin lista (asueto, CTE, económico, actividad fuera del aula).</p></section>
   <div class="kpis"><div class="kpi"><b>${tom.length}</b><span>Días con lista de ${fs.length} hábiles</span></div><div class="kpi"><b>${sinL.length}</b><span>Días sin lista${sinL.length?': '+esc(sinL.map(f=>asDia(f).s).join(', ')):''}</span></div><div class="kpi"><b>${pend.length}</b><span>Días pendientes hasta hoy</span></div><div class="kpi"><b>${pg==null?'—':Math.round(pg)+'%'}</b><span>Asistencia del grupo</span></div></div>
-  ${alertas.length?`<div class="banner warn"><b>Atención:</b> ${alertas.map(x=>`${esc(x.a.nombre)} lleva ${x.n} faltas seguidas`).join(' · ')}. Conviene comunicarse con la familia.</div>`:''}
-  <div class="tw as-tw"><table class="mx as-t"><thead><tr><th class="nm">Alumno(a)</th>${fs.map(f=>{const r=asDia(f);return `<th class="${r&&r.s?'sin':''}${f===hoy()?' hoy':''}"><button class="as-h" data-act="asDiaMenu" data-k="${f}" title="${fechaLarga(f)}${r&&r.s?' · '+esc(AS_MOT[r.s]||r.s):''}"><small>${DSEM[diaSem(f)]}</small><b>${+f.slice(8)}</b>${r&&r.s?`<small>${esc(r.s)}</small>`:''}</button></th>`}).join('')}<th class="tt">A</th><th class="tt">F</th><th class="tt">J</th><th class="tt">%</th></tr></thead>
-    <tbody>${L.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${fs.map(f=>celda(a,f)).join('')}<td class="tt"><b>${tots[i].A}</b></td><td class="tt ${tots[i].F?'tf':''}">${tots[i].F}</td><td class="tt">${tots[i].J}</td><td class="tt"><b class="${tots[i].pct!=null&&tots[i].pct<85?'tf':''}">${tots[i].pct==null?'—':tots[i].pct+'%'}</b></td></tr>`).join('')}</tbody>
-    <tfoot><tr><td class="nm">Asistentes por día</td>${fs.map(f=>`<td>${asTomado(f)?L.filter(a=>asVal(a.id,f)==='A').length:''}</td>`).join('')}<td colspan="4"></td></tr></tfoot></table></div>
-  <p class="hint">• asistencia · F falta · J falta justificada · gris: día sin lista. Los días sin lista no cuentan como faltas. El porcentaje considera solo los días en que pasaste lista.</p>`;
+  ${alertas.length?`<div class="banner warn"><b>Atención:</b> ${alertas.map(x=>`${esc(x.a.nombre)} lleva ${x.n} faltas seguidas`).join(' · ')}. Conviene comunicarse con la familia. <button class="btn sm" data-act="citAbrir" data-k="asis">Generar citatorios</button></div>`:''}
+  <div class="tw as-tw"><table class="mx as-t"><thead><tr><th class="nm">Alumno(a)</th>${fs.map(f=>{const r=asDia(f);return `<th class="${r&&r.s?'sin':''}${f===hoy()?' hoy':''}"><button class="as-h" data-act="asDiaMenu" data-k="${f}" title="${fechaLarga(f)}${r&&r.s?' · '+esc(AS_MOT[r.s]||r.s):''}"><small>${DSEM[diaSem(f)]}</small><b>${+f.slice(8)}</b>${r&&r.s?`<small>${esc(r.s)}</small>`:''}</button></th>`}).join('')}<th class="tt" title="Asistencias${ret?' (incluye retardos)':''}">A</th><th class="tt" title="Faltas">F</th><th class="tt" title="Faltas justificadas">J</th>${ret?'<th class="tt" title="Retardos">R</th>':''}<th class="tt">%</th></tr></thead>
+    <tbody>${L.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${fs.map(f=>celda(a,f)).join('')}<td class="tt"><b>${tots[i].A}</b></td><td class="tt ${tots[i].F?'tf':''}">${tots[i].F}</td><td class="tt">${tots[i].J}</td>${ret?`<td class="tt">${tots[i].R}</td>`:''}<td class="tt"><b class="${tots[i].pct!=null&&tots[i].pct<85?'tf':''}">${tots[i].pct==null?'—':tots[i].pct+'%'}</b></td></tr>`).join('')}</tbody>
+    <tfoot><tr><td class="nm">Asistentes por día</td>${fs.map(f=>`<td>${asTomado(f)?L.filter(a=>asPres(asVal(a.id,f))).length:''}</td>`).join('')}<td colspan="${ret?5:4}"></td></tr></tfoot></table></div>
+  <p class="hint">• asistencia · F falta · J falta justificada${ret?' · R retardo (cuenta como asistencia)':''} · gris: día sin lista. Los días sin lista no cuentan como faltas. El porcentaje considera solo los días en que pasaste lista.</p>`;
 }
 function asDiaHTML(f){
   const L=activos(),r=asDia(f),tom=asTomado(f);
@@ -2511,12 +2529,76 @@ function asDiaHTML(f){
   return `<section class="panel"><div class="sec-h"><div><div class="eyebrow">Pase de lista</div><h2>${esc(fechaLarga(f))}</h2></div>
       <div class="row"><button class="btn sm" data-act="asIrDia" ${nav(-1)}>← Día anterior</button><button class="btn sm" data-act="asIrDia" ${nav(1)}>Día siguiente →</button><button class="btn sm ghost" data-act="asVolver">Ver el mes</button></div></div>
     ${r&&r.s?`<div class="banner">Día sin lista: <b>${esc(AS_MOT[r.s]||r.s)}</b>${r.n?' · '+esc(r.n):''}. <button class="btn sm" data-act="asQuitar" data-k="${f}">Quitar y pasar lista</button></div>`
-    :`<div class="row"><button class="btn ${tom?'':'primary'}" data-act="asTodos" data-k="${f}">Todos presentes</button><button class="btn sm ghost" data-act="asDiaMenu" data-k="${f}">Marcar día sin lista…</button><span class="spacer"></span><span class="muted">${tom?`Presentes: ${L.filter(a=>asVal(a.id,f)==='A').length} de ${L.length}`:'Aún no se pasa lista'}</span></div>
-    <div class="as-lista">${L.map((a,i)=>{const v=asVal(a.id,f);return `<div class="st"><span class="n">${i+1}</span><span class="nm">${esc(a.nombre)}</span><div class="seg mini">${[['A','Asistió'],['F','Faltó'],['J','Justificada']].map(([k,n])=>`<button class="${v===k?'on as-'+k.toLowerCase():''}" data-act="asPon" data-aid="${a.id}" data-k="${f}" data-v="${k}" aria-pressed="${v===k}">${n}</button>`).join('')}</div></div>`}).join('')}</div>`}
+    :`<div class="row"><button class="btn ${tom?'':'primary'}" data-act="asTodos" data-k="${f}">Todos presentes</button><button class="btn sm ghost" data-act="asDiaMenu" data-k="${f}">Marcar día sin lista…</button><span class="spacer"></span><span class="muted">${tom?`Presentes: ${L.filter(a=>asPres(asVal(a.id,f))).length} de ${L.length}`:'Aún no se pasa lista'}</span></div>
+    <div class="as-lista">${L.map((a,i)=>{const v=asVal(a.id,f);return `<div class="st"><span class="n">${i+1}</span><span class="nm">${esc(a.nombre)}</span><div class="seg mini">${[['A','Asistió'],...(S.cfg.retardos?[['R','Retardo']]:[]),['F','Faltó'],['J','Justificada']].map(([k,n])=>`<button class="${v===k?'on as-'+k.toLowerCase():''}" data-act="asPon" data-aid="${a.id}" data-k="${f}" data-v="${k}" aria-pressed="${v===k}">${n}</button>`).join('')}</div></div>`}).join('')}</div>`}
   </section>`;
 }
 function asFechasNav(f,d){const [y,m,dd]=f.split('-').map(Number);let x=new Date(y,m-1,dd);for(let i=0;i<10;i++){x.setDate(x.getDate()+d);const w=x.getDay();if(w>0&&w<6){const s=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');return s}}return null}
 function asRender(){const t=$('.as-tw'),x=t?t.scrollLeft:0,y=window.scrollY;render();const n=$('.as-tw');if(n)n.scrollLeft=x;window.scrollTo(0,y)}
+/* Calendario del ciclo: días sin clases marcados una sola vez */
+const fISO=(y,m,d)=>y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+function cicloAnios(){const m=String(S.cfg.ciclo||'').match(/(\d{4})\D+(\d{4})/);if(m)return [+m[1],+m[2]];const y=+hoy().slice(0,4);return +hoy().slice(5,7)>=8?[y,y+1]:[y-1,y]}
+function nLunes(y,m,n){let c=0;for(let d=1;d<=31;d++)if(new Date(y,m-1,d).getDay()===1&&++c===n)return fISO(y,m,d)}
+function calSugeridos(k){const [a,b]=cicloAnios();
+  if(k==='cte'){const o=[];[[a,9],[a,10],[a,11],[b,1],[b,2],[b,3],[b,4],[b,5],[b,6]].forEach(([y,m])=>{for(let d=new Date(y,m,0).getDate();d>0;d--)if(new Date(y,m-1,d).getDay()===5){o.push([fISO(y,m,d),'CTE','']);break}});return o}
+  return [[fISO(a,9,16),'Independencia de México'],[nLunes(a,11,3),'Revolución Mexicana'],[fISO(a,12,25),'Navidad'],[fISO(b,1,1),'Año Nuevo'],[nLunes(b,2,1),'Día de la Constitución'],[nLunes(b,3,3),'Natalicio de Benito Juárez'],[fISO(b,5,1),'Día del Trabajo'],[fISO(b,5,5),'Batalla de Puebla'],[fISO(b,5,15),'Día del Maestro']].filter(([f])=>diaSem(f)%6!==0).map(([f,n])=>[f,'AO',n])}
+function asCalHTML(){
+  const cal=S.cfg.cal||{},fs=Object.keys(cal).sort(),[a,b]=cicloAnios(),porMes={};fs.forEach(f=>{(porMes[ymDe(f)]=porMes[ymDe(f)]||[]).push(f)});
+  return `<section class="panel"><div class="sec-h"><div><div class="eyebrow">Ciclo escolar ${esc(S.cfg.ciclo||a+'-'+b)}</div><h2>Calendario del ciclo</h2></div><button class="btn sm ghost" data-act="asCalCerrar">← Volver a la asistencia</button></div>
+    <p class="lead">Marca una sola vez los días sin clases de todo el ciclo: asuetos, Consejos Técnicos y vacaciones. Aparecen solos en cada mes como días sin lista y no cuentan como faltas. Si un día marcado aquí sí pasas lista, la lista tiene prioridad.</p>
+    <div class="row"><button class="btn" data-act="asCalSug" data-k="ao">Sugerir asuetos oficiales</button><button class="btn" data-act="asCalSug" data-k="cte">Sugerir CTE (último viernes de cada mes)</button></div>
+    <p class="hint">Son sugerencias para el ciclo ${a}-${b}: revísalas con el calendario oficial de tu estado y quita o agrega lo necesario.</p>
+    <div class="hj-sep"><span class="lbl">Agregar un día o un periodo</span><div class="grid2">
+      <label class="fld"><span>Desde</span><input type="date" id="cal-ini"></label><label class="fld"><span>Hasta <em>· opcional, para varios días</em></span><input type="date" id="cal-fin"></label>
+      <label class="fld"><span>Motivo</span><select id="cal-mot">${Object.entries(AS_MOT).map(([k,n])=>`<option value="${k}">${k} · ${esc(n)}</option>`).join('')}</select></label><label class="fld"><span>Nota <em>· opcional</em></span><input id="cal-nota" placeholder="Ej. Vacaciones de invierno"></label></div>
+      <div class="row"><button class="btn primary" data-act="asCalAdd">Agregar al calendario</button></div></div>
+    ${fs.length?`<div class="cal-l">${Object.keys(porMes).map(ym=>`<div class="fx-t"><div class="eyebrow">${mesLargo(ym)}</div>${porMes[ym].map(f=>`<div class="cal-i"><b>${DIASL[diaSem(f)]} ${+f.slice(8)}</b><span class="tag">${esc(cal[f].s)}</span><span class="cal-n">${esc(AS_MOT[cal[f].s]||cal[f].s)}${cal[f].n?' · '+esc(cal[f].n):''}${asReg(f)&&asReg(f).t?' <small class="muted">(ese día sí se pasó lista)</small>':''}</span><button class="btn sm ghost" data-act="asCalDel" data-k="${f}">Quitar</button></div>`).join('')}</div>`).join('')}</div>
+      <div class="row"><span class="muted">${pl(fs.length,'día marcado','días marcados')}</span><span class="spacer"></span>${confirmBtn('asCalVaciar','x','Vaciar calendario')}</div>`:'<p class="muted">Aún no hay días marcados en el calendario.</p>'}
+  </section>`;
+}
+/* Inicio: estado de la asistencia */
+function inicioAsisHTML(){
+  const L=activos();if(!L.length)return '';
+  const h=hoy(),ym=ymDe(h),lab=diaSem(h)%6!==0,r=asDia(h),fs=diasMes(ym),pend=fs.filter(f=>f<h&&!asDia(f)).length;
+  const v=L.map(a=>asTot(a.id,fs).pct).filter(x=>x!=null),pg=v.length?Math.round(avg(v)):null,rs=L.map(a=>({a,n:asRacha(a.id)})).filter(x=>x.n>=3);
+  const est=!lab?'Hoy no es día de clases':r&&r.s?`Hoy es día sin lista: ${esc(AS_MOT[r.s]||r.s)}`:asTomado(h)?`Hoy ya pasaste lista: ${L.filter(a=>asPres(asVal(a.id,h))).length} de ${L.length} presentes`:'Hoy aún no has pasado lista';
+  return `<section class="panel ini-as${lab&&!r?' pend':''}"><div class="sec-h"><div><div class="eyebrow">Asistencia · ${mesLargo(ym)}</div><h3>${est}</h3></div>
+      <div class="row">${lab&&!(r&&r.s)?`<button class="btn ${asTomado(h)?'':'primary'}" data-act="asHoyIni">${asTomado(h)?'Ver la lista de hoy':'Pasar lista de hoy'}</button>`:''}<button class="btn sm" data-act="nav" data-k="asistencia">Ver el mes</button></div></div>
+    <div class="row"><span class="pill">${pg==null?'Sin lista este mes':'Asistencia del grupo en el mes: '+pg+'%'}</span>${pend?`<span class="pill warn">${pl(pend,'día pendiente','días pendientes')} de pasar lista</span>`:''}${rs.map(x=>`<span class="pill warn">${esc(x.a.nombre)}: ${x.n} faltas seguidas</span>`).join('')}</div></section>`;
+}
+/* Ajustes: opciones de asistencia y de documentos */
+function ajustesExtraHTML(){const c=S.cfg;
+  return `<section class="panel"><h2>Asistencia y documentos</h2>
+    <label class="hj-chk"><input type="checkbox" data-chg="cfgChk" data-k="retardos" ${c.retardos?'checked':''}> Registrar retardos (R) en la asistencia <span class="muted">· cuentan como asistencia y se totalizan aparte</span></label>
+    <label class="fld" style="max-width:520px"><span>Nombres de los alumnos en reportes y citatorios</span><select data-chg="cfgSel" data-k="nomFmt"><option value="" ${c.nomFmt?'':'selected'}>Como están en la lista, en mayúsculas (GARCÍA LÓPEZ ANA SOFÍA)</option><option value="sep" ${c.nomFmt==='sep'?'selected':''}>Formato de control escolar (GARCÍA/LÓPEZ*ANA SOFÍA)</option></select></label>
+    <p class="hint">El formato de control escolar toma las dos primeras palabras como apellidos; si un apellido tiene varias palabras (por ejemplo «De la Cruz»), revisa ese nombre en el documento.</p>
+    <div class="row"><button class="btn" data-act="asCalAbrir">Calendario del ciclo (asuetos, CTE y vacaciones)</button></div></section>`}
+/* Citatorios: motivo redactado con los datos del alumno */
+function citMotivo(aid,tipo,t){
+  if(tipo==='asis'){const x=asTot(aid,asFechasTrim(t)),n=asRacha(aid);if(!x.hab)return 'Dar seguimiento a la asistencia de su hijo(a) a clases.';
+    return `En el ${ORD[t]} trimestre acumula ${pl(x.F,'falta','faltas')}${x.J?` y ${pl(x.J,'falta justificada','faltas justificadas')}`:''} en ${x.hab} días de clase (asistencia de ${x.pct}%)${n>=3?`, y lleva ${n} faltas seguidas`:''}. La asistencia constante es indispensable para su aprendizaje.`}
+  if(tipo==='aca'){const ds=discsTrim(t),it=(ds.length?ds.map(d=>[d.n,califD(aid,d.n,t).cal]):CAMPOS.map(c=>[c.n,calif(aid,c.k,t).cal])).filter(x=>x[1]!=null);if(!it.length)return 'Dar seguimiento al desempeño escolar de su hijo(a).';
+    const rep=it.filter(x=>x[1]<6).map(x=>x[0]);return `En el ${ORD[t]} trimestre obtuvo un promedio de ${f1(avg(it.map(x=>x[1])))}${rep.length?` y calificación no aprobatoria en ${lista(rep)}`:''}. Es necesario acordar un plan de apoyo en casa y en la escuela.`}
+  if(tipo==='bol')return `Entrega y firma de calificaciones del ${ORD[t]} trimestre.`;
+  return ''}
+/* Concentrado del trimestre en Excel */
+function repXls(t){CACHE={};const L=activos(),c=S.cfg;
+  let cols=discsTrim(t).map(d=>({n:d.n,k:d.c,cal:aid=>califD(aid,d.n,t).cal}));if(!cols.length)cols=CAMPOS.map(x=>({n:x.n,k:x.k,cal:aid=>calif(aid,x.k,t).cal}));
+  const CAL=L.map(a=>cols.map(x=>x.cal(a.id))),pr=v=>{v=v.filter(x=>x!=null);return v.length?r1(avg(v)):null},num=(v,dec)=>v==null?{v:''}:{v,f:dec?'dec':'int',c:v<6?ROJO:null};
+  const datos=[['Escuela',c.escuela||''],['C.C.T.',c.cct||''],['Localidad',[c.localidad,c.municipio,c.estado].map(x=>String(x||'').trim()).filter(Boolean).join(', ')],['Zona y sector',[c.zona&&'Zona escolar '+c.zona,c.sector&&'Sector '+c.sector].filter(Boolean).join(' · ')],['Grado y grupo',`${c.grado||''}° ${c.grupo||''}`],['Ciclo escolar',c.ciclo||''],['Fecha',fechaLarga(U.repFecha||hoy())]];
+  const N=[{h:'No.',w:5,al:'c'},{h:'Nombre del alumno(a)',w:38,al:'l'}];
+  const hojas=[{nombre:'Calificaciones T'+t,titulo:`REPORTE DE CALIFICACIONES DEL ${ORD[t].toUpperCase()} TRIMESTRE`,datos,firmas:true,
+    tabla:{fijas:2,hh:58,cols:[...N,...cols.map(x=>({h:x.n,w:anchoDisc(x.n),al:'c',g:nombreCampo(x.k)})),{h:'Promedio del alumno',w:11,al:'c',g:'Resultado'}],
+      filas:L.map((a,i)=>[{v:i+1,f:'int'},{v:nomRep(a)},...CAL[i].map(v=>num(v)),{...num(pr(CAL[i]),true),b:true}]),
+      pie:[{v:''},{v:'Promedio por disciplina'},...cols.map((x,j)=>num(pr(CAL.map(r=>r[j])),true)),num(pr(CAL.map(pr)),true)]},
+    notas:['Calificaciones de 5 a 10. Promedio del alumno y promedio por disciplina con un decimal.']}];
+  const fs=asFechasTrim(t);
+  if(fs.some(asTomado)){const ms=[...new Set(fs.map(ymDe))].sort();
+    hojas.push({nombre:'Asistencia T'+t,titulo:`CONCENTRADO DE ASISTENCIA · ${ORD[t].toUpperCase()} TRIMESTRE`,datos,firmas:true,
+      tabla:{fijas:2,cols:[...N,...ms.flatMap(ym=>['A','F','J'].map(k=>({h:k,w:5,al:'c',g:mesLargo(ym)}))),...['A','F','J','%'].map(k=>({h:k,w:6,al:'c',g:'Trimestre'}))],
+        filas:L.map((a,i)=>{const z=asTot(a.id,fs);return [{v:i+1,f:'int'},{v:nomRep(a)},...ms.flatMap(ym=>{const x=asTot(a.id,fs.filter(f=>ymDe(f)==ym));return [{v:x.A,f:'int'},{v:x.F,f:'int',c:x.F?ROJO:null},{v:x.J,f:'int'}]}),{v:z.A,f:'int',b:true},{v:z.F,f:'int',b:true,c:z.F?ROJO:null},{v:z.J,f:'int',b:true},{v:z.pct==null?'':z.pct,f:'int',b:true}]})},
+      notas:['A asistencias (incluye retardos) · F faltas · J faltas justificadas · % de asistencia sobre los días con lista. No cuentan los días sin lista.']})}
+  return {archivo:`Concentrado_T${t}_${grupoTag()}`,hojas}}
 
 /* ---------- Reportes en Word (una página por reporte, gráficas editables) ---------- */
 const RepW=(()=>{
@@ -2591,18 +2673,18 @@ const RepW=(()=>{
     return {L,cols,CAL,PA:CAL.map(pr),PD:cols.map((c,j)=>pr(CAL.map(r=>r[j])))}}
   const TIT=t=>`${ORD[t].toUpperCase()} TRIMESTRE`;
   /* páginas */
-  function pConcentrado(D,t){const {L,cols,CAL,PA,PD}=D,wn=2700,wp=900,wd=Math.floor((W-wn-wp-400)/cols.length),ws=[400,wn,...cols.map(()=>wd),wp];
+  function pConcentrado(D,titulo,dec){const {L,cols,CAL,PA,PD}=D,wn=2700,wp=900,wd=Math.floor((W-wn-wp-400)/cols.length),ws=[400,wn,...cols.map(()=>wd),wp];
     const grupos=[];cols.forEach(c=>{const g=grupos[grupos.length-1];if(g&&g.k===c.k)g.n++;else grupos.push({k:c.k,n:1})});
     const h1={h:true,c:[{t:'',bg:'FFFFFF'},{t:'',bg:'FFFFFF'},...grupos.map(g=>({t:nombreCampo(g.k),sp:g.n,b:true,sz:13,c:'FFFFFF',bg:COL[g.k]||AZ})),{t:'',bg:'FFFFFF'}]};
     const h2={h:true,alto:1500,c:[{t:'No.',b:true,sz:15,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:15,c:'FFFFFF',bg:AZ},...cols.map(c=>({t:c.n.toUpperCase(),b:true,sz:14,c:'FFFFFF',bg:AZ,vert:true})),{t:'PROMEDIO DEL ALUMNO',b:true,sz:13,c:'FFFFFF',bg:AZ2,vert:true}]};
     const alt=Math.min(330,Math.floor(7900/L.length)),fz=alt>=300?16:alt>=220?14:12;
-    const filas=L.map((a,i)=>({alto:alt,exacto:L.length>22,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:a.nombre.toUpperCase(),sz:a.nombre.length>26?fz-2:fz,jc:'left',bg:i%2?GR:null},...CAL[i].map(v=>({t:v??'—',sz:fz+1,c:v!=null&&v<6?ROJO:null,b:v!=null&&v<6,bg:i%2?GR:null})),{t:f1n(PA[i]),b:true,sz:fz+1,c:PA[i]!=null&&PA[i]<6?ROJO:null,bg:CLARO}]}));
+    const filas=L.map((a,i)=>({alto:alt,exacto:L.length>22,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:nomRep(a),sz:nomRep(a).length>(dec?21:25)?fz-2:fz,jc:'left',bg:i%2?GR:null},...CAL[i].map(v=>({t:v==null?'—':dec?v.toFixed(1):v,sz:dec?fz:fz+1,c:v!=null&&v<6?ROJO:null,b:v!=null&&v<6,bg:i%2?GR:null})),{t:f1n(PA[i]),b:true,sz:fz+1,c:PA[i]!=null&&PA[i]<6?ROJO:null,bg:CLARO}]}));
     const pg=PA.filter(x=>x!=null);
     const pie={c:[{t:'',bg:CLARO},{t:'PROMEDIO POR DISCIPLINA',b:true,sz:15,jc:'left',bg:CLARO},...PD.map(v=>({t:f1n(v),b:true,sz:16,bg:CLARO})),{t:pg.length?f1n(avg(pg)):'—',b:true,sz:17,c:'FFFFFF',bg:AZ2}]};
-    return {o:'v',x:encab('REPORTE DE CALIFICACIONES DEL '+TIT(t))+T(ws,[h1,h2,...filas,pie])+nota('Calificaciones de 5 a 10. En guinda, calificaciones no aprobatorias. Promedio del alumno y promedio por disciplina con un decimal.')+firmas(W)}}
-  function pAlumnos(D,t){const n=chart({titulo:'PROMEDIO POR ALUMNO · '+TIT(t),cats:D.L.map(a=>a.nombre.toUpperCase()),series:[{n:'Promedio',c:AZ,v:D.PA,pts:D.PA.map(v=>NIV(v??10))}],horiz:true,gap:45});
+    return {o:'v',x:encab(titulo)+T(ws,[h1,h2,...filas,pie])+nota(dec?'Promedio final de cada disciplina: promedio de los trimestres evaluados, con un decimal. En guinda, promedios no aprobatorios.':'Calificaciones de 5 a 10. En guinda, calificaciones no aprobatorias. Promedio del alumno y promedio por disciplina con un decimal.')+firmas(W)}}
+  function pAlumnos(D,tit){const n=chart({titulo:'PROMEDIO POR ALUMNO · '+tit,cats:D.L.map(a=>nomRep(a)),series:[{n:'Promedio',c:AZ,v:D.PA,pts:D.PA.map(v=>NIV(v??10))}],horiz:true,gap:45});
     return {o:'v',x:encab('GRÁFICA DE PROMEDIOS POR ALUMNO')+CHART(n,W,9200)+nota('Colores: guinda = 5 · dorado = 6 a 7.9 · verde = 8 a 9.9 · azul = 10. Escala fija de 5 a 10 para comparar trimestres.')+firmas(W)}}
-  function pDisciplinas(D,t){const n=chart({titulo:'PROMEDIO DEL GRUPO POR DISCIPLINA · '+TIT(t),cats:D.cols.map(c=>c.n),series:[{n:'Promedio',c:AZ,v:D.PD,pts:D.cols.map(c=>COL[c.k]||AZ)}],gap:50});
+  function pDisciplinas(D,tit){const n=chart({titulo:'PROMEDIO DEL GRUPO POR DISCIPLINA · '+tit,cats:D.cols.map(c=>c.n),series:[{n:'Promedio',c:AZ,v:D.PD,pts:D.cols.map(c=>COL[c.k]||AZ)}],gap:50});
     const ks=[...new Set(D.cols.map(c=>c.k))];
     return {o:'v',x:encab('GRÁFICA DE PROMEDIOS POR DISCIPLINA')+CHART(n,W,7600)+T(ks.map(()=>Math.floor(W/ks.length)),[{c:ks.map(k=>({t:'■  '+nombreCampo(k),sz:15,b:true,c:COL[k]||AZ}))}],{nob:true})+nota('Cada color corresponde a un campo formativo.')+firmas(W)}}
   function pAprob(D,t){const {L,cols,CAL,PD}=D,ap=cols.map((c,j)=>CAL.filter(r=>r[j]!=null&&r[j]>=6).length),ev=cols.map((c,j)=>CAL.filter(r=>r[j]!=null).length),no=ev.map((e,j)=>e-ap[j]);
@@ -2616,70 +2698,132 @@ const RepW=(()=>{
     const lst=D.L.map((a,i)=>({a,p:D.PA[i],rep:D.cols.filter((c,j)=>D.CAL[i][j]!=null&&D.CAL[i][j]<6).map(c=>c.n),as:hayAs?asTot(a.id,fs):null})).filter(x=>(x.p!=null&&x.p<7)||x.rep.length||(x.as&&x.as.pct!=null&&x.as.pct<85)).sort((a,b)=>(a.p??10)-(b.p??10));
     const acc=x=>x.rep.length>=3?'Citar a la familia y canalizar':x.rep.length?'Plan de recuperación por disciplina':x.as&&x.as.pct<85?'Dar seguimiento a la asistencia con la familia':'Seguimiento y tutoría entre pares';
     const ws=hayAs?[400,3000,1000,1000,3000,2400]:[400,3300,1100,3300,2700];
-    const filas=lst.map((x,k)=>({c:[{t:k+1,sz:16},{t:x.a.nombre.toUpperCase(),jc:'left',sz:16},{t:f1n(x.p),b:true,sz:16,c:x.p!=null&&x.p<6?ROJO:null},...(hayAs?[{t:x.as.pct==null?'—':x.as.pct+'%',sz:16,c:x.as.pct!=null&&x.as.pct<85?ROJO:null}]:[]),{t:x.rep.join(', ')||'—',jc:'left',sz:15},{t:acc(x),jc:'left',sz:15}]}));
+    const filas=lst.map((x,k)=>({c:[{t:k+1,sz:16},{t:nomRep(x.a),jc:'left',sz:16},{t:f1n(x.p),b:true,sz:16,c:x.p!=null&&x.p<6?ROJO:null},...(hayAs?[{t:x.as.pct==null?'—':x.as.pct+'%',sz:16,c:x.as.pct!=null&&x.as.pct<85?ROJO:null}]:[]),{t:x.rep.join(', ')||'—',jc:'left',sz:15},{t:acc(x),jc:'left',sz:15}]}));
     return {o:'v',x:encab('ALUMNOS QUE REQUIEREN ATENCIÓN')+P(R(`Alumnos con promedio menor a 7, con al menos una disciplina no aprobada${hayAs?' o con asistencia menor a 85%':''}. Sirve para el seguimiento con dirección, USAER y familias.`,{sz:17}),{after:120})
       +(lst.length?T(ws,[{h:true,c:['No.','Alumno(a)','Promedio',...(hayAs?['Asistencia']:[]),'Disciplinas no aprobadas','Acción sugerida'].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},...filas]):P(R('Ningún alumno cumple estos criterios en el trimestre.',{i:true,sz:17}),{after:120}))+P('',{after:120})+firmas(W)}}
-  function pIndividual(D,t,i){const a=D.L[i],tri=[1,2,3].map(tt=>D.cols.map(c=>c.cal(a.id,tt))),mi=tri[t-1];
+  function pIndividual(D,t,i,fin){const a=D.L[i],tri=[1,2,3].map(tt=>D.cols.map(c=>c.cal(a.id,tt))); // fin: reporte final del ciclo
     const prom=j=>{const v=tri.map(x=>x[j]).filter(x=>x!=null);return v.length?r1(avg(v)):null};
-    const n=chart({titulo:'CALIFICACIONES POR DISCIPLINA',cats:D.cols.map(c=>c.n),series:[{n:'Alumno(a)',c:AZ,v:mi,pts:D.cols.map(c=>COL[c.k]||AZ)},{n:'Promedio del grupo',c:'A6A6A6',v:D.PD}],leyenda:true,gap:60});
+    const mi=fin?D.cols.map((c,j)=>prom(j)):tri[t-1],n=chart({titulo:fin?'PROMEDIO FINAL POR DISCIPLINA':'CALIFICACIONES POR DISCIPLINA',cats:D.cols.map(c=>c.n),series:[{n:'Alumno(a)',c:AZ,v:mi,pts:D.cols.map(c=>COL[c.k]||AZ)},{n:'Promedio del grupo',c:'A6A6A6',v:D.PD}],leyenda:true,gap:60});
     const pt=tt=>{const v=tri[tt-1].filter(x=>x!=null);return v.length?f1n(avg(v)):''};
-    const fs=asFechasTrim(t),as=fs.some(asTomado)?asTot(a.id,fs):null,obs=((S.fichas[a.id]||{})['t'+t]||{}).obs||'';
+    const fs=fin?asFechas():asFechasTrim(t),as=fs.some(asTomado)?asTot(a.id,fs):null,sx=((S.fichas[a.id]||{}).final||{}).sintesis||'',obs=fin?(sx.length<=520?sx:''):((S.fichas[a.id]||{})['t'+t]||{}).obs||'';
     const tabla=T([3400,1500,1500,1500,1500,1400],[{h:true,c:['Disciplina','1er trimestre','2° trimestre','3er trimestre','Promedio','Grupo'].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},
-      ...D.cols.map((c,j)=>({c:[{t:c.n,jc:'left',sz:16},...tri.map((x,k)=>({t:x[j]??'',b:k===t-1,sz:16,c:x[j]!=null&&x[j]<6?ROJO:null})),{t:f1n(prom(j)),sz:16},{t:f1n(D.PD[j]),sz:16,c:'7F7F7F'}]})),
+      ...D.cols.map((c,j)=>({c:[{t:c.n,jc:'left',sz:16},...tri.map((x,k)=>({t:x[j]??'',b:!fin&&k===t-1,sz:16,c:x[j]!=null&&x[j]<6?ROJO:null})),{t:f1n(prom(j)),b:!!fin,sz:16},{t:f1n(D.PD[j]),sz:16,c:'7F7F7F'}]})),
       {c:[{t:'PROMEDIO GENERAL',b:true,jc:'left',sz:16,bg:CLARO},...[1,2,3].map(tt=>({t:pt(tt),b:true,sz:16,bg:CLARO})),{t:(()=>{const v=D.cols.map((c,j)=>prom(j)).filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),b:true,sz:16,bg:CLARO},{t:(()=>{const v=D.PA.filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),sz:16,bg:CLARO,c:'7F7F7F'}]}]);
-    return {o:'v',x:encab('REPORTE INDIVIDUAL DE CALIFICACIONES · '+TIT(t))+T([2000,8800],[{c:[{t:'ALUMNO(A)',b:true,sz:16,c:'FFFFFF',bg:AZ},{t:a.nombre.toUpperCase(),b:true,sz:18,jc:'left'}]}])+P('',{after:80})+tabla
+    return {o:'v',x:encab(fin?'REPORTE INDIVIDUAL FINAL · CICLO ESCOLAR '+ESC.ciclo:'REPORTE INDIVIDUAL DE CALIFICACIONES · '+TIT(t))+T([2000,8800],[{c:[{t:'ALUMNO(A)',b:true,sz:16,c:'FFFFFF',bg:AZ},{t:nomRep(a),b:true,sz:18,jc:'left'}]}])+P('',{after:80})+tabla
       +CHART(n,W,D.cols.length>10?3900:4300)
-      +(as?P(R('Asistencia del trimestre: ',{b:true,sz:16})+R(`${as.pct}% · ${as.A} asistencias, ${as.F} faltas y ${as.J} justificadas en ${as.hab} días con lista.`,{sz:16}),{before:40,after:40}):'')
+      +(as?P(R(fin?'Asistencia del ciclo: ':'Asistencia del trimestre: ',{b:true,sz:16})+R(`${as.pct}% · ${as.A} asistencias, ${as.F} faltas y ${as.J} justificadas en ${as.hab} días con lista.`,{sz:16}),{before:40,after:40}):'')
       +T([W],[{alto:700,c:[{raw:P(R('Observaciones: ',{b:true,sz:16})+R(obs,{sz:16}),{jc:'both',after:0})}]}])+firmas(W,true)}}
   /* asistencia */
   function pAsisMes(ym){const L=activos(),fs=diasMes(ym).filter(f=>asDia(f)),tom=fs.filter(asTomado);
-    const tot=L.map(a=>asTot(a.id,fs)),wdd=Math.floor((WL-400-3000-4*700)/Math.max(fs.length,1)),ws=[400,3000,...fs.map(()=>wdd),700,700,700,700];
-    const h1={h:true,c:[{t:'No.',b:true,sz:14,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:14,c:'FFFFFF',bg:AZ},...fs.map(f=>{const r=asDia(f);return {t:DSEM[diaSem(f)]+'\n'+(+f.slice(8))+(r.s?'\n'+r.s:''),b:true,sz:r.s&&r.s.length>2?10:12,c:'FFFFFF',bg:r.s?'7F7F7F':AZ}}),{t:'A',b:true,sz:14,c:'FFFFFF',bg:'235B4E'},{t:'F',b:true,sz:14,c:'FFFFFF',bg:'9F2241'},{t:'J',b:true,sz:14,c:'FFFFFF',bg:'BC955C'},{t:'%',b:true,sz:14,c:'FFFFFF',bg:AZ2}]};
+    const ret=!!S.cfg.retardos,nt=ret?5:4,tot=L.map(a=>asTot(a.id,fs)),wdd=Math.floor((WL-400-3000-nt*700)/Math.max(fs.length,1)),ws=[400,3000,...fs.map(()=>wdd),...Array(nt).fill(700)];
+    const h1={h:true,c:[{t:'No.',b:true,sz:14,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:14,c:'FFFFFF',bg:AZ},...fs.map(f=>{const r=asDia(f);return {t:DSEM[diaSem(f)]+'\n'+(+f.slice(8))+(r.s?'\n'+r.s:''),b:true,sz:r.s&&r.s.length>2?10:12,c:'FFFFFF',bg:r.s?'7F7F7F':AZ}}),{t:'A',b:true,sz:14,c:'FFFFFF',bg:'235B4E'},{t:'F',b:true,sz:14,c:'FFFFFF',bg:'9F2241'},{t:'J',b:true,sz:14,c:'FFFFFF',bg:'BC955C'},...(ret?[{t:'R',b:true,sz:14,c:'FFFFFF',bg:'1E3A5F'}]:[]),{t:'%',b:true,sz:14,c:'FFFFFF',bg:AZ2}]};
     const alt=Math.min(300,Math.floor(6000/L.length)),fz=alt>=260?14:alt>=170?12:11;oFirma=L.length>25?160:360;
-    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz},{t:a.nombre.toUpperCase(),jc:'left',sz:fz},...fs.map(f=>{const v=asVal(a.id,f);return v==null?{t:'',bg:'A6A6A6'}:{t:v==='A'?'•':v,sz:fz,b:v!=='A',c:v==='F'?'9F2241':v==='J'?'8A6A2F':'235B4E',bg:v==='F'?'F3D6DC':v==='J'?'F5ECDD':null}}),{t:tot[i].A,sz:fz,b:true},{t:tot[i].F,sz:fz,b:!!tot[i].F,c:tot[i].F?ROJO:null},{t:tot[i].J,sz:fz},{t:tot[i].pct==null?'—':tot[i].pct+'%',sz:fz,b:true,c:tot[i].pct!=null&&tot[i].pct<85?ROJO:null,bg:CLARO}]}));
-    const pd=fs.map(f=>asTomado(f)?L.filter(a=>asVal(a.id,f)==='A').length:null),pcts=tot.map(x=>x.pct).filter(x=>x!=null);
-    const pie={c:[{t:'',bg:CLARO},{t:'ASISTENTES POR DÍA',b:true,sz:13,jc:'left',bg:CLARO},...pd.map(v=>({t:v??'',sz:12,b:true,bg:v==null?'A6A6A6':CLARO})),{t:tot.reduce((s,x)=>s+x.A,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.F,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.J,0),sz:13,b:true,bg:CLARO},{t:pcts.length?Math.round(avg(pcts))+'%':'—',sz:13,b:true,c:'FFFFFF',bg:AZ2}]};
+    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz},{t:nomRep(a),jc:'left',sz:fz},...fs.map(f=>{const v=asVal(a.id,f);return v==null?{t:'',bg:'A6A6A6'}:{t:v==='A'?'•':v,sz:fz,b:v!=='A',c:v==='F'?'9F2241':v==='J'?'8A6A2F':v==='R'?'1E3A5F':'235B4E',bg:v==='F'?'F3D6DC':v==='J'?'F5ECDD':v==='R'?'DCE6F1':null}}),{t:tot[i].A,sz:fz,b:true},{t:tot[i].F,sz:fz,b:!!tot[i].F,c:tot[i].F?ROJO:null},{t:tot[i].J,sz:fz},...(ret?[{t:tot[i].R,sz:fz}]:[]),{t:tot[i].pct==null?'—':tot[i].pct+'%',sz:fz,b:true,c:tot[i].pct!=null&&tot[i].pct<85?ROJO:null,bg:CLARO}]}));
+    const pd=fs.map(f=>asTomado(f)?L.filter(a=>asPres(asVal(a.id,f))).length:null),pcts=tot.map(x=>x.pct).filter(x=>x!=null);
+    const pie={c:[{t:'',bg:CLARO},{t:'ASISTENTES POR DÍA',b:true,sz:13,jc:'left',bg:CLARO},...pd.map(v=>({t:v??'',sz:12,b:true,bg:v==null?'A6A6A6':CLARO})),{t:tot.reduce((s,x)=>s+x.A,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.F,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.J,0),sz:13,b:true,bg:CLARO},...(ret?[{t:tot.reduce((s,x)=>s+x.R,0),sz:13,b:true,bg:CLARO}]:[]),{t:pcts.length?Math.round(avg(pcts))+'%':'—',sz:13,b:true,c:'FFFFFF',bg:AZ2}]};
     const sinL=fs.filter(f=>asDia(f).s),cods=[...new Set(sinL.map(f=>asDia(f).s))];
-    const claves=R('Claves: ',{b:true,sz:14})+R('• asistencia · F falta · J falta justificada.'+(sinL.length?'   Días sin lista: ':''),{sz:14})+cods.map(k=>R(k,{b:true,sz:14})+R(` ${(AS_MOT[k]||k).toLowerCase()} (${sinL.filter(f=>asDia(f).s===k).map(f=>+f.slice(8)).join(', ')})`,{sz:14})).join(R(' · ',{sz:14}))+R('.',{sz:14});
+    const claves=R('Claves: ',{b:true,sz:14})+R('• asistencia · F falta · J falta justificada'+(ret?' · R retardo (cuenta como asistencia)':'')+'.'+(sinL.length?'   Días sin lista: ':''),{sz:14})+cods.map(k=>R(k,{b:true,sz:14})+R(` ${(AS_MOT[k]||k).toLowerCase()} (${sinL.filter(f=>asDia(f).s===k).map(f=>+f.slice(8)).join(', ')})`,{sz:14})).join(R(' · ',{sz:14}))+R('.',{sz:14});
     const x=encab('CONTROL DE ASISTENCIA · '+nomMes(ym).toUpperCase(),{fecha:`DÍAS CON LISTA: ${tom.length} · DÍAS HÁBILES DEL MES: ${diasMes(ym).length}`})+T(ws,[h1,...filas,pie])+P(claves,{before:80,after:0})+firmas(WL);
     oFirma=360;
-    const n1=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+nomMes(ym).toUpperCase(),cats:L.map(a=>a.nombre.toUpperCase()),series:[{n:'% asistencia',c:'235B4E',v:tot.map(x=>x.pct==null?null:x.pct/100),pts:tot.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
+    const n1=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+nomMes(ym).toUpperCase(),cats:L.map(a=>nomRep(a)),series:[{n:'% asistencia',c:'235B4E',v:tot.map(x=>x.pct==null?null:x.pct/100),pts:tot.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
     const n2=chart({titulo:'ASISTENTES POR DÍA',cats:fs.map(f=>(asDia(f).s?asDia(f).s+' ':'')+(+f.slice(8))),series:[{n:'Asistentes',c:AZ,v:pd}],min:0,max:L.length,unit:L.length>20?10:5,gap:40,fmt:'0'});
     oFirma=200;const g=encab('ASISTENCIA DEL MES · GRÁFICAS')+CHART(n1,W,L.length>20?7600:6200)+CHART(n2,W,3200)+nota('Verde: 95% o más · dorado: 85 a 94% · guinda: menos de 85%. Los días sin lista no cuentan como faltas.')+firmas(W);oFirma=360;
     return [{o:'h',x},{o:'v',x:g}]}
-  function pAsisTrim(t){const L=activos(),fsT=asFechasTrim(t),meses=[...new Set(fsT.map(ymDe))].sort(),pal=['235B4E','BC955C','1E3A5F','9F2241','7FA38F'];
-    const hab=meses.map(ym=>fsT.filter(f=>ymDe(f)===ym&&asTomado(f)).length),HT=hab.reduce((s,x)=>s+x,0);
-    const TM=L.map(a=>meses.map(ym=>asTot(a.id,fsT.filter(f=>ymDe(f)===ym)))),TT=L.map(a=>asTot(a.id,fsT));
+  function pAsisTrim(t){ // t='c': todo el ciclo, agrupado por trimestre; si no, un trimestre agrupado por mes
+    const ci=t==='c',L=activos(),fsT=ci?asFechas():asFechasTrim(t),gk=ci?f=>'T'+trimDe(f):ymDe,glb=k=>ci?TIT(+k[1]):MESL[+k.slice(5)-1].toUpperCase(),per=ci?'CICLO ESCOLAR '+ESC.ciclo:TIT(t);
+    const meses=[...new Set(fsT.map(gk))].sort(),pal=['235B4E','BC955C','1E3A5F','9F2241','7FA38F'];
+    const hab=meses.map(ym=>fsT.filter(f=>gk(f)===ym&&asTomado(f)).length),HT=hab.reduce((s,x)=>s+x,0);
+    const TM=L.map(a=>meses.map(ym=>asTot(a.id,fsT.filter(f=>gk(f)===ym)))),TT=L.map(a=>asTot(a.id,fsT));
     const cw=Math.min(560,Math.floor((W-380-2400-2380)/(meses.length*3))),ws=[380,2400,...Array(meses.length*3).fill(cw),620,620,620,520];ws[1]+=W-ws.reduce((a,b)=>a+b,0);
-    const h1={h:true,c:[{t:'',bg:'FFFFFF'},{t:'',bg:'FFFFFF'},...meses.map((ym,k)=>({t:`${MESL[+ym.slice(5)-1].toUpperCase()} (${hab[k]} días)`,sp:3,b:true,sz:13,c:'FFFFFF',bg:pal[k%5]})),{t:`TRIMESTRE (${HT} días)`,sp:4,b:true,sz:13,c:'FFFFFF',bg:AZ2}]};
+    const h1={h:true,c:[{t:'',bg:'FFFFFF'},{t:'',bg:'FFFFFF'},...meses.map((ym,k)=>({t:`${glb(ym)} (${hab[k]} días)`,sp:3,b:true,sz:13,c:'FFFFFF',bg:pal[k%5]})),{t:`${ci?'CICLO':'TRIMESTRE'} (${HT} días)`,sp:4,b:true,sz:13,c:'FFFFFF',bg:AZ2}]};
     const h2={h:true,c:[{t:'No.',b:true,sz:13,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:13,c:'FFFFFF',bg:AZ},...meses.flatMap(()=>['A','F','J'].map(x=>({t:x,b:true,sz:13,c:'FFFFFF',bg:AZ}))),...['A','F','J','%'].map(x=>({t:x,b:true,sz:13,c:'FFFFFF',bg:AZ2}))]};
     const alt=Math.min(320,Math.floor(8400/L.length)),fz=alt>=290?15:alt>=220?14:12;
-    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:a.nombre.toUpperCase(),jc:'left',sz:fz,bg:i%2?GR:null},...TM[i].flatMap(m=>[{t:m.A,sz:fz,bg:i%2?GR:null},{t:m.F,sz:fz,b:!!m.F,c:m.F?ROJO:null,bg:i%2?GR:null},{t:m.J,sz:fz,bg:i%2?GR:null}]),{t:TT[i].A,b:true,sz:fz,bg:CLARO},{t:TT[i].F,b:true,sz:fz,c:TT[i].F?ROJO:null,bg:CLARO},{t:TT[i].J,b:true,sz:fz,bg:CLARO},{t:TT[i].pct==null?'—':TT[i].pct+'%',b:true,sz:fz,c:TT[i].pct!=null&&TT[i].pct<85?ROJO:null,bg:CLARO}]}));
+    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:nomRep(a),jc:'left',sz:fz,bg:i%2?GR:null},...TM[i].flatMap(m=>[{t:m.A,sz:fz,bg:i%2?GR:null},{t:m.F,sz:fz,b:!!m.F,c:m.F?ROJO:null,bg:i%2?GR:null},{t:m.J,sz:fz,bg:i%2?GR:null}]),{t:TT[i].A,b:true,sz:fz,bg:CLARO},{t:TT[i].F,b:true,sz:fz,c:TT[i].F?ROJO:null,bg:CLARO},{t:TT[i].J,b:true,sz:fz,bg:CLARO},{t:TT[i].pct==null?'—':TT[i].pct+'%',b:true,sz:fz,c:TT[i].pct!=null&&TT[i].pct<85?ROJO:null,bg:CLARO}]}));
     const pm=meses.map((ym,k)=>{const v=TM.map(m=>m[k].pct).filter(x=>x!=null);return v.length?Math.round(avg(v))+'%':'—'}),pt=TT.map(x=>x.pct).filter(x=>x!=null);
     const pie={c:[{t:'',bg:CLARO},{t:'% DE ASISTENCIA DEL GRUPO',b:true,sz:13,jc:'left',bg:CLARO},...pm.map(p=>({t:p,sp:3,b:true,sz:14,bg:CLARO})),{t:pt.length?Math.round(avg(pt))+'%':'—',sp:4,b:true,sz:14,c:'FFFFFF',bg:AZ2}]};
-    const x=encab('CONCENTRADO DE ASISTENCIA · '+TIT(t))+T(ws,[h1,h2,...filas,pie])+nota('A asistencias · F faltas · J faltas justificadas. Días con lista por mes; no cuentan los días sin lista (asuetos, CTE, permisos económicos y actividades fuera del aula). En guinda, asistencia menor a 85%.')+firmas(W);
-    const n3=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+TIT(t),cats:L.map(a=>a.nombre.toUpperCase()),series:[{n:'% asistencia',c:'235B4E',v:TT.map(x=>x.pct==null?null:x.pct/100),pts:TT.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
-    const n4=chart({titulo:'FALTAS DEL GRUPO POR MES',cats:meses.map(ym=>mesLargo(ym).replace(/ \d+$/,'')),series:[{n:'Faltas',c:'9F2241',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].F,0))},{n:'Faltas justificadas',c:'BC955C',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].J,0))}],min:0,max:null,unit:null,leyenda:true,gap:80,fmt:'0'});
+    const x=encab('CONCENTRADO DE ASISTENCIA · '+per)+T(ws,[h1,h2,...filas,pie])+nota('A asistencias · F faltas · J faltas justificadas. Días con lista por '+(ci?'trimestre':'mes')+'; no cuentan los días sin lista (asuetos, CTE, permisos económicos y actividades fuera del aula). En guinda, asistencia menor a 85%.')+firmas(W);
+    const n3=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+(ci?'CICLO ESCOLAR':TIT(t)),cats:L.map(a=>nomRep(a)),series:[{n:'% asistencia',c:'235B4E',v:TT.map(x=>x.pct==null?null:x.pct/100),pts:TT.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
+    const n4=chart({titulo:ci?'FALTAS DEL GRUPO POR TRIMESTRE':'FALTAS DEL GRUPO POR MES',cats:meses.map(ym=>ci?'Trimestre '+ym[1]:mesLargo(ym).replace(/ \d+$/,'')),series:[{n:'Faltas',c:'9F2241',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].F,0))},{n:'Faltas justificadas',c:'BC955C',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].J,0))}],min:0,max:null,unit:null,leyenda:true,gap:80,fmt:'0'});
     const riesgo=L.map((a,i)=>({a,x:TT[i]})).filter(r=>r.x.pct!=null&&r.x.pct<90).sort((p,q)=>p.x.pct-q.x.pct);
-    const g=encab('ASISTENCIA DEL TRIMESTRE · GRÁFICAS')+CHART(n3,W,L.length>20?7200:5600)+CHART(n4,W,2900)+(riesgo.length?P(R('Alumnos con asistencia menor a 90%: ',{b:true,sz:16,c:AZ})+R(riesgo.map(r=>`${r.a.nombre.toUpperCase()} (${r.x.pct}%, ${r.x.F} faltas)`).join(' · '),{sz:16}),{before:60,after:40}):'')+firmas(W);
+    const g=encab(ci?'ASISTENCIA DEL CICLO · GRÁFICAS':'ASISTENCIA DEL TRIMESTRE · GRÁFICAS')+CHART(n3,W,L.length>20?7200:5600)+CHART(n4,W,2900)+(riesgo.length?P(R('Alumnos con asistencia menor a 90%: ',{b:true,sz:16,c:AZ})+R(riesgo.map(r=>`${nomRep(r.a)} (${r.x.pct}%, ${r.x.F} faltas)`).join(' · '),{sz:16}),{before:60,after:40}):'')+firmas(W);
     return [{o:'v',x},{o:'v',x:g}]}
+  /* todo el ciclo: promedios por trimestre y finales (columnas: todas las disciplinas del ciclo) */
+  function datosC(){const L=activos(),pr=v=>{v=v.filter(x=>x!=null);return v.length?r1(avg(v)):null};
+    let cols=discsEn(S.registros).map(d=>({n:d.n,k:d.c,cal:(aid,tt)=>califD(aid,d.n,tt).cal}));
+    if(!cols.length)cols=CAMPOS.map(c=>({n:c.n,k:c.k,cal:(aid,tt)=>calif(aid,c.k,tt).cal}));
+    const FIN=L.map(a=>cols.map(c=>pr([1,2,3].map(tt=>c.cal(a.id,tt)))));
+    const PT=[1,2,3].map(tt=>L.map(a=>pr(cols.map(c=>c.cal(a.id,tt))))),GT=[1,2,3].map(tt=>cols.map(c=>pr(L.map(a=>c.cal(a.id,tt)))));
+    return {L,cols,CAL:FIN,PA:FIN.map(pr),PD:cols.map((c,j)=>pr(FIN.map(r=>r[j]))),PT,GT,ts:[1,2,3].filter(tt=>PT[tt-1].some(x=>x!=null))}}
+  const dif=(a,b)=>a==null||b==null?null:r1(a-b),difT=d=>d==null?'—':d>0?'+'+d.toFixed(1):d<0?'−'+Math.abs(d).toFixed(1):'0.0',difC=d=>d==null||d===0?null:d<0?ROJO:'235B4E';
+  function pHonor(D,tit){const ord=D.L.map((a,i)=>({a,p:D.PA[i]})).filter(x=>x.p!=null).sort((x,y)=>y.p-x.p);
+    let lst=ord.filter(x=>x.p>=9);const todos=lst.length>=3;if(!todos)lst=ord.slice(0,3);lst=lst.slice(0,12);
+    if(!lst.length)return {o:'v',x:encab('CUADRO DE HONOR · '+tit)+P(R('Aún no hay promedios para formar el cuadro de honor.',{i:true,sz:17}))+firmas(W)};
+    let lugar=0,prev=null;lst.forEach((x,i)=>{if(x.p!==prev){lugar=i+1;prev=x.p}x.l=lugar});
+    const n=chart({titulo:'MEJORES PROMEDIOS · '+tit,cats:lst.map(x=>nomRep(x.a)),series:[{n:'Promedio',c:'1E3A5F',v:lst.map(x=>x.p),pts:lst.map(x=>x.l===1?'BC955C':x.l<=3?'235B4E':'1E3A5F')}],horiz:true,gap:45});
+    const tab=T([1500,7300,2000],[{h:true,c:['Lugar','Alumno(a)','Promedio'].map(x=>({t:x,b:true,sz:16,c:'FFFFFF',bg:AZ}))},...lst.map(x=>({alto:330,c:[{t:x.l+'°',b:true,sz:18,c:x.l===1?'8A6A2F':null,bg:x.l<=3?CLARO:null},{t:nomRep(x.a),jc:'left',b:x.l<=3,sz:17,bg:x.l<=3?CLARO:null},{t:x.p.toFixed(1),b:true,sz:18,bg:x.l<=3?CLARO:null}]}))]);
+    return {o:'v',x:encab('CUADRO DE HONOR · '+tit)+P(R(todos?'Se reconoce el esfuerzo y la constancia de las alumnas y los alumnos con promedio de 9.0 o más.':'Se reconoce el esfuerzo y la constancia de los mejores promedios del grupo.',{sz:17}),{jc:'center',after:120})+tab+P('',{after:80})
+      +CHART(n,W,Math.min(4400,1500+lst.length*330))+nota('Dorado: primer lugar · verde: segundo y tercer lugar · azul: resto del cuadro de honor.')+firmas(W)}}
+  function pCompDisc(C){const ts=C.ts,pal=['9F2241','BC955C','235B4E'],u=ts[ts.length-1],p=ts[ts.length-2];
+    const n=chart({titulo:'PROMEDIO DEL GRUPO POR DISCIPLINA EN CADA TRIMESTRE',cats:C.cols.map(c=>c.n),series:ts.map(tt=>({n:'Trimestre '+tt,c:pal[tt-1],v:C.GT[tt-1]})),leyenda:true,gap:70});
+    const tab=T([3800,1500,1500,1500,2500],[{h:true,c:['Disciplina','1er trimestre','2° trimestre','3er trimestre',`Cambio (T${p} a T${u})`].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},
+      ...C.cols.map((c,j)=>{const d=dif(C.GT[u-1][j],C.GT[p-1][j]);return {c:[{t:c.n,jc:'left',sz:16},...[1,2,3].map(tt=>({t:ts.includes(tt)?f1n(C.GT[tt-1][j]):'',sz:16})),{t:difT(d),b:true,sz:16,c:difC(d)}]}})]);
+    return {o:'v',x:encab('COMPARATIVO ENTRE TRIMESTRES · DISCIPLINAS')+CHART(n,W,C.cols.length>10?5000:5600)+tab+nota('Cambio: diferencia del promedio del grupo entre los dos últimos trimestres evaluados. En verde, mejora; en guinda, disminución.')+firmas(W)}}
+  function pAlumTrim(C,fin){const L=C.L,ts=C.ts,u=ts[ts.length-1],p=ts.length>1?ts[ts.length-2]:null; // fin: agrega la columna de promedio final
+    const alt=Math.min(320,Math.floor(8600/L.length)),fz=alt>=290?15:alt>=220?14:12;
+    const ws=fin?[400,4000,1300,1300,1300,1300,1200]:[400,4300,1400,1400,1400,1900];
+    const hd=['No.','Nombre del alumno(a)','1er trimestre','2° trimestre','3er trimestre',...(fin?['Promedio final','Cambio']:[p?`Cambio (T${p} a T${u})`:'Cambio'])];
+    const filas=L.map((a,i)=>{const d=p?dif(C.PT[u-1][i],C.PT[p-1][i]):null,bg=i%2?GR:null;
+      return {alto:alt,exacto:true,c:[{t:i+1,sz:fz,bg},{t:nomRep(a),jc:'left',sz:fz,bg},...[1,2,3].map(tt=>{const v=C.PT[tt-1][i];return {t:ts.includes(tt)?f1n(v):'',sz:fz,c:v!=null&&v<6?ROJO:null,bg}}),...(fin?[{t:f1n(C.PA[i]),b:true,sz:fz,c:C.PA[i]!=null&&C.PA[i]<6?ROJO:null,bg:CLARO}]:[]),{t:difT(d),b:true,sz:fz,c:difC(d),bg:fin?bg:CLARO}]}});
+    const g=tt=>{const v=C.PT[tt-1].filter(x=>x!=null);return v.length?r1(avg(v)):null},vf=C.PA.filter(x=>x!=null),dg=p?dif(g(u),g(p)):null;
+    const pie={c:[{t:'',bg:CLARO},{t:'PROMEDIO DEL GRUPO',b:true,sz:14,jc:'left',bg:CLARO},...[1,2,3].map(tt=>({t:ts.includes(tt)?f1n(g(tt)):'',b:true,sz:15,bg:CLARO})),...(fin?[{t:vf.length?f1n(avg(vf)):'—',b:true,sz:15,c:'FFFFFF',bg:AZ2}]:[]),{t:difT(dg),b:true,sz:15,c:fin?difC(dg):'FFFFFF',bg:fin?CLARO:AZ2}]};
+    return {o:'v',x:encab(fin?'PROMEDIOS POR TRIMESTRE Y PROMEDIO FINAL':'COMPARATIVO ENTRE TRIMESTRES · ALUMNOS')+T(ws,[{h:true,c:hd.map(x=>({t:x.toUpperCase(),b:true,sz:13,c:'FFFFFF',bg:AZ}))},...filas,pie])
+      +nota('Promedio de las disciplinas en cada trimestre. Cambio: diferencia entre los dos últimos trimestres evaluados; en verde, mejora; en guinda, disminución.')+firmas(W)}}
+  /* citatorio: una página por alumno, con acuse de recibo desprendible */
+  const CIT_AS={aca:'Desempeño académico',asis:'Inasistencias',bol:'Entrega de calificaciones',otro:'Asunto escolar'};
+  function pCitatorio(a,o){const c=S.cfg,lugar=[c.localidad,c.municipio,c.estado].map(x=>String(x||'').trim()).filter(Boolean).join(', ');
+    const par=(t,op={})=>P(R(t,{sz:op.sz||21}),{jc:op.jc||'both',after:op.after??160});
+    const cuando=`${o.dia?'el día '+DIASL[diaSem(o.dia)]+' '+fechaLarga(o.dia):'el día ______ de ________________ de ________'}, a las ${o.hora||'________'} horas, en ${o.lugar||'las instalaciones de la escuela'}`;
+    return {o:'v',x:encab('CITATORIO',{fecha:'ASUNTO: '+(CIT_AS[o.tipo]||CIT_AS.otro).toUpperCase()})
+      +par(`${lugar?lugar+', a ':'A '}${fechaLarga(o.fecha)}.`,{jc:'right',after:240})
+      +P(R('C. MADRE, PADRE O TUTOR',{b:true,sz:21}),{after:0})+P(R('DEL ALUMNO(A): ',{b:true,sz:21})+R(nomRep(a),{b:true,sz:21,c:AZ}),{after:0})+P(R('P R E S E N T E',{b:true,sz:21}),{after:240})
+      +par(`Por este medio se le solicita atentamente presentarse ${cuando}, para tratar asuntos relacionados con la formación de su hijo(a).`)
+      +(o.motivo?P(R('Motivo: ',{b:true,sz:21})+R(o.motivo,{sz:21}),{jc:'both',after:160}):'')+(o.extra?par(o.extra):'')
+      +par('Su presencia es muy importante para acordar acciones de apoyo entre la familia y la escuela. Se agradece de antemano su puntual asistencia.')
+      +P(R('A T E N T A M E N T E',{b:true,sz:21}),{jc:'center',before:240,after:0})+firmas(W)
+      +P(R('- '.repeat(34)+' cortar por aquí '+'- '.repeat(34),{sz:14,c:'7F7F7F'}),{jc:'center',before:600,after:120})
+      +P(R('ACUSE DE RECIBO',{b:true,sz:20,c:AZ}),{jc:'center',after:120})
+      +par(`Recibí el citatorio para presentarme ${cuando}, con relación a mi hijo(a) ${nomRep(a)}, del grupo ${ESC.grupo}.`,{sz:19,after:300})
+      +T([Math.floor(W*.62),W-Math.floor(W*.62)],[{c:[{t:'_______________________________________'},{t:'_____________________'}]},{c:[{t:'NOMBRE Y FIRMA DE LA MADRE, PADRE O TUTOR',b:true,sz:16},{t:'FECHA',b:true,sz:16}]}],{nob:true})}}
   return {
     async trimestre(t,op,fecha){CACHE={};ini(fecha);const D=datosT(t),pags=[];
-      if(op.conc)pags.push(pConcentrado(D,t));if(op.alum)pags.push(pAlumnos(D,t));if(op.disc)pags.push(pDisciplinas(D,t));
+      if(op.conc)pags.push(pConcentrado(D,'REPORTE DE CALIFICACIONES DEL '+TIT(t)));if(op.alum)pags.push(pAlumnos(D,TIT(t)));if(op.disc)pags.push(pDisciplinas(D,TIT(t)));
       if(op.aprob)pags.push(pAprob(D,t));if(op.distrib)pags.push(pDistrib(D));if(op.aten)pags.push(pAtencion(D,t));
+      if(op.honor)pags.push(pHonor(D,TIT(t)));
+      if(op.comp){const C=datosC();if(C.ts.length>1)pags.push(pCompDisc(C),pAlumTrim(C))}
       if(op.indiv)D.L.forEach((a,i)=>pags.push(pIndividual(D,t,i)));
       if(op.asis&&asFechasTrim(t).some(asTomado))pags.push(...pAsisTrim(t));
       return pags.length?armar(pags):null},
+    async final(op,fecha){CACHE={};ini(fecha);const C=datosC(),tit='CICLO ESCOLAR '+ESC.ciclo;if(!C.ts.length)return null;
+      const pags=[pConcentrado(C,'REPORTE FINAL DE CALIFICACIONES · '+tit,true),pAlumTrim(C,true),pAlumnos(C,'PROMEDIO FINAL'),pDisciplinas(C,'PROMEDIO FINAL')];
+      if(C.ts.length>1)pags.push(pCompDisc(C));
+      pags.push(pAprob(C),pHonor(C,tit));
+      if(op.indiv)C.L.forEach((a,i)=>pags.push(pIndividual(C,0,i,true)));
+      if(asFechas().some(asTomado))pags.push(...pAsisTrim('c'));
+      return armar(pags)},
+    async citatorios(aids,o){CACHE={};ini(o.fecha);return armar(aids.map(aid=>pCitatorio(al(aid),{...o,motivo:citMotivo(aid,o.tipo,o.t)})))},
+    trimsConDatos(){CACHE={};return datosC().ts},
     async mes(ym,fecha){ini(fecha);return armar(pAsisMes(ym))}
   };
 })();
-const REP_OPS=[['conc','Reporte de calificaciones (concentrado con promedios)'],['alum','Gráfica de promedio por alumno'],['disc','Gráfica de promedio por disciplina'],['aprob','Índice de aprobación por disciplina'],['distrib','Distribución de calificaciones'],['aten','Alumnos que requieren atención'],['indiv','Reporte individual (una página por alumno)'],['asis','Asistencia del trimestre (concentrado y gráficas)']];
-function repOps(){return {conc:true,alum:true,disc:true,aprob:true,distrib:true,aten:true,indiv:false,asis:true,...LS.get('tsf-rep',{})}}
-function reportesHTML(t){const op=repOps(),hayAs=asFechasTrim(t).some(asTomado),ds=discsTrim(t),n=REP_OPS.filter(([k])=>op[k]&&(k!=='asis'||hayAs)).length;
+const REP_OPS=[['conc','Reporte de calificaciones (concentrado con promedios)'],['alum','Gráfica de promedio por alumno'],['disc','Gráfica de promedio por disciplina'],['aprob','Índice de aprobación por disciplina'],['distrib','Distribución de calificaciones'],['aten','Alumnos que requieren atención'],['honor','Cuadro de honor'],['comp','Comparativo entre trimestres (disciplinas y alumnos)'],['indiv','Reporte individual (una página por alumno)'],['asis','Asistencia del trimestre (concentrado y gráficas)']];
+function repOps(){return {conc:true,alum:true,disc:true,aprob:true,distrib:true,aten:true,honor:true,comp:true,indiv:false,asis:true,...LS.get('tsf-rep',{})}}
+function reportesHTML(t){const op=repOps(),hayAs=asFechasTrim(t).some(asTomado),ds=discsTrim(t),nts=RepW.trimsConDatos().length,falta=k=>k==='asis'?(hayAs?'':'sin lista en este trimestre'):k==='comp'?(nts>1?'':'se activa cuando haya dos trimestres con calificaciones'):'',n=REP_OPS.filter(([k])=>op[k]&&!falta(k)).length;
   return `<section class="panel rep"><div class="sec-h"><div><div class="eyebrow">Word editable · una página por reporte · gráficas editables</div><h2>Reportes del trimestre ${t}</h2></div></div>
     <p class="lead">Llevan el encabezado de tu escuela (Ajustes), el ciclo escolar ${esc(S.cfg.ciclo||'')} y las firmas del director y del docente. ${ds.length?`Columnas: ${pl(ds.length,'disciplina','disciplinas')} del trimestre.`:'Aún no hay disciplinas en este trimestre: las columnas serán los campos formativos.'}</p>
-    <div class="rep-ops">${REP_OPS.map(([k,nm])=>{const dis=k==='asis'&&!hayAs;return `<label class="${dis?'off':''}"><input type="checkbox" data-chg="repOp" data-k="${k}" ${op[k]&&!dis?'checked':''} ${dis?'disabled':''}> ${esc(nm)}${k==='indiv'?` <small class="muted">(${activos().length} páginas)</small>`:''}${dis?' <small class="muted">— sin lista en este trimestre</small>':''}</label>`}).join('')}</div>
-    <div class="row"><label class="fld" style="max-width:200px"><span>Fecha del documento</span><input type="date" id="rep-fecha" value="${esc(U.repFecha||hoy())}" data-inp="repFecha"></label><span class="spacer"></span><button class="btn primary" data-act="repWord" ${n?'':'disabled'}>Descargar reportes en Word</button></div>
+    <div class="rep-ops">${REP_OPS.map(([k,nm])=>{const fl=falta(k),dis=!!fl;return `<label class="${dis?'off':''}"><input type="checkbox" data-chg="repOp" data-k="${k}" ${op[k]&&!dis?'checked':''} ${dis?'disabled':''}> ${esc(nm)}${k==='indiv'?` <small class="muted">(${activos().length} páginas)</small>`:''}${dis?` <small class="muted">— ${fl}</small>`:''}</label>`}).join('')}</div>
+    <div class="row"><label class="fld" style="max-width:200px"><span>Fecha del documento</span><input type="date" id="rep-fecha" value="${esc(U.repFecha||hoy())}" data-inp="repFecha"></label><span class="spacer"></span><button class="btn" data-act="repXls">Concentrado en Excel</button><button class="btn primary" data-act="repWord" ${n?'':'disabled'}>Descargar reportes en Word</button></div>
+    <div class="hj-sep"><div class="row"><div style="min-width:0;flex:1 1 260px"><b>Reporte final del ciclo ${esc(S.cfg.ciclo||'')}</b><br><span class="muted" style="font-size:.88rem">Promedio final por disciplina y por alumno con ${nts>1?'los '+nts+' trimestres evaluados':nts?'el trimestre evaluado hasta ahora':'los trimestres evaluados'}, gráficas, cuadro de honor y asistencia del ciclo. Incluye los reportes individuales si esa casilla está marcada.</span></div><button class="btn" data-act="repFinal" ${nts?'':'disabled'}>Reporte final (Word)</button></div>
+      <div class="row"><div style="min-width:0;flex:1 1 260px"><b>Citatorios a madres, padres o tutores</b><br><span class="muted" style="font-size:.88rem">Una página por alumno, con el motivo redactado con sus datos y acuse de recibo.</span></div><button class="btn" data-act="citAbrir" data-k="aca">Citatorios…</button></div></div>
   </section>`}
 async function bajarRep(prom,nombre,btn){const prev=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Preparando…'}
   try{const blob=await prom;if(!blob){toast('Elige al menos un reporte.');return}await bajarBin(nombre,blob)}catch(e){console.warn(e);toast('No se pudo preparar el archivo.')}finally{if(btn){btn.disabled=false;btn.textContent=prev}}}
@@ -2691,10 +2835,21 @@ Object.assign(A,{
   asIrDia(b){U.asis.dia=b.dataset.k;render()},
   asCel(b){const f=b.dataset.k,aid=b.dataset.aid,r=asDia(f);if(r&&r.s)return;
     if(!asTomado(f)){asSet(f,{t:1,v:{[aid]:'F'}});asRender();toast('Lista del '+fechaLarga(f)+': todos presentes y una falta');return}
-    const v={...(r.v||{})},sig={A:'F',F:'J',J:'A'}[v[aid]||'A'];if(sig==='A')delete v[aid];else v[aid]=sig;asSet(f,{...r,v});asRender()},
+    const v={...(r.v||{})},sig={A:'F',F:'J',J:S.cfg.retardos?'R':'A',R:'A'}[v[aid]||'A'];if(sig==='A')delete v[aid];else v[aid]=sig;asSet(f,{t:1,v});asRender()},
   asPon(b){const f=b.dataset.k,aid=b.dataset.aid,r=asTomado(f)?asDia(f):{t:1,v:{}},v={...(r.v||{})};if(b.dataset.v==='A')delete v[aid];else v[aid]=b.dataset.v;asSet(f,{t:1,v});render()},
   asTodos(b){const f=b.dataset.k;asSet(f,{t:1,v:{}});render();toast('Todos presentes')},
-  asQuitar(b){asSet(b.dataset.k,null);render()},
+  asQuitar(b){asLimpia(b.dataset.k);render()},
+  asHoyIni(){U.view='asistencia';LS.set('tsf-view','asistencia');limpiarModos();U.asis={mes:ymDe(hoy()),dia:hoy()};render();window.scrollTo(0,0)},
+  asCalAbrir(){U.view='asistencia';LS.set('tsf-view','asistencia');U.asis={...(U.asis||{mes:ymDe(hoy())}),dia:null,cal:true};render();window.scrollTo(0,0)},
+  asCalCerrar(){U.asis.cal=false;render()},
+  asCalAdd(){const ini=$('#cal-ini').value,fin=$('#cal-fin').value||ini,s=$('#cal-mot').value,n=$('#cal-nota').value.trim();
+    if(!ini){toast('Elige la fecha.');$('#cal-ini').focus();return}if(fin<ini){toast('La fecha final debe ser igual o posterior a la inicial.');return}
+    const [y,m,d]=ini.split('-').map(Number),x=new Date(y,m-1,d);let k=0;S.cfg.cal=S.cfg.cal||{};
+    for(let i=0;i<200;i++){const f=fISO(x.getFullYear(),x.getMonth()+1,x.getDate());if(f>fin)break;if(x.getDay()%6!==0){S.cfg.cal[f]={s,...(n?{n}:{})};k++}x.setDate(x.getDate()+1)}
+    Store.grupo();render();toast(k?`Se ${k===1?'marcó 1 día':'marcaron '+k+' días'}: ${AS_MOT[s]}`:'Ese periodo solo tiene sábados o domingos.')},
+  asCalDel(b){delete (S.cfg.cal||{})[b.dataset.k];Store.grupo();render()},
+  asCalVaciar(){U.confirm=null;S.cfg.cal={};Store.grupo();render();toast('Calendario vacío')},
+  asCalSug(b){S.cfg.cal=S.cfg.cal||{};let k=0;calSugeridos(b.dataset.k).forEach(([f,s,n])=>{if(f&&!S.cfg.cal[f]){S.cfg.cal[f]={s,...(n?{n}:{})};k++}});Store.grupo();render();toast(k?`Se agregaron ${pl(k,'día','días')}. Revísalos con el calendario oficial.`:'Esos días ya estaban en el calendario.')},
   asDiaMenu(b){const f=b.dataset.k,r=asDia(f);
     modal(`<div><div class="eyebrow">${['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][diaSem(f)]}</div><h3>${esc(fechaLarga(f))}</h3></div>
       <div class="row"><button class="btn primary" data-act="asIrDiaM" data-k="${f}">Pasar lista alumno por alumno</button>${r&&r.s?'':`<button class="btn" data-act="asTodosM" data-k="${f}">Todos presentes</button>`}</div>
@@ -2704,13 +2859,32 @@ Object.assign(A,{
   asIrDiaM(b){$('#modal').innerHTML='';U.asis.dia=b.dataset.k;render();window.scrollTo(0,0)},
   asTodosM(b){$('#modal').innerHTML='';asSet(b.dataset.k,{t:1,v:{}});asRender();toast('Todos presentes')},
   asSin(b){const f=b.dataset.k,s=$('#as-mot').value,n=$('#as-nota').value.trim();$('#modal').innerHTML='';asSet(f,{s,...(n?{n}:{})});asRender();toast(`${fechaLarga(f)}: ${AS_MOT[s]}`)},
-  asQuitarM(b){$('#modal').innerHTML='';asSet(b.dataset.k,null);asRender()},
+  asQuitarM(b){$('#modal').innerHTML='';asLimpia(b.dataset.k);asRender()},
   asWord(b){bajarRep(RepW.mes(U.asis.mes,U.repFecha||hoy()),`Asistencia_${U.asis.mes}_${grupoTag()}.docx`,b)},
-  repWord(b){const t=U.trim,op=repOps();bajarRep(RepW.trimestre(t,op,U.repFecha||hoy()),`Reportes_T${t}_${grupoTag()}.docx`,b)}
+  repWord(b){const t=U.trim,op=repOps();bajarRep(RepW.trimestre(t,op,U.repFecha||hoy()),`Reportes_T${t}_${grupoTag()}.docx`,b)},
+  repFinal(b){bajarRep(RepW.final(repOps(),U.repFecha||hoy()),`Reporte_final_${fname(S.cfg.ciclo||'ciclo')}_${grupoTag()}.docx`,b)},
+  repXls(b){exportarRep('xlsx',repXls(U.trim),b)},
+  citAbrir(b){const tipo=b.dataset.k||'aca',t=U.trim,L=activos(),ds=discsTrim(t);CACHE={};
+    const razon=a=>{if(tipo==='asis'){const x=asTot(a.id,asFechasTrim(t)),n=asRacha(a.id);return n>=3?n+' faltas seguidas':x.pct!=null&&x.pct<85?x.pct+'% de asistencia':''}
+      const cs=(ds.length?ds.map(d=>califD(a.id,d.n,t).cal):CAMPOS.map(c=>calif(a.id,c.k,t).cal)).filter(x=>x!=null),r=cs.filter(x=>x<6).length;return r?pl(r,'no aprobada','no aprobadas'):cs.length&&avg(cs)<7?'promedio '+f1(avg(cs)):''};
+    modal(`<div><div class="eyebrow">Word · una página por alumno, con acuse de recibo</div><h3>Citatorios a madres, padres o tutores</h3></div>
+      <label class="fld"><span>Asunto</span><select id="cit-tipo">${[['aca','Desempeño académico'],['asis','Inasistencias'],['bol','Entrega de calificaciones'],['otro','Otro asunto (escríbelo abajo)']].map(([k,n])=>`<option value="${k}" ${k===tipo?'selected':''}>${n}</option>`).join('')}</select></label>
+      <div class="fld"><span>Alumnos <em>· vienen marcados quienes requieren atención en el trimestre ${t}</em></span><div class="row"><button class="btn sm" data-act="citSel" data-k="1">Todos</button><button class="btn sm ghost" data-act="citSel" data-k="0">Ninguno</button></div>
+        <div class="fg-al cit-al">${L.map(a=>{const r=razon(a);return `<label><input type="checkbox" data-cit="${a.id}" ${r?'checked':''}><span>${esc(a.nombre)}</span>${r?`<small class="muted">${esc(r)}</small>`:''}</label>`}).join('')}</div></div>
+      <div class="grid2"><label class="fld"><span>Día de la cita</span><input type="date" id="cit-dia"></label><label class="fld"><span>Hora</span><input type="time" id="cit-hora" value="08:00"></label></div>
+      <label class="fld"><span>Lugar</span><input id="cit-lugar" value="la dirección de la escuela"></label>
+      <label class="fld"><span>Texto adicional <em>· opcional</em></span><textarea id="cit-extra" style="min-height:60px" placeholder="Ej. Favor de traer la boleta del ciclo anterior."></textarea></label>
+      <p class="hint">El motivo se redacta solo con los datos de cada alumno: promedio y disciplinas no aprobadas, o faltas del trimestre ${t}. Si dejas el día vacío, sale un espacio para escribirlo a mano. Es un Word editable.</p>
+      <div class="row"><button class="btn primary" data-act="citGen">Generar citatorios (Word)</button><button class="btn" data-act="cerrar">Cerrar</button></div>`)},
+  citSel(b){document.querySelectorAll('#modal input[data-cit]').forEach(e=>{e.checked=b.dataset.k==='1'})},
+  citGen(b){const aids=[...document.querySelectorAll('#modal input[data-cit]:checked')].map(e=>e.dataset.cit);if(!aids.length){toast('Marca al menos un alumno.');return}
+    const h=$('#cit-hora').value;
+    bajarRep(RepW.citatorios(aids,{tipo:$('#cit-tipo').value,t:U.trim,dia:$('#cit-dia').value,hora:h?h.replace(/^0/,''):'',lugar:$('#cit-lugar').value.trim(),extra:$('#cit-extra').value.trim(),fecha:U.repFecha||hoy()}),`Citatorios_${grupoTag()}_${hoy()}.docx`,b)}
 });
-Object.assign(CHG,{repOp(e){const op=repOps();op[e.target.dataset.k]=e.target.checked;LS.set('tsf-rep',op)}});
+Object.assign(CHG,{repOp(e){const op=repOps();op[e.target.dataset.k]=e.target.checked;LS.set('tsf-rep',op)},
+  cfgChk(e){S.cfg[e.target.dataset.k]=e.target.checked;Store.grupo();render()},
+  cfgSel(e){S.cfg[e.target.dataset.k]=e.target.value;Store.grupo()}});
 Object.assign(INP,{repFecha(e){U.repFecha=e.target.value||hoy()}});
-
 /* ---------- Asistente de IA (ventana flotante) ---------- */
 // La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
 const IA_PROV={
