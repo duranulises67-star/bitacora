@@ -345,7 +345,27 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .hj-sep{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px}
 #hc-fill{width:80px;text-align:center}
 @media (max-width:640px){.hj-t .hj-p{right:auto;box-shadow:none}.hj-t th.nm,.hj-t td.nm{min-width:118px;max-width:132px;font-size:.84rem}.hj-tw{max-height:calc(100vh - 110px)}}
-/* Asistente de IA: botón y ventana flotantes */
+/* Asistencia y reportes */
+.as-tw{max-height:calc(100vh - 170px);overflow:auto}
+.as-t{border-collapse:separate;border-spacing:0}
+.as-t thead th{position:sticky;top:0;z-index:3;background:var(--surface2);padding:3px 2px}
+.as-t thead th.nm{z-index:5}
+.as-t thead th.sin{background:var(--ljbg)}.as-t thead th.hoy .as-h{outline:2px solid var(--primary);border-radius:6px}
+.as-t td{padding:2px}.as-t .tt{min-width:40px;padding:2px 6px;text-align:center}
+.as-t td.as-sin{background:repeating-linear-gradient(135deg,var(--ljbg) 0 6px,var(--surface2) 6px 12px)}
+.as-t tfoot td{position:sticky;bottom:0;background:var(--primary-soft);font-size:.8rem}
+.as-t td .tf,.as-t td.tf{color:var(--l0);font-weight:700}
+.as-h{display:grid;gap:0;width:30px;border:0;background:none;cursor:pointer;padding:2px 0;color:var(--ink);text-transform:none;letter-spacing:0;line-height:1.1}
+.as-h small{font-size:.62rem;color:var(--muted);font-weight:700}.as-h b{font-size:.85rem}.as-h:hover{background:var(--primary-soft);border-radius:6px}
+.as-c{width:30px;height:28px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-weight:800;font-size:.85rem;padding:0}
+.as-c.a{color:var(--l3);background:var(--l3bg);border-color:transparent}.as-c.f{color:var(--l0);background:var(--l0bg);border-color:var(--l0)}.as-c.j{color:var(--l2);background:var(--l2bg);border-color:var(--l2)}
+.as-c.p{border-style:dashed;background:transparent}.as-c.fut{opacity:.45}
+.as-lista .st{grid-template-columns:28px minmax(0,1fr) auto}
+@media (max-width:640px){.as-lista .st{grid-template-columns:24px minmax(0,1fr)}.as-lista .st .seg{grid-column:1/-1;justify-self:stretch;display:grid;grid-template-columns:repeat(3,1fr)}}
+.seg button.as-a{background:var(--l3);color:#fff}.seg button.as-f{background:var(--l0);color:#fff}.seg button.as-j{background:var(--l2);color:#fff}
+.banner.warn{background:var(--l0bg);color:var(--l0);border-color:transparent}
+.rep-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px}
+.rep-ops label{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);cursor:pointer;font-size:.92rem}.rep-ops label.off{opacity:.55}/* Asistente de IA: botón y ventana flotantes */
 :root{--ia1:#7f9cd8;--ia2:#b49ad6;--ia3:#e9a77e}
 .ia-fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:12px 18px 12px 14px;border-radius:999px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--ia1),var(--ia2) 55%,var(--ia3));box-shadow:0 6px 20px rgba(110,90,160,.35);transition:transform .15s}
 .ia-fab:hover{transform:translateY(-2px)}.ia-fab svg{width:22px;height:22px}.ia-fab.on{opacity:.0;pointer-events:none}
@@ -446,7 +466,7 @@ const SUG={
   HYC:'trabajo colaborativo con roles definidos, rutinas de autorregulación y actividades de proyecto de vida'};
 const PH={actividad:'Ej. Lectura comentada de leyendas',tarea:'Ej. Investigar una leyenda con la familia',participacion:'Ej. Plenaria sobre el ciclo del agua',parcial:'Ej. Borrador del guion',producto:'Ej. Antología ilustrada de leyendas',evaluacion:'Ej. Rúbrica de exposición oral',auto:'Ej. Coevaluación del equipo',diagnostica:'Ej. Evaluación diagnóstica'};
 const OLD_PESOS={actividad:25,participacion:15,producto:30,tarea:10,evaluacion:10,auto:10,diagnostica:0};
-const DEF_CFG={escuela:'',cct:'',docente:'',director:'',grado:'',grupo:'',ciclo:'2026-2027',localidad:'',ne:5,disciplinas:null,
+const DEF_CFG={escuela:'',cct:'',docente:'',director:'',grado:'',grupo:'',ciclo:'2026-2027',localidad:'',municipio:'',estado:'',zona:'',sector:'',trims:null,ne:5,disciplinas:null,
   pesos:{actividad:20,tarea:10,participacion:10,parcial:15,producto:25,evaluacion:10,auto:10,diagnostica:0},
   escala:{1:6,2:7.5,3:9,4:10}};
 function discDefault(){
@@ -506,7 +526,8 @@ const pl=(n,s,p)=>`${n} ${n===1?s:p}`;
 const slug=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'x';
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const trimDe=f=>{const m=+f.slice(5,7);return (m>=8&&m<=11)?1:(m===12||m<=3)?2:3};
+const trimDe=f=>{try{const ts=S.cfg.trims;if(Array.isArray(ts))for(let i=0;i<3;i++){const x=ts[i]||{};if(x.ini&&x.fin&&f>=x.ini&&f<=x.fin)return i+1}}catch(e){} // fechas de Ajustes; si no hay, por mes
+  const m=+f.slice(5,7);return (m>=8&&m<=11)?1:(m===12||m<=3)?2:3};
 const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const fmtF=f=>f?(+f.slice(8,10))+' '+MES[+f.slice(5,7)-1]+' '+f.slice(0,4):'';
 const lista=a=>a.length<=1?(a[0]||''):a.slice(0,-1).join(', ')+' y '+a[a.length-1];
@@ -515,7 +536,7 @@ const dbs={};const deb=(key,fn,ms=700)=>{clearTimeout(dbs[key]);dbs[key]=setTime
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3400)}
 
 /* ---------- Estado ---------- */
-let S={cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},ejemplo:false};
+let S={cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:false};
 let CACHE={};
 const newDraft=()=>({id:null,trim:null,fecha:hoy(),ppa:null,pa:null,campos:[],disc:'',tipo:'actividad',titulo:'',desc:'',valores:{},fase:null});
 function convVal(v){ // valores de la primera versión (niveles 1–4) → calificación 5–10
@@ -538,7 +559,8 @@ function normalize(){
   if(S.cfg.disciplinas&&!S.cfg.discV2){const d=discDefault();for(const k in d){const l=Array.isArray(S.cfg.disciplinas[k])?S.cfg.disciplinas[k]:[];d[k].forEach(n=>{if(!l.includes(n))l.push(n)});S.cfg.disciplinas[k]=l}}
   S.cfg.discV2=true;
   for(const k of ['alumnos','ppas','registros','notas'])S[k]=S[k]||[];
-  S.fichas=S.fichas||{};S.grupoTexto=S.grupoTexto||{};
+  S.fichas=S.fichas||{};S.grupoTexto=S.grupoTexto||{};S.asis=S.asis||{};
+  if(!Array.isArray(S.cfg.trims))S.cfg.trims=[{},{},{}];
   S.ppas.forEach(p=>{p.pas=p.pas||[];p.campos=p.campos||[];p.pas.forEach(pa=>{if(!Array.isArray(pa.discs))pa.discs=pa.disc?[pa.disc]:[]})});
   S.notas.forEach(n=>{if(!NOTA_CAT[n.cat])n.cat='socioemocional'});
   CACHE={};
@@ -559,12 +581,13 @@ const Store={mode:'loading',db:null,base:null,q:{},
   },
   async loadDb(){
     const col=n=>this.base.collection(n).limit(1000).get();
-    const [g,r,n,f,p]=await Promise.all([this.base.get(),col('registros'),col('notas'),col('fichas'),col('ppas')]);
+    const [g,r,n,f,p,as]=await Promise.all([this.base.get(),col('registros'),col('notas'),col('fichas'),col('ppas'),col('asistencia')]);
     if(g.exists){const d=clone(g.data());S.cfg=d.cfg||S.cfg;S.alumnos=d.alumnos||[];S.grupoTexto=d.grupoTexto||{};S.ejemplo=!!d.ejemplo}
     S.registros=r.docs.map(x=>({...clone(x.data()),id:x.id}));
     S.notas=n.docs.map(x=>({...clone(x.data()),id:x.id}));
     S.ppas=p.docs.map(x=>({...clone(x.data()),id:x.id}));
     S.fichas={};f.docs.forEach(x=>S.fichas[x.id]=clone(x.data()));
+    S.asis={};as.docs.forEach(x=>{S.asis[x.id]=clone(x.data()).d||{}});
   },
   saveLocal:debounce(()=>{if(!LS.set('tsf-data',S))toast('El navegador no permitió guardar. Descarga un respaldo.');Sync.cambio()},400),
   put(path,data){
@@ -588,16 +611,19 @@ const Store={mode:'loading',db:null,base:null,q:{},
   nota(n){return this.mode==='db'?this.put(this.p('notas',n.id),n):this.put()},
   delNota(id){return this.mode==='db'?this.del(this.p('notas',id)):this.del()},
   ppa(P){return this.mode==='db'?this.put(this.p('ppas',P.id),P):this.put()},
+  asis(ym){if(this.mode!=='db')return this.put();return S.asis[ym]?this.put(this.p('asistencia',ym),{d:S.asis[ym]}):this.del(this.p('asistencia',ym))},
   delPpa(id){return this.mode==='db'?this.del(this.p('ppas',id)):this.del()},
   ficha(aid){deb('f'+aid,()=>{(this.mode==='db'?this.put(this.p('fichas',aid),S.fichas[aid]||{}):this.put()).then(()=>setStatus('Guardado')).catch(()=>{})},800);setStatus('Guardando…')},
   async bulk(tasks){let i=0;for(const t of tasks){await t();i++;if(i%8===0)toast('Guardando '+i+' de '+tasks.length+'…')}},
   async replaceAll(next){
-    const old={registros:S.registros.map(x=>x.id),notas:S.notas.map(x=>x.id),ppas:S.ppas.map(x=>x.id),fichas:Object.keys(S.fichas)};
+    const old={registros:S.registros.map(x=>x.id),notas:S.notas.map(x=>x.id),ppas:S.ppas.map(x=>x.id),fichas:Object.keys(S.fichas),asis:Object.keys(S.asis||{})};
     S={...S,...next};normalize();
     if(this.mode!=='db'){this.saveLocal();return}
     const t=[];
     for(const col of ['registros','notas','ppas'])old[col].filter(id=>!S[col].some(x=>x.id===id)).forEach(id=>t.push(()=>this.del(this.p(col,id))));
     old.fichas.filter(id=>!S.fichas[id]).forEach(id=>t.push(()=>this.del(this.p('fichas',id))));
+    old.asis.filter(ym=>!S.asis[ym]).forEach(ym=>t.push(()=>this.del(this.p('asistencia',ym))));
+    Object.keys(S.asis).forEach(ym=>t.push(()=>this.asis(ym)));
     S.ppas.forEach(x=>t.push(()=>this.ppa(x)));
     S.registros.forEach(r=>t.push(()=>this.reg(r)));
     S.notas.forEach(n=>t.push(()=>this.nota(n)));
@@ -615,7 +641,7 @@ const IDB={db(){return this.p||(this.p=new Promise((res,rej)=>{const r=indexedDB
   async get(k){const d=await this.db();return new Promise((res,rej)=>{const r=d.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
   async set(k,v){const d=await this.db();return new Promise((res,rej)=>{const t=d.transaction('kv','readwrite'),o=t.objectStore('kv');v===undefined?o.delete(k):o.put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}};
 const ARCH_DRIVE='Bitacora_datos.json',DIAS_RESP=30,RESP_RX=/^Bitacora_\d{4}-\d\d-\d\d\.json$/;
-const datosS=()=>({cfg:S.cfg,alumnos:S.alumnos,ppas:S.ppas,registros:S.registros,notas:S.notas,fichas:S.fichas,grupoTexto:S.grupoTexto,ejemplo:!!S.ejemplo});
+const datosS=()=>({cfg:S.cfg,alumnos:S.alumnos,ppas:S.ppas,registros:S.registros,notas:S.notas,fichas:S.fichas,grupoTexto:S.grupoTexto,asis:S.asis,ejemplo:!!S.ejemplo});
 async function escribirArch(dir,nombre,txt){const fh=await dir.getFileHandle(nombre,{create:true});const w=await fh.createWritable();await w.write(txt);await w.close()}
 const fechaHora=iso=>{if(!iso)return '';const d=new Date(iso);return fmtF(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))+', '+d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})};
 const errNom=(name,msg)=>{const e=new Error(msg||name);e.name=name;return e};
@@ -773,7 +799,7 @@ const Sync={B:null,est:'off',err:'',busy:null,otra:false,t:null,remoto:null,
   },
   cargar(r){
     const d=r.datos;
-    S={cfg:d.cfg,alumnos:d.alumnos,ppas:d.ppas||[],registros:d.registros||[],notas:d.notas||[],fichas:d.fichas||{},grupoTexto:d.grupoTexto||{},ejemplo:!!d.ejemplo};normalize();
+    S={cfg:d.cfg,alumnos:d.alumnos,ppas:d.ppas||[],registros:d.registros||[],notas:d.notas||[],fichas:d.fichas||{},grupoTexto:d.grupoTexto||{},asis:d.asis||{},ejemplo:!!d.ejemplo};normalize();
     LS.set('tsf-data',S);this.m.local=this.m.base=r.guardado;this.m.ultimo=new Date().toISOString();this.guardarM();this.est='ok';
     U.sel=null;U.fsel=null;U.confirm=null;limpiarModos();if(U.ppaSel&&!S.ppas.some(p=>p.id===U.ppaSel))U.ppaSel=null;
     render();
@@ -1120,6 +1146,7 @@ function resumenAl(aid,ts){
     proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(p=>{const s=scorePPA(aid,p);return {ppa:p.nombre,promedio:s==null?null:+f1(s)}}).filter(x=>x.promedio!=null),
     cumplimiento:{evidencias:st.asig,entregadas:st.ent,porcentaje:st.pct},
     participaciones:{total:st.part,ideas:st.pk.i,exposiciones:st.pk.e,voluntarias:st.pk.v,promedioDelGrupo:+f1(partGrupo(ts))},
+    asistencia:(x=>x.hab?{diasConLista:x.hab,asistencias:x.A,faltas:x.F,justificadas:x.J,porcentaje:x.pct,faltasSeguidasActuales:asRacha(aid)}:undefined)(asTot(aid,asFechas(f=>ts.includes(trimDe(f))))),
     notasDocente:notasDe(aid,ts).map(n=>({tipo:NOTA_CAT[n.cat],texto:n.texto}))};
 }
 async function redactar(prompt,ta,btn){
@@ -1467,7 +1494,7 @@ async function exportarRep(kind,rep,btn){
 function exportar(kind,P,pa,btn){if(!P)return;CACHE={};return exportarRep(kind,pa?reportPA(P,pa):reportPPA(P),btn)}
 
 /* ---------- Vistas ---------- */
-const VIEWS=[['inicio','Inicio'],['registrar','Registrar'],['proyectos','Proyectos'],['bitacora','Bitácora'],['trimestre','Evaluación trimestral'],['fichas','Fichas descriptivas'],['grupo','Grupo'],['ajustes','Ajustes']];
+const VIEWS=[['inicio','Inicio'],['registrar','Registrar'],['asistencia','Asistencia'],['proyectos','Proyectos'],['bitacora','Bitácora'],['trimestre','Evaluación trimestral'],['fichas','Fichas descriptivas'],['grupo','Grupo'],['ajustes','Ajustes']];
 function header(){
   const c=S.cfg;
   $('#h-title').textContent=(c.grado||c.grupo)?`${c.grado}° ${c.grupo}${c.escuela?' · '+c.escuela:''}`:(c.escuela||'Mi grupo');
@@ -1910,6 +1937,7 @@ function vTrimestre(){
   return `<section class="panel flat"><div class="sec-h"><h2>Evaluación del trimestre ${t}</h2><div class="row"><button class="btn sm" data-act="csvTrim">Descargar concentrado (CSV)</button><button class="btn sm" data-act="htmlTrim">Descargar reporte con observaciones</button></div></div>
   <p class="lead">Calificación de 5 a 10 ${modo==='disc'?'por disciplina':'por campo formativo'}. El número grande es la calificación; el pequeño, el promedio ponderado de las evidencias del trimestre. Ajústala con tu juicio docente en el detalle; las ajustadas llevan *. Toca un alumno para ver su desglose y redactar su observación.</p>
   ${ds.length?`<div class="chips"><button class="chip ${modo==='campo'?'on':''}" data-act="tmode" data-k="campo">Por campo formativo</button><button class="chip ${modo==='disc'?'on':''}" data-act="tmode" data-k="disc">Por disciplina</button></div>`:''}</section>
+  ${reportesHTML(t)}
   ${tabla}
   ${U.sel?detalleAl(U.sel,t):''}`;
 }
@@ -1950,7 +1978,8 @@ function vFichas(){
     <div class="tw"><table><thead><tr><th>Campo formativo / disciplina</th><th class="c">T1</th><th class="c">T2</th><th class="c">T3</th><th class="c">Promedio final</th></tr></thead><tbody>${tr}
       <tr><td><b>Promedio general</b></td><td></td><td></td><td></td><td class="c">${gnum(finalAl(aid),'cal')}</td></tr>
       <tr><td class="muted">Cumplimiento de evidencias</td>${[1,2,3].map(t=>{const s=stats(aid,t);return `<td class="c">${s.pct==null?'—':s.pct+'%'}</td>`}).join('')}<td></td></tr>
-      <tr><td class="muted">Participaciones registradas</td>${[1,2,3].map(t=>{const s=stats(aid,t);return `<td class="c">${s.part}${s.pk.i+s.pk.e+s.pk.v?`<br><small class="muted">I ${s.pk.i} · E ${s.pk.e} · V ${s.pk.v}</small>`:''}</td>`}).join('')}<td></td></tr></tbody></table></div>
+      <tr><td class="muted">Participaciones registradas</td>${[1,2,3].map(t=>{const s=stats(aid,t);return `<td class="c">${s.part}${s.pk.i+s.pk.e+s.pk.v?`<br><small class="muted">I ${s.pk.i} · E ${s.pk.e} · V ${s.pk.v}</small>`:''}</td>`}).join('')}<td></td></tr>
+      <tr><td class="muted">Asistencia</td>${[1,2,3].map(t=>{const x=asTot(aid,asFechasTrim(t));return `<td class="c">${x.pct==null?'—':x.pct+'%'}${x.hab?`<br><small class="muted">F ${x.F} · J ${x.J}</small>`:''}</td>`}).join('')}<td></td></tr></tbody></table></div>
     ${fichaExtrasHTML(aid)}
     <div class="row"><button class="btn" data-act="prellenar" data-aid="${aid}">Prellenar apartados vacíos</button><button class="btn ai" data-act="fichaIA" data-aid="${aid}" ${U.fg.prog?'disabled':''}>✦ Redactar esta ficha con IA</button><button class="btn sm ghost" data-act="iaAbrirAl" data-aid="${aid}">Preguntar al asistente</button><span class="spacer"></span><span class="status" data-status></span></div>
     <label class="fld"><span>Síntesis descriptiva</span><textarea id="f-sintesis" data-inp="ficha" data-aid="${aid}" data-k="sintesis" placeholder="Párrafo que resume quién es el alumno como aprendiz: logros, retos y cómo aprende mejor.">${esc(f.sintesis||'')}</textarea></label>
@@ -1986,7 +2015,11 @@ function vAjustes(){
   const c=S.cfg,sum=TIPOS.reduce((s,t)=>s+pesoDe(t.k),0);
   const inp=(k,l,ph='')=>`<label class="fld"><span>${l}</span><input id="cfg-${k}" data-inp="cfg" data-k="${k}" value="${esc(c[k])}" placeholder="${ph}"></label>`;
   const ex=S.ejemplo?`<section class="panel"><h3>Grupo de ejemplo</h3><p class="lead">Elimina todos los datos de ejemplo para empezar con tu grupo real.</p><div class="row">${confirmBtn('borrarTodo','x','Quitar datos de ejemplo')}</div></section>`:'';
-  return `${ex}<section class="panel"><h2>Datos del grupo</h2><div class="grid2">${inp('escuela','Escuela','Telesecundaria …')}${inp('cct','CCT','')}${inp('localidad','Localidad / municipio')}${inp('docente','Docente de grupo')}${inp('director','Director(a) escolar','Aparece en las firmas')}${inp('grado','Grado','1, 2 o 3')}${inp('grupo','Grupo','A')}${inp('ciclo','Ciclo escolar')}</div><span class="status" data-status></span></section>
+  return `${ex}<section class="panel"><h2>Datos de la escuela y del grupo</h2><p class="lead">Aparecen en el encabezado y las firmas de todos los documentos.</p><div class="grid2">${inp('escuela','Escuela','ETV. …')}${inp('cct','C.C.T.','27ETV0000X')}${inp('localidad','Ejido o localidad','Ejido …')}${inp('municipio','Municipio')}${inp('estado','Estado','Tabasco')}${inp('zona','Zona escolar','27')}${inp('sector','Sector','05')}${inp('director','Director(a) escolar','Nombre con grado: Dr., Mtro., Lic.')}${inp('docente','Docente frente a grupo','Nombre con grado: Lic., Profr.')}${inp('grado','Grado','1, 2 o 3')}${inp('grupo','Grupo','A')}</div><span class="status" data-status></span></section>
+  <section class="panel"><h2>Ciclo escolar</h2><p class="lead">Todos los documentos llevan este ciclo. Si escribes las fechas de cada trimestre según el calendario oficial, la asistencia y los reportes se acomodan en el trimestre correcto; si las dejas vacías, se toma por mes (agosto a noviembre, diciembre a marzo y abril a julio).</p>
+    <div class="grid2" style="grid-template-columns:minmax(0,220px)">${inp('ciclo','Ciclo escolar','2026-2027')}</div>
+    <div class="grid2">${[0,1,2].map(i=>{const x=(c.trims||[])[i]||{};return `<div class="fld"><span>${['Primer','Segundo','Tercer'][i]} trimestre</span><div class="row" style="flex-wrap:nowrap"><input type="date" id="tr-${i}-ini" data-chg="trimF" data-i="${i}" data-k="ini" value="${esc(x.ini||'')}" aria-label="Inicio del ${ORD[i+1]} trimestre"><span class="muted">a</span><input type="date" id="tr-${i}-fin" data-chg="trimF" data-i="${i}" data-k="fin" value="${esc(x.fin||'')}" aria-label="Fin del ${ORD[i+1]} trimestre"></div></div>`}).join('')}</div>
+    <div class="hj-sep"><b>Al terminar el ciclo</b><p class="lead">Descarga un respaldo completo del ciclo actual y deja la app lista para el siguiente con los mismos alumnos y datos de la escuela; borra proyectos, valoraciones, notas, fichas y asistencia. Después puedes ajustar el grado y la lista de alumnos.</p><div class="row">${confirmBtn('nuevoCiclo','x','Cerrar ciclo e iniciar el siguiente')}</div></div></section>
   <section class="panel"><div class="sec-h"><h2>Alumnos</h2><button class="btn sm" data-act="ordenar">Ordenar A–Z</button></div>
     <label class="fld"><span>Agregar alumnos · uno por renglón (Apellido paterno, materno, nombre)</span><textarea id="nuevos" style="min-height:90px" placeholder="García López Ana Sofía&#10;Hernández Cruz Luis Ángel"></textarea></label>
     <div class="row"><button class="btn primary" data-act="addAl">Agregar</button>${!S.alumnos.length?'<button class="btn" data-act="ejemplo">Cargar grupo de ejemplo</button>':''}</div>
@@ -2011,7 +2044,7 @@ function render(){
   CACHE={};header();
   if(U.view!=='registrar'&&VOZ.on)vozDetener();
   if(Store.mode==='loading'){$('#main').innerHTML='<div class="panel empty"><p class="muted">Cargando tu grupo…</p></div>';saveBar();return}
-  const v={inicio:vInicio,registrar:vRegistrar,proyectos:vProyectos,bitacora:vBitacora,trimestre:vTrimestre,fichas:vFichas,grupo:vGrupo,ajustes:vAjustes}[U.view]||vRegistrar;
+  const v={inicio:vInicio,registrar:vRegistrar,asistencia:vAsistencia,proyectos:vProyectos,bitacora:vBitacora,trimestre:vTrimestre,fichas:vFichas,grupo:vGrupo,ajustes:vAjustes}[U.view]||vRegistrar;
   $('#main').innerHTML=v();saveBar();
 }
 function modal(h){$('#modal').innerHTML=`<div class="modal" data-act="bg"><div class="box" role="dialog" aria-modal="true">${h}</div></div>`}
@@ -2177,7 +2210,7 @@ const A={
   baja(b){const a=al(b.dataset.aid);a.activo=a.activo===false;Store.grupo();render()},
   discReset(){S.cfg.disciplinas=null;Store.grupo();render();toast('Lista de disciplinas restablecida')},
   backup(){bajar(`Respaldo_bitacora_${grupoTag()}_${hoy()}.json`,JSON.stringify({app:'bitacora-telesecundaria',version:4,fecha:hoy(),...S},null,1))},
-  async doImport(){const d=U.pendingImport;U.pendingImport=null;toast('Restaurando…');await Store.replaceAll({cfg:d.cfg,alumnos:d.alumnos,ppas:d.ppas||[],registros:d.registros||[],notas:d.notas||[],fichas:d.fichas||{},grupoTexto:d.grupoTexto||{},ejemplo:!!d.ejemplo});render();toast('Respaldo restaurado')},
+  async doImport(){const d=U.pendingImport;U.pendingImport=null;toast('Restaurando…');await Store.replaceAll({cfg:d.cfg,alumnos:d.alumnos,ppas:d.ppas||[],registros:d.registros||[],notas:d.notas||[],fichas:d.fichas||{},grupoTexto:d.grupoTexto||{},asis:d.asis||{},ejemplo:!!d.ejemplo});render();toast('Respaldo restaurado')},
   noImport(){U.pendingImport=null;render()},
   /* respaldo automático en Drive */
   async syncVincular(){
@@ -2203,7 +2236,11 @@ const A={
     Sync.remoto=null;Sync.m.base=r.guardado;Sync.m.local=new Date().toISOString();Sync.guardarM();Sync.est='ok';
     await Sync.revisar();toast('Se conservó la versión de este equipo. La otra quedó en «Respaldos».')},
   async ejemplo(){if(S.alumnos.length||U.busy)return;U.busy=true;toast('Cargando grupo de ejemplo…');await Store.replaceAll(ejemploData());U.busy=false;U.view='proyectos';U.trim=1;U.ppaSel='ejppa1';U.paSel='resumen';limpiarModos();U.draft=newDraft();LS.set('tsf-draft',U.draft);render();toast('Grupo de ejemplo listo')},
-  async borrarTodo(){U.confirm=null;toast('Quitando datos de ejemplo…');await Store.replaceAll({cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},ejemplo:false});U.draft=newDraft();LS.set('tsf-draft',U.draft);U.sel=null;U.fsel=null;U.ppaSel=null;limpiarModos();render();toast('Listo. Agrega a tus alumnos para comenzar.')},
+  async nuevoCiclo(){U.confirm=null;const c=S.cfg,act=c.ciclo||'',m=act.match(/(\d{4})\D+(\d{4})/),sig=m?(+m[1]+1)+'-'+(+m[2]+1):act;
+    await bajar(`Respaldo_ciclo_${fname(act||'anterior')}_${grupoTag()}.json`,JSON.stringify({app:'bitacora-telesecundaria',version:5,fecha:hoy(),...S},null,1));
+    await Store.replaceAll({cfg:{...clone(c),ciclo:sig,trims:[{},{},{}]},alumnos:S.alumnos,ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:!!S.ejemplo});
+    U.trim=1;LS.set('tsf-trim',1);U.sel=U.fsel=U.ppaSel=null;limpiarModos();U.draft=newDraft();LS.set('tsf-draft',U.draft);render();toast('Ciclo '+sig+' listo. Se descargó el respaldo del ciclo '+act+'.')},
+  async borrarTodo(){U.confirm=null;toast('Quitando datos de ejemplo…');await Store.replaceAll({cfg:clone(DEF_CFG),alumnos:[],ppas:[],registros:[],notas:[],fichas:{},grupoTexto:{},asis:{},ejemplo:false});U.draft=newDraft();LS.set('tsf-draft',U.draft);U.sel=null;U.fsel=null;U.ppaSel=null;limpiarModos();render();toast('Listo. Agrega a tus alumnos para comenzar.')},
   /* proyectos */
   newPPA(){U.view='proyectos';LS.set('tsf-view','proyectos');limpiarModos();U.ppaForm=null;U.elegirTipo=true;render();irA('tipo-nuevo')},
   tipoCancel(){U.elegirTipo=false;render()},
@@ -2278,6 +2315,7 @@ const CHG={
   ifVt(e){if(U.instForm)U.instForm.vt=e.target.value},
   instAlumno(e){U.instAid=e.target.value;render()},
   filtroPPA(e){U.filtroPPA=e.target.value;render()},
+  trimF(e){const i=+e.target.dataset.i,k=e.target.dataset.k;S.cfg.trims=S.cfg.trims||[{},{},{}];S.cfg.trims[i]={...(S.cfg.trims[i]||{}),[k]:e.target.value};CACHE={};setStatus('Guardando…');Store.grupo()},
   ajuste(e){const aid=e.target.dataset.aid,f=fichaDe(aid),k='t'+U.trim;f[k]=f[k]||{};f[k].ajuste=f[k].ajuste||{};
     if(e.target.value==='')delete f[k].ajuste[e.target.dataset.k];else f[k].ajuste[e.target.dataset.k]=+e.target.value;Store.ficha(aid);render()},
   ajusteD(e){const aid=e.target.dataset.aid,f=fichaDe(aid),k='t'+U.trim,s=slug(e.target.dataset.k);f[k]=f[k]||{};f[k].ajusteD=f[k].ajusteD||{};
@@ -2429,6 +2467,250 @@ document.addEventListener('paste',e=>{ // pegar un bloque copiado de Excel a par
     const x=hjLeer(s);if(x.bad||x.v==null){mal++;return}cambios.push({r:regById(inp.dataset.r),aid:inp.dataset.aid,v:x.v})}));
   hjSet(cambios);toast(`Se pegaron ${pl(cambios.length,'calificación','calificaciones')}`+(mal?` · ${mal} no válidas`:'')+(fuera?` · ${fuera} fuera de la hoja o con 🔒`:''))});
 
+/* ---------- Asistencia ---------- */
+// S.asis['AAAA-MM']['DD'] = {t:1, v:{aid:'F'|'J'}} (lista tomada; sin entrada = asistencia) o {s:'CTE', n:'nota'} (día sin lista)
+const AS_MOT={AO:'Asueto oficial',CTE:'Consejo Técnico Escolar',PE:'Permiso económico del docente',AE:'Actividad escolar fuera del aula',SU:'Suspensión de clases'};
+const MESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],DSEM=['D','L','M','M','J','V','S'];
+const ymDe=f=>f.slice(0,7),nomMes=ym=>{const [y,m]=ym.split('-').map(Number);return MESL[m-1]+' '+y};
+const mesLargo=ym=>{const s=nomMes(ym);return s[0].toUpperCase()+s.slice(1)};
+const fechaLarga=f=>{const [y,m,d]=f.split('-').map(Number);return `${d} de ${MESL[m-1]} de ${y}`};
+const diaSem=f=>{const [y,m,d]=f.split('-').map(Number);return new Date(y,m-1,d).getDay()};
+function diasMes(ym){const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),o=[];for(let d=1;d<=n;d++){const w=new Date(y,m-1,d).getDay();if(w>0&&w<6)o.push(ym+'-'+String(d).padStart(2,'0'))}return o}
+const asDia=f=>(S.asis[ymDe(f)]||{})[f.slice(8)]||null;
+const asTomado=f=>{const r=asDia(f);return !!(r&&r.t&&!r.s)};
+const asVal=(aid,f)=>asTomado(f)?((asDia(f).v||{})[aid]||'A'):null;
+function asTot(aid,fechas){const o={A:0,F:0,J:0,hab:0};fechas.forEach(f=>{const v=asVal(aid,f);if(!v)return;o.hab++;o[v]++});o.pct=o.hab?Math.round(100*o.A/o.hab):null;return o}
+function asFechas(filtro){const o=[];for(const ym of Object.keys(S.asis||{}))for(const dd of Object.keys(S.asis[ym]||{})){const f=ym+'-'+dd;if(!filtro||filtro(f))o.push(f)}return o.sort()}
+const asFechasTrim=t=>asFechas(f=>trimDe(f)===t);
+function asRacha(aid){ // faltas seguidas más recientes (sin contar justificadas)
+  let n=0;const fs=asFechas(asTomado);for(let i=fs.length-1;i>=0;i--){const v=asVal(aid,fs[i]);if(v==='F')n++;else if(v==='A')break}return n}
+function asSet(f,rec){const ym=ymDe(f),dd=f.slice(8);S.asis[ym]=S.asis[ym]||{};if(rec)S.asis[ym][dd]=rec;else delete S.asis[ym][dd];if(!Object.keys(S.asis[ym]).length)delete S.asis[ym];Store.asis(ym)}
+function vAsistencia(){
+  const L=activos();if(!L.length)return sinAlumnos();
+  const u=U.asis||(U.asis={mes:ymDe(hoy()),dia:null});
+  if(u.dia)return asDiaHTML(u.dia);
+  const fs=diasMes(u.mes),tom=fs.filter(asTomado),sinL=fs.filter(f=>asDia(f)&&asDia(f).s),pend=fs.filter(f=>f<=hoy()&&!asDia(f));
+  const tots=L.map(a=>asTot(a.id,fs)),pg=avg(tots.map(x=>x.pct).filter(x=>x!=null));
+  const alertas=L.map(a=>({a,n:asRacha(a.id)})).filter(x=>x.n>=3);
+  const hoyMes=ymDe(hoy())===u.mes&&diaSem(hoy())%6!==0;
+  const celda=(a,f)=>{const r=asDia(f);if(r&&r.s)return '<td class="as-sin"></td>';const v=asVal(a.id,f);
+    return `<td><button class="as-c ${v?v.toLowerCase():'p'}${f>hoy()?' fut':''}" data-act="asCel" data-aid="${a.id}" data-k="${f}" aria-label="${esc(a.nombre)}, ${fechaLarga(f)}: ${v==='F'?'falta':v==='J'?'justificada':v?'asistencia':'sin lista'}">${v==='A'?'•':v||''}</button></td>`};
+  return `<section class="panel flat"><div class="sec-h"><div><div class="eyebrow">Control de asistencia</div><h2>${mesLargo(u.mes)}</h2></div>
+      <div class="row"><button class="btn sm" data-act="asMes" data-k="-1" aria-label="Mes anterior">← ${esc(MESL[(+u.mes.slice(5)+10)%12])}</button><button class="btn sm" data-act="asMes" data-k="1" aria-label="Mes siguiente">${esc(MESL[(+u.mes.slice(5))%12])} →</button>${hoyMes?'<button class="btn sm primary" data-act="asHoy">Pasar lista de hoy</button>':''}<button class="btn sm" data-act="asWord" ${tom.length||sinL.length?'':'disabled'}>Reporte del mes (Word)</button></div></div>
+    <p class="lead">Toca a quien faltó: la primera vez se pasa lista del día con todos presentes y esa casilla queda como falta; vuelve a tocar para cambiar a justificada y luego a asistencia. Toca el número del día para pasar lista alumno por alumno o marcarlo como día sin lista (asueto, CTE, económico, actividad fuera del aula).</p></section>
+  <div class="kpis"><div class="kpi"><b>${tom.length}</b><span>Días con lista de ${fs.length} hábiles</span></div><div class="kpi"><b>${sinL.length}</b><span>Días sin lista${sinL.length?': '+esc(sinL.map(f=>asDia(f).s).join(', ')):''}</span></div><div class="kpi"><b>${pend.length}</b><span>Días pendientes hasta hoy</span></div><div class="kpi"><b>${pg==null?'—':Math.round(pg)+'%'}</b><span>Asistencia del grupo</span></div></div>
+  ${alertas.length?`<div class="banner warn"><b>Atención:</b> ${alertas.map(x=>`${esc(x.a.nombre)} lleva ${x.n} faltas seguidas`).join(' · ')}. Conviene comunicarse con la familia.</div>`:''}
+  <div class="tw as-tw"><table class="mx as-t"><thead><tr><th class="nm">Alumno(a)</th>${fs.map(f=>{const r=asDia(f);return `<th class="${r&&r.s?'sin':''}${f===hoy()?' hoy':''}"><button class="as-h" data-act="asDiaMenu" data-k="${f}" title="${fechaLarga(f)}${r&&r.s?' · '+esc(AS_MOT[r.s]||r.s):''}"><small>${DSEM[diaSem(f)]}</small><b>${+f.slice(8)}</b>${r&&r.s?`<small>${esc(r.s)}</small>`:''}</button></th>`}).join('')}<th class="tt">A</th><th class="tt">F</th><th class="tt">J</th><th class="tt">%</th></tr></thead>
+    <tbody>${L.map((a,i)=>`<tr><td class="nm"><span class="muted">${i+1}.</span> ${esc(a.nombre)}</td>${fs.map(f=>celda(a,f)).join('')}<td class="tt"><b>${tots[i].A}</b></td><td class="tt ${tots[i].F?'tf':''}">${tots[i].F}</td><td class="tt">${tots[i].J}</td><td class="tt"><b class="${tots[i].pct!=null&&tots[i].pct<85?'tf':''}">${tots[i].pct==null?'—':tots[i].pct+'%'}</b></td></tr>`).join('')}</tbody>
+    <tfoot><tr><td class="nm">Asistentes por día</td>${fs.map(f=>`<td>${asTomado(f)?L.filter(a=>asVal(a.id,f)==='A').length:''}</td>`).join('')}<td colspan="4"></td></tr></tfoot></table></div>
+  <p class="hint">• asistencia · F falta · J falta justificada · gris: día sin lista. Los días sin lista no cuentan como faltas. El porcentaje considera solo los días en que pasaste lista.</p>`;
+}
+function asDiaHTML(f){
+  const L=activos(),r=asDia(f),tom=asTomado(f);
+  const nav=d=>{const fs=asFechasNav(f,d);return fs?`data-k="${fs}"`:'disabled'};
+  return `<section class="panel"><div class="sec-h"><div><div class="eyebrow">Pase de lista</div><h2>${esc(fechaLarga(f))}</h2></div>
+      <div class="row"><button class="btn sm" data-act="asIrDia" ${nav(-1)}>← Día anterior</button><button class="btn sm" data-act="asIrDia" ${nav(1)}>Día siguiente →</button><button class="btn sm ghost" data-act="asVolver">Ver el mes</button></div></div>
+    ${r&&r.s?`<div class="banner">Día sin lista: <b>${esc(AS_MOT[r.s]||r.s)}</b>${r.n?' · '+esc(r.n):''}. <button class="btn sm" data-act="asQuitar" data-k="${f}">Quitar y pasar lista</button></div>`
+    :`<div class="row"><button class="btn ${tom?'':'primary'}" data-act="asTodos" data-k="${f}">Todos presentes</button><button class="btn sm ghost" data-act="asDiaMenu" data-k="${f}">Marcar día sin lista…</button><span class="spacer"></span><span class="muted">${tom?`Presentes: ${L.filter(a=>asVal(a.id,f)==='A').length} de ${L.length}`:'Aún no se pasa lista'}</span></div>
+    <div class="as-lista">${L.map((a,i)=>{const v=asVal(a.id,f);return `<div class="st"><span class="n">${i+1}</span><span class="nm">${esc(a.nombre)}</span><div class="seg mini">${[['A','Asistió'],['F','Faltó'],['J','Justificada']].map(([k,n])=>`<button class="${v===k?'on as-'+k.toLowerCase():''}" data-act="asPon" data-aid="${a.id}" data-k="${f}" data-v="${k}" aria-pressed="${v===k}">${n}</button>`).join('')}</div></div>`}).join('')}</div>`}
+  </section>`;
+}
+function asFechasNav(f,d){const [y,m,dd]=f.split('-').map(Number);let x=new Date(y,m-1,dd);for(let i=0;i<10;i++){x.setDate(x.getDate()+d);const w=x.getDay();if(w>0&&w<6){const s=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');return s}}return null}
+function asRender(){const t=$('.as-tw'),x=t?t.scrollLeft:0,y=window.scrollY;render();const n=$('.as-tw');if(n)n.scrollLeft=x;window.scrollTo(0,y)}
+
+/* ---------- Reportes en Word (una página por reporte, gráficas editables) ---------- */
+const RepW=(()=>{
+  const COL={LEN:'9F2241',SPC:'235B4E',ENS:'BC955C',HYC:'1E3A5F'},NIV=v=>v<6?'9F2241':v<8?'BC955C':v<10?'235B4E':'1E3A5F';
+  const AZ='691C32',AZ2='9F2241',CLARO='F3E9EC',GR='F2F2F2',BO='A6A6A6',ROJO='9F2241',W=10800,WL=14400;
+  const R=(t,o={})=>{const p=(o.b?'<w:b/>':'')+(o.i?'<w:i/>':'')+(o.c?`<w:color w:val="${o.c}"/>`:'')+(o.sz?`<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`:'');return String(t??'').split('\n').map((s,i)=>`<w:r>${p?`<w:rPr>${p}</w:rPr>`:''}${i?'<w:br/>':''}<w:t xml:space="preserve">${XE(s)}</w:t></w:r>`).join('')};
+  const P=(runs,o={})=>`<w:p><w:pPr>${o.keep?'<w:keepNext/>':''}${o.shd?`<w:shd w:val="clear" w:color="auto" w:fill="${o.shd}"/>`:''}<w:spacing w:before="${o.before||0}" w:after="${o.after??60}"/>${o.jc?`<w:jc w:val="${o.jc}"/>`:''}${o.sect||''}</w:pPr>${runs}</w:p>`;
+  function T(widths,rows,o={}){const b=o.nob?'w:val="nil"':`w:val="single" w:sz="4" w:space="0" w:color="${BO}"`;
+    let x=`<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((a,c)=>a+c,0)}" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders><w:top ${b}/><w:left ${b}/><w:bottom ${b}/><w:right ${b}/><w:insideH ${b}/><w:insideV ${b}/></w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="30" w:type="dxa"/><w:left w:w="50" w:type="dxa"/><w:bottom w:w="30" w:type="dxa"/><w:right w:w="50" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>`;
+    rows.forEach(row=>{x+=`<w:tr><w:trPr><w:cantSplit/>${row.h?'<w:tblHeader/>':''}${row.alto?`<w:trHeight w:val="${row.alto}" w:hRule="${row.exacto?'exact':'atLeast'}"/>`:''}</w:trPr>`;let ci=0;
+      row.c.forEach(c=>{const sp=c.sp||1,w=widths.slice(ci,ci+sp).reduce((a,v)=>a+v,0);ci+=sp;
+        x+=`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${sp>1?`<w:gridSpan w:val="${sp}"/>`:''}${c.bg?`<w:shd w:val="clear" w:color="auto" w:fill="${c.bg}"/>`:''}${c.vert?'<w:textDirection w:val="btLr"/>':''}<w:vAlign w:val="center"/></w:tcPr>${c.raw||P(R(c.t??'',{b:c.b,c:c.c,sz:c.sz||o.sz}),{jc:c.jc||'center',after:0})}</w:tc>`});x+='</w:tr>'});
+    return x+'</w:tbl>'}
+  let charts=[],nid=10,oFirma=360,ESC={};
+  function escuela(fecha){const c=S.cfg,z=String(c.zona||'').trim(),s=String(c.sector||'').trim();
+    return {nombre:(c.escuela||'Escuela Telesecundaria').toUpperCase(),lugar:[c.localidad,c.municipio,c.estado].map(x=>String(x||'').trim()).filter(Boolean).join(', ').toUpperCase(),
+      cct:String(c.cct||'').toUpperCase(),zona:[z?(/^\d+$/.test(z)?'ZONA ESCOLAR '+z:z.toUpperCase()):'',s?(/^\d+$/.test(s)?'SECTOR '+s:s.toUpperCase()):''].filter(Boolean).join(' · '),
+      grupo:`${c.grado||''}° "${c.grupo||''}"`,ciclo:c.ciclo||'',director:String(c.director||'').toUpperCase(),docente:String(c.docente||'').toUpperCase(),fecha:fechaLarga(fecha||hoy()).toUpperCase()}}
+  const nota=t=>P(R(t,{i:true,sz:15,c:'595959'}),{after:40});
+  function encab(titulo,o={}){
+    return P(R(ESC.nombre,{b:true,sz:26,c:AZ}),{jc:'center',after:0})+(ESC.lugar?P(R(ESC.lugar,{sz:18}),{jc:'center',after:0}):'')
+      +P(R([ESC.cct?'C.C.T. '+ESC.cct:'',ESC.zona].filter(Boolean).join('  ·  ')||' ',{sz:18}),{jc:'center',after:0})
+      +P(R(titulo,{b:true,sz:22,c:'FFFFFF'}),{shd:AZ,jc:'center',before:80,after:20})
+      +P(R(`GRADO Y GRUPO: ${ESC.grupo}     ·     CICLO ESCOLAR ${ESC.ciclo}     ·     ${o.fecha||'FECHA: '+ESC.fecha}`,{b:true,sz:17,c:'404040'}),{jc:'center',after:120})}
+  function firmas(ancho,tutor){const h=Math.floor(ancho/2),L='_______________________________________';
+    const izq=tutor?['MADRE, PADRE O TUTOR','']:['DIRECTOR ESCOLAR',ESC.director];
+    return P('',{before:oFirma,after:0,keep:true})+T([h,ancho-h],[{c:[{t:L},{t:L}]},{c:[{t:izq[0],b:true,sz:17},{t:'DOCENTE FRENTE A GRUPO',b:true,sz:17}]},{c:[{t:izq[1],sz:17},{t:ESC.docente,sz:17}]}],{nob:true})}
+  function chart({titulo,cats,series,horiz,min=5,max=10,unit=1,leyenda,gap=60,apilado,pct,fmt,dentro}){
+    const n=charts.length+1,col=i=>String.fromCharCode(66+i);
+    const strC=(f,arr)=>`<c:strRef><c:f>${f}</c:f><c:strCache><c:ptCount val="${arr.length}"/>${arr.map((v,i)=>`<c:pt idx="${i}"><c:v>${XE(v)}</c:v></c:pt>`).join('')}</c:strCache></c:strRef>`;
+    const numC=(f,arr)=>`<c:numRef><c:f>${f}</c:f><c:numCache><c:formatCode>${pct?'0%':'0.0'}</c:formatCode><c:ptCount val="${arr.length}"/>${arr.map((v,i)=>v==null?'':`<c:pt idx="${i}"><c:v>${v}</c:v></c:pt>`).join('')}</c:numCache></c:numRef>`;
+    const fill=c=>`<c:spPr><a:solidFill><a:srgbClr val="${c}"/></a:solidFill><a:ln><a:noFill/></a:ln></c:spPr>`;
+    const txt=(sz,b,c='404040')=>`<c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="${sz}" b="${b?1:0}"><a:solidFill><a:srgbClr val="${c}"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:pPr><a:endParaRPr lang="es-MX"/></a:p></c:txPr>`;
+    const ser=series.map((s,k)=>`<c:ser><c:idx val="${k}"/><c:order val="${k}"/><c:tx>${strC(`Hoja1!$${col(k)}$1`,[s.n])}</c:tx>${fill(s.c)}<c:invertIfNegative val="0"/>${(s.pts||[]).map((c,i)=>`<c:dPt><c:idx val="${i}"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/>${fill(c)}</c:dPt>`).join('')}<c:dLbls><c:numFmt formatCode="${fmt||(pct?'0%':apilado?'0':'0.0')}" sourceLinked="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>${txt(apilado?800:900,true,apilado||dentro?'FFFFFF':'262626')}<c:dLblPos val="${apilado?'ctr':dentro?'inEnd':'outEnd'}"/><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls><c:cat>${strC(`Hoja1!$A$2:$A$${cats.length+1}`,cats)}</c:cat><c:val>${numC(`Hoja1!$${col(k)}$2:$${col(k)}$${cats.length+1}`,s.v)}</c:val></c:ser>`).join('');
+    const xml=`${XML_H}<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><c:lang val="es-MX"/><c:roundedCorners val="0"/><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1400" b="1"><a:solidFill><a:srgbClr val="${AZ}"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:pPr><a:r><a:rPr lang="es-MX" sz="1400" b="1"><a:solidFill><a:srgbClr val="${AZ}"/></a:solidFill><a:latin typeface="Arial"/></a:rPr><a:t>${XE(titulo)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/>
+      <c:plotArea><c:layout/><c:barChart><c:barDir val="${horiz?'bar':'col'}"/><c:grouping val="${apilado?'stacked':'clustered'}"/><c:varyColors val="0"/>${ser}<c:gapWidth val="${gap}"/>${apilado?'<c:overlap val="100"/>':''}<c:axId val="500"/><c:axId val="501"/></c:barChart>
+      <c:catAx><c:axId val="500"/><c:scaling><c:orientation val="${horiz?'maxMin':'minMax'}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz?'l':'b'}"/><c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln w="9525"><a:solidFill><a:srgbClr val="808080"/></a:solidFill></a:ln></c:spPr>${txt(horiz?(cats.length>22?700:850):900,false)}<c:crossAx val="501"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:tickLblSkip val="1"/><c:noMultiLvlLbl val="0"/></c:catAx>
+      <c:valAx><c:axId val="501"/><c:scaling><c:orientation val="minMax"/>${max!=null?`<c:max val="${max}"/>`:''}${min!=null?`<c:min val="${min}"/>`:''}</c:scaling><c:delete val="0"/><c:axPos val="${horiz?'t':'l'}"/><c:majorGridlines><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="D9D9D9"/></a:solidFill><a:prstDash val="dash"/></a:ln></c:spPr></c:majorGridlines><c:numFmt formatCode="${pct?'0%':'0'}" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln><a:noFill/></a:ln></c:spPr>${txt(900,false)}<c:crossAx val="500"/><c:crosses val="${horiz?'max':'autoZero'}"/><c:crossBetween val="between"/>${unit?`<c:majorUnit val="${unit}"/>`:''}</c:valAx><c:spPr><a:noFill/></c:spPr></c:plotArea>${leyenda?`<c:legend><c:legendPos val="b"/><c:overlay val="0"/>${txt(900,false)}</c:legend>`:''}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
+      <c:spPr><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="BFBFBF"/></a:solidFill></a:ln></c:spPr><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr><a:latin typeface="Arial"/></a:defRPr></a:pPr><a:endParaRPr lang="es-MX"/></a:p></c:txPr><c:externalData r:id="rId1"><c:autoUpdate val="0"/></c:externalData></c:chartSpace>`;
+    charts.push({n,xml,cats,series});return n}
+  const EMU=tw=>Math.round(tw*635);
+  const CHART=(n,ancho,alto)=>P(`<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${EMU(ancho)}" cy="${EMU(alto)}"/><wp:docPr id="${nid++}" name="Gráfico ${n}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rIdC${n}"/></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`,{jc:'center',after:60});
+  async function libro(Z,ch){ // libro de Excel incrustado: permite «Editar datos» en Word
+    const z=new Z(),cl=i=>String.fromCharCode(65+i),is=t=>`<is><t>${XE(t)}</t></is>`;
+    let rows=`<row r="1"><c r="A1" t="inlineStr">${is('')}</c>${ch.series.map((s,k)=>`<c r="${cl(k+1)}1" t="inlineStr">${is(s.n)}</c>`).join('')}</row>`;
+    ch.cats.forEach((c,i)=>{rows+=`<row r="${i+2}"><c r="A${i+2}" t="inlineStr">${is(c)}</c>${ch.series.map((s,k)=>s.v[i]==null?'':`<c r="${cl(k+1)}${i+2}"><v>${s.v[i]}</v></c>`).join('')}</row>`});
+    z.file('[Content_Types].xml',`${XML_H}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`);
+    z.file('_rels/.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('officeDocument')}" Target="xl/workbook.xml"/></Relationships>`);
+    z.file('xl/workbook.xml',`${XML_H}<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Hoja1" sheetId="1" r:id="rId1"/></sheets></workbook>`);
+    z.file('xl/_rels/workbook.xml.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('worksheet')}" Target="worksheets/sheet1.xml"/></Relationships>`);
+    z.file('xl/worksheets/sheet1.xml',`${XML_H}<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows}</sheetData></worksheet>`);
+    return z.generateAsync({type:'uint8array'})}
+  const sect=o=>`<w:sectPr><w:footerReference w:type="default" r:id="rIdF"/>${o==='h'?'<w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/><w:pgMar w:top="600" w:right="720" w:bottom="500" w:left="720" w:header="300" w:footer="300" w:gutter="0"/>':'<w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="600" w:right="720" w:bottom="600" w:left="720" w:header="300" w:footer="300" w:gutter="0"/>'}</w:sectPr>`;
+  const salto='<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>';
+  async function armar(pags){ // pags=[{o:'v'|'h',x}] → blob .docx
+    let body='',cur=null;pags.forEach((pg,i)=>{if(i){body+=pg.o!==cur?P('',{after:0,sect:sect(cur)}):salto}cur=pg.o;body+=pg.x});
+    const Z=await loadZip(),z=new Z();
+    z.file('[Content_Types].xml',`${XML_H}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="xlsx" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>${charts.map(c=>`<Override PartName="/word/charts/chart${c.n}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>`).join('')}</Types>`);
+    z.file('_rels/.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('officeDocument')}" Target="word/document.xml"/></Relationships>`);
+    z.file('word/_rels/document.xml.rels',`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdS" Type="${REL('styles')}" Target="styles.xml"/><Relationship Id="rIdF" Type="${REL('footer')}" Target="footer1.xml"/>${charts.map(c=>`<Relationship Id="rIdC${c.n}" Type="${REL('chart')}" Target="charts/chart${c.n}.xml"/>`).join('')}</Relationships>`);
+    z.file('word/styles.xml',`${XML_H}<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="18"/><w:szCs w:val="18"/><w:lang w:val="es-MX"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="60" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`);
+    z.file('word/footer1.xml',`${XML_H}<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="right"/></w:pPr>${R('Valoración formativa · '+ESC.nombre+' · Página ',{sz:13,c:'8C8C8C'})}<w:fldSimple w:instr=" PAGE ">${R('1',{sz:13,c:'8C8C8C'})}</w:fldSimple></w:p></w:ftr>`);
+    for(const c of charts){z.file(`word/charts/chart${c.n}.xml`,c.xml);z.file(`word/charts/_rels/chart${c.n}.xml.rels`,`${XML_H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL('package')}" Target="../embeddings/Libro${c.n}.xlsx"/></Relationships>`);z.file(`word/embeddings/Libro${c.n}.xlsx`,await libro(Z,c))}
+    z.file('word/document.xml',`${XML_H}<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${body}${sect(cur)}</w:body></w:document>`);
+    return z.generateAsync({type:'blob',compression:'DEFLATE',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})}
+  const ini=fecha=>{charts=[];nid=10;oFirma=360;ESC=escuela(fecha)};
+  const f1n=x=>x==null?'—':r1(x).toFixed(1);
+  /* datos del trimestre: columnas por disciplina (o por campo formativo si no hay disciplinas) */
+  function datosT(t){const L=activos();let cols=discsTrim(t).map(d=>({n:d.n,k:d.c,cal:(aid,tt)=>califD(aid,d.n,tt).cal}));
+    if(!cols.length)cols=CAMPOS.map(c=>({n:c.n,k:c.k,cal:(aid,tt)=>calif(aid,c.k,tt).cal}));
+    const CAL=L.map(a=>cols.map(c=>c.cal(a.id,t))),pr=v=>{v=v.filter(x=>x!=null);return v.length?r1(avg(v)):null};
+    return {L,cols,CAL,PA:CAL.map(pr),PD:cols.map((c,j)=>pr(CAL.map(r=>r[j])))}}
+  const TIT=t=>`${ORD[t].toUpperCase()} TRIMESTRE`;
+  /* páginas */
+  function pConcentrado(D,t){const {L,cols,CAL,PA,PD}=D,wn=2700,wp=900,wd=Math.floor((W-wn-wp-400)/cols.length),ws=[400,wn,...cols.map(()=>wd),wp];
+    const grupos=[];cols.forEach(c=>{const g=grupos[grupos.length-1];if(g&&g.k===c.k)g.n++;else grupos.push({k:c.k,n:1})});
+    const h1={h:true,c:[{t:'',bg:'FFFFFF'},{t:'',bg:'FFFFFF'},...grupos.map(g=>({t:nombreCampo(g.k),sp:g.n,b:true,sz:13,c:'FFFFFF',bg:COL[g.k]||AZ})),{t:'',bg:'FFFFFF'}]};
+    const h2={h:true,alto:1500,c:[{t:'No.',b:true,sz:15,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:15,c:'FFFFFF',bg:AZ},...cols.map(c=>({t:c.n.toUpperCase(),b:true,sz:14,c:'FFFFFF',bg:AZ,vert:true})),{t:'PROMEDIO DEL ALUMNO',b:true,sz:13,c:'FFFFFF',bg:AZ2,vert:true}]};
+    const alt=Math.min(330,Math.floor(7900/L.length)),fz=alt>=300?16:alt>=220?14:12;
+    const filas=L.map((a,i)=>({alto:alt,exacto:L.length>22,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:a.nombre.toUpperCase(),sz:a.nombre.length>26?fz-2:fz,jc:'left',bg:i%2?GR:null},...CAL[i].map(v=>({t:v??'—',sz:fz+1,c:v!=null&&v<6?ROJO:null,b:v!=null&&v<6,bg:i%2?GR:null})),{t:f1n(PA[i]),b:true,sz:fz+1,c:PA[i]!=null&&PA[i]<6?ROJO:null,bg:CLARO}]}));
+    const pg=PA.filter(x=>x!=null);
+    const pie={c:[{t:'',bg:CLARO},{t:'PROMEDIO POR DISCIPLINA',b:true,sz:15,jc:'left',bg:CLARO},...PD.map(v=>({t:f1n(v),b:true,sz:16,bg:CLARO})),{t:pg.length?f1n(avg(pg)):'—',b:true,sz:17,c:'FFFFFF',bg:AZ2}]};
+    return {o:'v',x:encab('REPORTE DE CALIFICACIONES DEL '+TIT(t))+T(ws,[h1,h2,...filas,pie])+nota('Calificaciones de 5 a 10. En guinda, calificaciones no aprobatorias. Promedio del alumno y promedio por disciplina con un decimal.')+firmas(W)}}
+  function pAlumnos(D,t){const n=chart({titulo:'PROMEDIO POR ALUMNO · '+TIT(t),cats:D.L.map(a=>a.nombre.toUpperCase()),series:[{n:'Promedio',c:AZ,v:D.PA,pts:D.PA.map(v=>NIV(v??10))}],horiz:true,gap:45});
+    return {o:'v',x:encab('GRÁFICA DE PROMEDIOS POR ALUMNO')+CHART(n,W,9200)+nota('Colores: guinda = 5 · dorado = 6 a 7.9 · verde = 8 a 9.9 · azul = 10. Escala fija de 5 a 10 para comparar trimestres.')+firmas(W)}}
+  function pDisciplinas(D,t){const n=chart({titulo:'PROMEDIO DEL GRUPO POR DISCIPLINA · '+TIT(t),cats:D.cols.map(c=>c.n),series:[{n:'Promedio',c:AZ,v:D.PD,pts:D.cols.map(c=>COL[c.k]||AZ)}],gap:50});
+    const ks=[...new Set(D.cols.map(c=>c.k))];
+    return {o:'v',x:encab('GRÁFICA DE PROMEDIOS POR DISCIPLINA')+CHART(n,W,7600)+T(ks.map(()=>Math.floor(W/ks.length)),[{c:ks.map(k=>({t:'■  '+nombreCampo(k),sz:15,b:true,c:COL[k]||AZ}))}],{nob:true})+nota('Cada color corresponde a un campo formativo.')+firmas(W)}}
+  function pAprob(D,t){const {L,cols,CAL,PD}=D,ap=cols.map((c,j)=>CAL.filter(r=>r[j]!=null&&r[j]>=6).length),ev=cols.map((c,j)=>CAL.filter(r=>r[j]!=null).length),no=ev.map((e,j)=>e-ap[j]);
+    const n=chart({titulo:'APROBACIÓN POR DISCIPLINA (NÚMERO DE ALUMNOS)',cats:cols.map(c=>c.n),series:[{n:'Aprobados (6 a 10)',c:'235B4E',v:ap},{n:'No aprobados (5)',c:'9F2241',v:no.map(x=>x||null)}],apilado:true,min:0,max:L.length,unit:L.length>20?10:5,leyenda:true,gap:50});
+    const tab=T([3800,1750,1750,1750,1750],[{h:true,c:['Disciplina','Aprobados','No aprobados','% aprobación','Promedio'].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},...cols.map((c,j)=>({c:[{t:c.n,jc:'left',sz:16},{t:ap[j],sz:16},{t:no[j],sz:16,c:no[j]?ROJO:null,b:!!no[j]},{t:ev[j]?Math.round(100*ap[j]/ev[j])+'%':'—',sz:16,b:true},{t:f1n(PD[j]),sz:16}]}))]);
+    return {o:'v',x:encab('ÍNDICE DE APROBACIÓN POR DISCIPLINA')+CHART(n,W,cols.length>10?5000:5600)+tab+firmas(W)}}
+  function pDistrib(D){const {L,cols,CAL}=D,pal=['9F2241','C77A5A','BC955C','7FA38F','235B4E','1E3A5F'];
+    const n=chart({titulo:'DISTRIBUCIÓN DE CALIFICACIONES POR DISCIPLINA',cats:cols.map(c=>c.n),series:[5,6,7,8,9,10].map((v,k)=>({n:'Calificación '+v,c:pal[k],v:cols.map((c,j)=>CAL.filter(r=>r[j]===v).length||null)})),apilado:true,min:0,max:L.length,unit:L.length>20?10:5,leyenda:true,gap:45});
+    return {o:'v',x:encab('DISTRIBUCIÓN DE CALIFICACIONES')+CHART(n,W,8600)+nota('Cada barra suma los alumnos del grupo; el número dentro de cada tramo indica cuántos obtuvieron esa calificación.')+firmas(W)}}
+  function pAtencion(D,t){const fs=asFechasTrim(t),hayAs=fs.some(asTomado);
+    const lst=D.L.map((a,i)=>({a,p:D.PA[i],rep:D.cols.filter((c,j)=>D.CAL[i][j]!=null&&D.CAL[i][j]<6).map(c=>c.n),as:hayAs?asTot(a.id,fs):null})).filter(x=>(x.p!=null&&x.p<7)||x.rep.length||(x.as&&x.as.pct!=null&&x.as.pct<85)).sort((a,b)=>(a.p??10)-(b.p??10));
+    const acc=x=>x.rep.length>=3?'Citar a la familia y canalizar':x.rep.length?'Plan de recuperación por disciplina':x.as&&x.as.pct<85?'Dar seguimiento a la asistencia con la familia':'Seguimiento y tutoría entre pares';
+    const ws=hayAs?[400,3000,1000,1000,3000,2400]:[400,3300,1100,3300,2700];
+    const filas=lst.map((x,k)=>({c:[{t:k+1,sz:16},{t:x.a.nombre.toUpperCase(),jc:'left',sz:16},{t:f1n(x.p),b:true,sz:16,c:x.p!=null&&x.p<6?ROJO:null},...(hayAs?[{t:x.as.pct==null?'—':x.as.pct+'%',sz:16,c:x.as.pct!=null&&x.as.pct<85?ROJO:null}]:[]),{t:x.rep.join(', ')||'—',jc:'left',sz:15},{t:acc(x),jc:'left',sz:15}]}));
+    return {o:'v',x:encab('ALUMNOS QUE REQUIEREN ATENCIÓN')+P(R(`Alumnos con promedio menor a 7, con al menos una disciplina no aprobada${hayAs?' o con asistencia menor a 85%':''}. Sirve para el seguimiento con dirección, USAER y familias.`,{sz:17}),{after:120})
+      +(lst.length?T(ws,[{h:true,c:['No.','Alumno(a)','Promedio',...(hayAs?['Asistencia']:[]),'Disciplinas no aprobadas','Acción sugerida'].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},...filas]):P(R('Ningún alumno cumple estos criterios en el trimestre.',{i:true,sz:17}),{after:120}))+P('',{after:120})+firmas(W)}}
+  function pIndividual(D,t,i){const a=D.L[i],tri=[1,2,3].map(tt=>D.cols.map(c=>c.cal(a.id,tt))),mi=tri[t-1];
+    const prom=j=>{const v=tri.map(x=>x[j]).filter(x=>x!=null);return v.length?r1(avg(v)):null};
+    const n=chart({titulo:'CALIFICACIONES POR DISCIPLINA',cats:D.cols.map(c=>c.n),series:[{n:'Alumno(a)',c:AZ,v:mi,pts:D.cols.map(c=>COL[c.k]||AZ)},{n:'Promedio del grupo',c:'A6A6A6',v:D.PD}],leyenda:true,gap:60});
+    const pt=tt=>{const v=tri[tt-1].filter(x=>x!=null);return v.length?f1n(avg(v)):''};
+    const fs=asFechasTrim(t),as=fs.some(asTomado)?asTot(a.id,fs):null,obs=((S.fichas[a.id]||{})['t'+t]||{}).obs||'';
+    const tabla=T([3400,1500,1500,1500,1500,1400],[{h:true,c:['Disciplina','1er trimestre','2° trimestre','3er trimestre','Promedio','Grupo'].map(x=>({t:x,b:true,sz:15,c:'FFFFFF',bg:AZ}))},
+      ...D.cols.map((c,j)=>({c:[{t:c.n,jc:'left',sz:16},...tri.map((x,k)=>({t:x[j]??'',b:k===t-1,sz:16,c:x[j]!=null&&x[j]<6?ROJO:null})),{t:f1n(prom(j)),sz:16},{t:f1n(D.PD[j]),sz:16,c:'7F7F7F'}]})),
+      {c:[{t:'PROMEDIO GENERAL',b:true,jc:'left',sz:16,bg:CLARO},...[1,2,3].map(tt=>({t:pt(tt),b:true,sz:16,bg:CLARO})),{t:(()=>{const v=D.cols.map((c,j)=>prom(j)).filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),b:true,sz:16,bg:CLARO},{t:(()=>{const v=D.PA.filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),sz:16,bg:CLARO,c:'7F7F7F'}]}]);
+    return {o:'v',x:encab('REPORTE INDIVIDUAL DE CALIFICACIONES · '+TIT(t))+T([2000,8800],[{c:[{t:'ALUMNO(A)',b:true,sz:16,c:'FFFFFF',bg:AZ},{t:a.nombre.toUpperCase(),b:true,sz:18,jc:'left'}]}])+P('',{after:80})+tabla
+      +CHART(n,W,D.cols.length>10?3900:4300)
+      +(as?P(R('Asistencia del trimestre: ',{b:true,sz:16})+R(`${as.pct}% · ${as.A} asistencias, ${as.F} faltas y ${as.J} justificadas en ${as.hab} días con lista.`,{sz:16}),{before:40,after:40}):'')
+      +T([W],[{alto:700,c:[{raw:P(R('Observaciones: ',{b:true,sz:16})+R(obs,{sz:16}),{jc:'both',after:0})}]}])+firmas(W,true)}}
+  /* asistencia */
+  function pAsisMes(ym){const L=activos(),fs=diasMes(ym).filter(f=>asDia(f)),tom=fs.filter(asTomado);
+    const tot=L.map(a=>asTot(a.id,fs)),wdd=Math.floor((WL-400-3000-4*700)/Math.max(fs.length,1)),ws=[400,3000,...fs.map(()=>wdd),700,700,700,700];
+    const h1={h:true,c:[{t:'No.',b:true,sz:14,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:14,c:'FFFFFF',bg:AZ},...fs.map(f=>{const r=asDia(f);return {t:DSEM[diaSem(f)]+'\n'+(+f.slice(8))+(r.s?'\n'+r.s:''),b:true,sz:r.s&&r.s.length>2?10:12,c:'FFFFFF',bg:r.s?'7F7F7F':AZ}}),{t:'A',b:true,sz:14,c:'FFFFFF',bg:'235B4E'},{t:'F',b:true,sz:14,c:'FFFFFF',bg:'9F2241'},{t:'J',b:true,sz:14,c:'FFFFFF',bg:'BC955C'},{t:'%',b:true,sz:14,c:'FFFFFF',bg:AZ2}]};
+    const alt=Math.min(300,Math.floor(6000/L.length)),fz=alt>=260?14:alt>=170?12:11;oFirma=L.length>25?160:360;
+    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz},{t:a.nombre.toUpperCase(),jc:'left',sz:fz},...fs.map(f=>{const v=asVal(a.id,f);return v==null?{t:'',bg:'A6A6A6'}:{t:v==='A'?'•':v,sz:fz,b:v!=='A',c:v==='F'?'9F2241':v==='J'?'8A6A2F':'235B4E',bg:v==='F'?'F3D6DC':v==='J'?'F5ECDD':null}}),{t:tot[i].A,sz:fz,b:true},{t:tot[i].F,sz:fz,b:!!tot[i].F,c:tot[i].F?ROJO:null},{t:tot[i].J,sz:fz},{t:tot[i].pct==null?'—':tot[i].pct+'%',sz:fz,b:true,c:tot[i].pct!=null&&tot[i].pct<85?ROJO:null,bg:CLARO}]}));
+    const pd=fs.map(f=>asTomado(f)?L.filter(a=>asVal(a.id,f)==='A').length:null),pcts=tot.map(x=>x.pct).filter(x=>x!=null);
+    const pie={c:[{t:'',bg:CLARO},{t:'ASISTENTES POR DÍA',b:true,sz:13,jc:'left',bg:CLARO},...pd.map(v=>({t:v??'',sz:12,b:true,bg:v==null?'A6A6A6':CLARO})),{t:tot.reduce((s,x)=>s+x.A,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.F,0),sz:13,b:true,bg:CLARO},{t:tot.reduce((s,x)=>s+x.J,0),sz:13,b:true,bg:CLARO},{t:pcts.length?Math.round(avg(pcts))+'%':'—',sz:13,b:true,c:'FFFFFF',bg:AZ2}]};
+    const sinL=fs.filter(f=>asDia(f).s),cods=[...new Set(sinL.map(f=>asDia(f).s))];
+    const claves=R('Claves: ',{b:true,sz:14})+R('• asistencia · F falta · J falta justificada.'+(sinL.length?'   Días sin lista: ':''),{sz:14})+cods.map(k=>R(k,{b:true,sz:14})+R(` ${(AS_MOT[k]||k).toLowerCase()} (${sinL.filter(f=>asDia(f).s===k).map(f=>+f.slice(8)).join(', ')})`,{sz:14})).join(R(' · ',{sz:14}))+R('.',{sz:14});
+    const x=encab('CONTROL DE ASISTENCIA · '+nomMes(ym).toUpperCase(),{fecha:`DÍAS CON LISTA: ${tom.length} · DÍAS HÁBILES DEL MES: ${diasMes(ym).length}`})+T(ws,[h1,...filas,pie])+P(claves,{before:80,after:0})+firmas(WL);
+    oFirma=360;
+    const n1=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+nomMes(ym).toUpperCase(),cats:L.map(a=>a.nombre.toUpperCase()),series:[{n:'% asistencia',c:'235B4E',v:tot.map(x=>x.pct==null?null:x.pct/100),pts:tot.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
+    const n2=chart({titulo:'ASISTENTES POR DÍA',cats:fs.map(f=>(asDia(f).s?asDia(f).s+' ':'')+(+f.slice(8))),series:[{n:'Asistentes',c:AZ,v:pd}],min:0,max:L.length,unit:L.length>20?10:5,gap:40,fmt:'0'});
+    oFirma=200;const g=encab('ASISTENCIA DEL MES · GRÁFICAS')+CHART(n1,W,L.length>20?7600:6200)+CHART(n2,W,3200)+nota('Verde: 95% o más · dorado: 85 a 94% · guinda: menos de 85%. Los días sin lista no cuentan como faltas.')+firmas(W);oFirma=360;
+    return [{o:'h',x},{o:'v',x:g}]}
+  function pAsisTrim(t){const L=activos(),fsT=asFechasTrim(t),meses=[...new Set(fsT.map(ymDe))].sort(),pal=['235B4E','BC955C','1E3A5F','9F2241','7FA38F'];
+    const hab=meses.map(ym=>fsT.filter(f=>ymDe(f)===ym&&asTomado(f)).length),HT=hab.reduce((s,x)=>s+x,0);
+    const TM=L.map(a=>meses.map(ym=>asTot(a.id,fsT.filter(f=>ymDe(f)===ym)))),TT=L.map(a=>asTot(a.id,fsT));
+    const cw=Math.min(560,Math.floor((W-380-2400-2380)/(meses.length*3))),ws=[380,2400,...Array(meses.length*3).fill(cw),620,620,620,520];ws[1]+=W-ws.reduce((a,b)=>a+b,0);
+    const h1={h:true,c:[{t:'',bg:'FFFFFF'},{t:'',bg:'FFFFFF'},...meses.map((ym,k)=>({t:`${MESL[+ym.slice(5)-1].toUpperCase()} (${hab[k]} días)`,sp:3,b:true,sz:13,c:'FFFFFF',bg:pal[k%5]})),{t:`TRIMESTRE (${HT} días)`,sp:4,b:true,sz:13,c:'FFFFFF',bg:AZ2}]};
+    const h2={h:true,c:[{t:'No.',b:true,sz:13,c:'FFFFFF',bg:AZ},{t:'NOMBRE DEL ALUMNO(A)',b:true,sz:13,c:'FFFFFF',bg:AZ},...meses.flatMap(()=>['A','F','J'].map(x=>({t:x,b:true,sz:13,c:'FFFFFF',bg:AZ}))),...['A','F','J','%'].map(x=>({t:x,b:true,sz:13,c:'FFFFFF',bg:AZ2}))]};
+    const alt=Math.min(320,Math.floor(8400/L.length)),fz=alt>=290?15:alt>=220?14:12;
+    const filas=L.map((a,i)=>({alto:alt,exacto:true,c:[{t:i+1,sz:fz,bg:i%2?GR:null},{t:a.nombre.toUpperCase(),jc:'left',sz:fz,bg:i%2?GR:null},...TM[i].flatMap(m=>[{t:m.A,sz:fz,bg:i%2?GR:null},{t:m.F,sz:fz,b:!!m.F,c:m.F?ROJO:null,bg:i%2?GR:null},{t:m.J,sz:fz,bg:i%2?GR:null}]),{t:TT[i].A,b:true,sz:fz,bg:CLARO},{t:TT[i].F,b:true,sz:fz,c:TT[i].F?ROJO:null,bg:CLARO},{t:TT[i].J,b:true,sz:fz,bg:CLARO},{t:TT[i].pct==null?'—':TT[i].pct+'%',b:true,sz:fz,c:TT[i].pct!=null&&TT[i].pct<85?ROJO:null,bg:CLARO}]}));
+    const pm=meses.map((ym,k)=>{const v=TM.map(m=>m[k].pct).filter(x=>x!=null);return v.length?Math.round(avg(v))+'%':'—'}),pt=TT.map(x=>x.pct).filter(x=>x!=null);
+    const pie={c:[{t:'',bg:CLARO},{t:'% DE ASISTENCIA DEL GRUPO',b:true,sz:13,jc:'left',bg:CLARO},...pm.map(p=>({t:p,sp:3,b:true,sz:14,bg:CLARO})),{t:pt.length?Math.round(avg(pt))+'%':'—',sp:4,b:true,sz:14,c:'FFFFFF',bg:AZ2}]};
+    const x=encab('CONCENTRADO DE ASISTENCIA · '+TIT(t))+T(ws,[h1,h2,...filas,pie])+nota('A asistencias · F faltas · J faltas justificadas. Días con lista por mes; no cuentan los días sin lista (asuetos, CTE, permisos económicos y actividades fuera del aula). En guinda, asistencia menor a 85%.')+firmas(W);
+    const n3=chart({titulo:'PORCENTAJE DE ASISTENCIA POR ALUMNO · '+TIT(t),cats:L.map(a=>a.nombre.toUpperCase()),series:[{n:'% asistencia',c:'235B4E',v:TT.map(x=>x.pct==null?null:x.pct/100),pts:TT.map(x=>x.pct==null||x.pct>=95?'235B4E':x.pct>=85?'BC955C':'9F2241')}],horiz:true,min:0,max:1,unit:.1,pct:true,gap:40,dentro:true});
+    const n4=chart({titulo:'FALTAS DEL GRUPO POR MES',cats:meses.map(ym=>mesLargo(ym).replace(/ \d+$/,'')),series:[{n:'Faltas',c:'9F2241',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].F,0))},{n:'Faltas justificadas',c:'BC955C',v:meses.map((ym,k)=>TM.reduce((s,m)=>s+m[k].J,0))}],min:0,max:null,unit:null,leyenda:true,gap:80,fmt:'0'});
+    const riesgo=L.map((a,i)=>({a,x:TT[i]})).filter(r=>r.x.pct!=null&&r.x.pct<90).sort((p,q)=>p.x.pct-q.x.pct);
+    const g=encab('ASISTENCIA DEL TRIMESTRE · GRÁFICAS')+CHART(n3,W,L.length>20?7200:5600)+CHART(n4,W,2900)+(riesgo.length?P(R('Alumnos con asistencia menor a 90%: ',{b:true,sz:16,c:AZ})+R(riesgo.map(r=>`${r.a.nombre.toUpperCase()} (${r.x.pct}%, ${r.x.F} faltas)`).join(' · '),{sz:16}),{before:60,after:40}):'')+firmas(W);
+    return [{o:'v',x},{o:'v',x:g}]}
+  return {
+    async trimestre(t,op,fecha){CACHE={};ini(fecha);const D=datosT(t),pags=[];
+      if(op.conc)pags.push(pConcentrado(D,t));if(op.alum)pags.push(pAlumnos(D,t));if(op.disc)pags.push(pDisciplinas(D,t));
+      if(op.aprob)pags.push(pAprob(D,t));if(op.distrib)pags.push(pDistrib(D));if(op.aten)pags.push(pAtencion(D,t));
+      if(op.indiv)D.L.forEach((a,i)=>pags.push(pIndividual(D,t,i)));
+      if(op.asis&&asFechasTrim(t).some(asTomado))pags.push(...pAsisTrim(t));
+      return pags.length?armar(pags):null},
+    async mes(ym,fecha){ini(fecha);return armar(pAsisMes(ym))}
+  };
+})();
+const REP_OPS=[['conc','Reporte de calificaciones (concentrado con promedios)'],['alum','Gráfica de promedio por alumno'],['disc','Gráfica de promedio por disciplina'],['aprob','Índice de aprobación por disciplina'],['distrib','Distribución de calificaciones'],['aten','Alumnos que requieren atención'],['indiv','Reporte individual (una página por alumno)'],['asis','Asistencia del trimestre (concentrado y gráficas)']];
+function repOps(){return {conc:true,alum:true,disc:true,aprob:true,distrib:true,aten:true,indiv:false,asis:true,...LS.get('tsf-rep',{})}}
+function reportesHTML(t){const op=repOps(),hayAs=asFechasTrim(t).some(asTomado),ds=discsTrim(t),n=REP_OPS.filter(([k])=>op[k]&&(k!=='asis'||hayAs)).length;
+  return `<section class="panel rep"><div class="sec-h"><div><div class="eyebrow">Word editable · una página por reporte · gráficas editables</div><h2>Reportes del trimestre ${t}</h2></div></div>
+    <p class="lead">Llevan el encabezado de tu escuela (Ajustes), el ciclo escolar ${esc(S.cfg.ciclo||'')} y las firmas del director y del docente. ${ds.length?`Columnas: ${pl(ds.length,'disciplina','disciplinas')} del trimestre.`:'Aún no hay disciplinas en este trimestre: las columnas serán los campos formativos.'}</p>
+    <div class="rep-ops">${REP_OPS.map(([k,nm])=>{const dis=k==='asis'&&!hayAs;return `<label class="${dis?'off':''}"><input type="checkbox" data-chg="repOp" data-k="${k}" ${op[k]&&!dis?'checked':''} ${dis?'disabled':''}> ${esc(nm)}${k==='indiv'?` <small class="muted">(${activos().length} páginas)</small>`:''}${dis?' <small class="muted">— sin lista en este trimestre</small>':''}</label>`}).join('')}</div>
+    <div class="row"><label class="fld" style="max-width:200px"><span>Fecha del documento</span><input type="date" id="rep-fecha" value="${esc(U.repFecha||hoy())}" data-inp="repFecha"></label><span class="spacer"></span><button class="btn primary" data-act="repWord" ${n?'':'disabled'}>Descargar reportes en Word</button></div>
+  </section>`}
+async function bajarRep(prom,nombre,btn){const prev=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Preparando…'}
+  try{const blob=await prom;if(!blob){toast('Elige al menos un reporte.');return}await bajarBin(nombre,blob)}catch(e){console.warn(e);toast('No se pudo preparar el archivo.')}finally{if(btn){btn.disabled=false;btn.textContent=prev}}}
+/* acciones */
+Object.assign(A,{
+  asMes(b){const u=U.asis,[y,m]=u.mes.split('-').map(Number),d=new Date(y,m-1+(+b.dataset.k),1);u.mes=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');render()},
+  asHoy(){U.asis.dia=hoy();render();window.scrollTo(0,0)},
+  asVolver(){const u=U.asis;if(u.dia)u.mes=ymDe(u.dia);u.dia=null;render()},
+  asIrDia(b){U.asis.dia=b.dataset.k;render()},
+  asCel(b){const f=b.dataset.k,aid=b.dataset.aid,r=asDia(f);if(r&&r.s)return;
+    if(!asTomado(f)){asSet(f,{t:1,v:{[aid]:'F'}});asRender();toast('Lista del '+fechaLarga(f)+': todos presentes y una falta');return}
+    const v={...(r.v||{})},sig={A:'F',F:'J',J:'A'}[v[aid]||'A'];if(sig==='A')delete v[aid];else v[aid]=sig;asSet(f,{...r,v});asRender()},
+  asPon(b){const f=b.dataset.k,aid=b.dataset.aid,r=asTomado(f)?asDia(f):{t:1,v:{}},v={...(r.v||{})};if(b.dataset.v==='A')delete v[aid];else v[aid]=b.dataset.v;asSet(f,{t:1,v});render()},
+  asTodos(b){const f=b.dataset.k;asSet(f,{t:1,v:{}});render();toast('Todos presentes')},
+  asQuitar(b){asSet(b.dataset.k,null);render()},
+  asDiaMenu(b){const f=b.dataset.k,r=asDia(f);
+    modal(`<div><div class="eyebrow">${['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][diaSem(f)]}</div><h3>${esc(fechaLarga(f))}</h3></div>
+      <div class="row"><button class="btn primary" data-act="asIrDiaM" data-k="${f}">Pasar lista alumno por alumno</button>${r&&r.s?'':`<button class="btn" data-act="asTodosM" data-k="${f}">Todos presentes</button>`}</div>
+      <div class="hj-sep"><span class="lbl">Día sin lista</span><div class="grid2"><label class="fld"><span>Motivo</span><select id="as-mot">${Object.entries(AS_MOT).map(([k,n])=>`<option value="${k}" ${r&&r.s===k?'selected':''}>${k} · ${esc(n)}</option>`).join('')}</select></label><label class="fld"><span>Nota (opcional)</span><input id="as-nota" value="${esc(r&&r.n||'')}" placeholder="Ej. Desfile, visita al museo"></label></div>
+        <div class="row"><button class="btn" data-act="asSin" data-k="${f}">Marcar sin lista</button>${r?`<button class="btn ghost" data-act="asQuitarM" data-k="${f}">Borrar el registro de este día</button>`:''}</div>${r&&r.t&&!r.s&&Object.keys(r.v||{}).length?'<p class="hint">Marcarlo sin lista borra las faltas registradas ese día.</p>':''}</div>
+      <div class="row"><button class="btn ghost" data-act="cerrar">Cerrar</button></div>`)},
+  asIrDiaM(b){$('#modal').innerHTML='';U.asis.dia=b.dataset.k;render();window.scrollTo(0,0)},
+  asTodosM(b){$('#modal').innerHTML='';asSet(b.dataset.k,{t:1,v:{}});asRender();toast('Todos presentes')},
+  asSin(b){const f=b.dataset.k,s=$('#as-mot').value,n=$('#as-nota').value.trim();$('#modal').innerHTML='';asSet(f,{s,...(n?{n}:{})});asRender();toast(`${fechaLarga(f)}: ${AS_MOT[s]}`)},
+  asQuitarM(b){$('#modal').innerHTML='';asSet(b.dataset.k,null);asRender()},
+  asWord(b){bajarRep(RepW.mes(U.asis.mes,U.repFecha||hoy()),`Asistencia_${U.asis.mes}_${grupoTag()}.docx`,b)},
+  repWord(b){const t=U.trim,op=repOps();bajarRep(RepW.trimestre(t,op,U.repFecha||hoy()),`Reportes_T${t}_${grupoTag()}.docx`,b)}
+});
+Object.assign(CHG,{repOp(e){const op=repOps();op[e.target.dataset.k]=e.target.checked;LS.set('tsf-rep',op)}});
+Object.assign(INP,{repFecha(e){U.repFecha=e.target.value||hoy()}});
+
 /* ---------- Asistente de IA (ventana flotante) ---------- */
 // La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
 const IA_PROV={
@@ -2467,7 +2749,7 @@ function datosGrupoIA(ts){
     promedioPorCampo:CAMPOS.map(c=>({campo:c.n,promedio:(x=>x==null?null:+f1(x))(avg(A.map(a=>ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k)).filter(x=>x!=null)))})),
     proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(P=>{const av=avanceTrabajo(P),pr=promTrabajo(P);return {nombre:P.nombre,tipo:nomTrabajo(P),trimestre:+P.trim,promedioGrupo:pr==null?null:+f1(pr),avance:`${av.n} de ${av.t} ${etqFase(P,true)} con evidencias`,estado:P.estado||'en curso'}}),
     alumnos:A.map(a=>{const st=stats(a.id,ts),p=ts.length===1?promAl(a.id,ts[0]):finalAl(a.id),pp=prev?promAl(a.id,prev):null;
-      return {alumno:alias(a.id),promedio:p==null?null:+f1(p),promedioTrimestreAnterior:pp==null?undefined:+f1(pp),porCampo:Object.fromEntries(CAMPOS.map(c=>[c.c||c.k,(x=>x==null?null:+f1(x))(ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k))])),cumplimientoPct:st.pct,participaciones:st.part,notas:notasDe(a.id,ts).length}}),
+      return {alumno:alias(a.id),promedio:p==null?null:+f1(p),promedioTrimestreAnterior:pp==null?undefined:+f1(pp),porCampo:Object.fromEntries(CAMPOS.map(c=>[c.c||c.k,(x=>x==null?null:+f1(x))(ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k))])),cumplimientoPct:st.pct,participaciones:st.part,asistenciaPct:asTot(a.id,asFechas(f=>ts.includes(trimDe(f)))).pct??undefined,notas:notasDe(a.id,ts).length}}),
     requierenAtencion:ts.length===1?atencion(ts[0]).map(x=>({alumno:alias(x.a.id),motivos:x.r})):undefined};
 }
 const IA_SYS='Eres un asistente pedagógico para un docente de telesecundaria en México que trabaja con la Nueva Escuela Mexicana y la evaluación formativa. Las calificaciones van de 5 a 10 (6 es aprobatorio). Los estudiantes aparecen como «Alumno N»: refiérete a ellos siempre así y nunca inventes nombres. Usa solo los datos proporcionados; si algo no está en los datos, dilo con claridad. No inventes cifras. Responde en español de México, con tono profesional y cercano, en párrafos breves o viñetas cortas. Cuando des recomendaciones, que sean concretas y realizables en el aula de telesecundaria.';
@@ -2702,6 +2984,7 @@ function fichaDocxBody(aid,primera){
   rows.push({c:[{t:'Promedio general',b:true,bg:AZ3},{t:'',sp:3,bg:AZ3},{t:f1(finalAl(aid)),b:true,jc:'center',bg:AZ3}]});
   rows.push({c:[{t:'Cumplimiento de evidencias'},...[1,2,3].map(t=>{const s=stats(aid,t);return {t:s.pct==null?'—':s.pct+'%',jc:'center'}}),{t:''}]});
   rows.push({c:[{t:'Participaciones'},...[1,2,3].map(t=>({t:String(stats(aid,t).part),jc:'center'})),{t:''}]});
+  rows.push({c:[{t:'Asistencia'},...[1,2,3].map(t=>{const x=asTot(aid,asFechasTrim(t));return {t:x.pct==null?'—':x.pct+'%',jc:'center'}}),{t:''}]});
   b+=wP(wR('Trayectoria por campo formativo y disciplina',{b:true,c:AZ,sz:22}),{before:120,after:60,keep:true})+wTbl([4240,1400,1400,1400,1800],rows,{sz:18});
   const sec=(t,v)=>{if(!String(v||'').trim())return;b+=wP(wR(t,{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});String(v).split(/\n+/).forEach(p=>{if(p.trim())b+=wP(wR(p.trim()),{after:60,jc:'both'})})};
   sec('Síntesis descriptiva',f.sintesis);FSECS.forEach(([k,n])=>sec(n,f[k]));
@@ -2944,7 +3227,10 @@ function ejemploData(){
     {id:'ejn5',aid:'ej9',trim:1,fecha:'2026-10-02',cat:'intereses',campo:'',texto:'Aprende mejor con esquemas y dibujos; muestra interés por las plantas y la cocina'},
     {id:'ejn6',aid:'ej10',trim:1,fecha:'2026-09-21',cat:'fortaleza',campo:'SPC',texto:'Explica a sus compañeros cómo resolvió los problemas con enteros'},
     {id:'ejn7',aid:'ej8',trim:1,fecha:'2026-09-30',cat:'socioemocional',campo:'',texto:'Interrumpe con frecuencia el trabajo en equipo; se acordó con él un rol de moderador'}];
-  return {cfg:{...clone(DEF_CFG),escuela:'Telesecundaria Ejemplo',docente:'Docente de ejemplo',director:'Director(a) de ejemplo',grado:'1',grupo:'A (ejemplo)',localidad:'Comunidad de ejemplo',discV2:true},alumnos,ppas,registros,notas,fichas:{},grupoTexto:{},ejemplo:true};
+  const asis={};{let s=11;const r=()=>(s=(s*48271)%2147483647)/2147483647,sin={'2026-09-16':'AO','2026-09-25':'CTE','2026-10-09':'AE','2026-10-30':'CTE'};
+    for(const ym of ['2026-09','2026-10','2026-11'])diasMes(ym).filter(f=>f<'2026-11-11').forEach(f=>{asis[ym]=asis[ym]||{};if(sin[f]){asis[ym][f.slice(8)]={s:sin[f]};return}
+      const v={};alumnos.forEach((a,i)=>{if(r()<(i===5?.2:i===11?.12:.04))v[a.id]=r()<.35?'J':'F'});asis[ym][f.slice(8)]={t:1,v}})}
+  return {cfg:{...clone(DEF_CFG),escuela:'Telesecundaria Ejemplo',cct:'00ETV0000X',docente:'Docente de ejemplo',director:'Director(a) de ejemplo',grado:'1',grupo:'A (ejemplo)',localidad:'Comunidad de ejemplo',municipio:'Municipio',estado:'Tabasco',zona:'00',sector:'00',discV2:true},alumnos,ppas,registros,notas,fichas:{},grupoTexto:{},asis,ejemplo:true};
 }
 
 /* ---------- Arranque ---------- */
