@@ -349,6 +349,66 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .hj-sep{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px}
 #hc-fill{width:80px;text-align:center}
 @media (max-width:640px){.hj-t .hj-p{right:auto;box-shadow:none}.hj-t th.nm,.hj-t td.nm{min-width:118px;max-width:132px;font-size:.84rem}.hj-tw{max-height:calc(100vh - 110px)}}
+/* Tablet para alumnos: pantalla completa, colorida, botones grandes */
+.tb-lanza .tb-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.tb-b{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;text-align:left;border:0;border-radius:16px;padding:14px 16px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(60,40,90,.18);transition:transform .15s}
+.tb-b:hover{transform:translateY(-2px)}.tb-b span{grid-row:span 2;font-size:2rem}.tb-b b{font-family:var(--f-display);font-size:1.1rem}.tb-b small{opacity:.92}
+.tb-b.alumnos{background:linear-gradient(135deg,#7e57c2,#29b6f6)}.tb-b.uno{background:linear-gradient(135deg,#ff7043,#ffb300)}
+.tb-pend{margin-bottom:0}
+.tb-centro .btn{background:#fff;color:#3d2d6b;border:2px solid #d1c4e9;font-weight:700}.tb-centro .btn.primary{background:#7e57c2;color:#fff;border-color:#7e57c2}.tb-centro .btn:disabled{opacity:.45}
+.tb-on .ia-fab,.tb-on .ia-win{display:none}
+.tb-win{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;background:radial-gradient(circle at 10% 0%,#fff3e0 0,transparent 40%),radial-gradient(circle at 90% 10%,#e1f5fe 0,transparent 45%),radial-gradient(circle at 50% 100%,#f3e5f5 0,transparent 50%),#fffdf8;color:#2b2540;font-family:var(--f-body)}
+.tb-cab{display:flex;gap:14px;align-items:center;padding:12px 18px;background:linear-gradient(90deg,#7e57c2,#5c6bc0 50%,#29b6f6);color:#fff}
+.tb-uno .tb-cab,.tb-win.tb-uno .tb-cab{background:linear-gradient(90deg,#ff7043,#ffa726)}
+.tb-cab>div:first-child{flex:1;min-width:0}.tb-cab b{display:block;font-family:var(--f-display);font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tb-cab small{opacity:.9}
+.tb-prog{width:170px;display:grid;gap:4px;font-weight:700;font-size:.9rem}.tb-prog i{display:block;height:8px;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);max-width:100%}
+.tb-prog{background:linear-gradient(rgba(255,255,255,.25),rgba(255,255,255,.25)) 0 100%/100% 8px no-repeat;border-radius:9px}
+.tb-doc{border:0;border-radius:99px;padding:8px 14px;font-weight:700;background:rgba(255,255,255,.22);color:#fff;cursor:pointer}
+.tb-body{flex:1;overflow:auto;padding:16px}
+.tb-busca{max-width:560px;margin:0 auto 14px}.tb-busca input{width:100%;font-size:1.25rem;padding:14px 18px;border-radius:99px;border:3px solid #d1c4e9;background:#fff;color:#2b2540}
+.tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:1200px;margin:0 auto}
+.tb-card{position:relative;display:grid;justify-items:center;gap:8px;padding:16px 10px 14px;border:0;border-radius:22px;cursor:pointer;background:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 70%,#000),0 10px 24px rgba(60,40,90,.12);border-top:8px solid var(--c);animation:tbEntra .45s var(--d) both;transition:transform .12s}
+.tb-card:active{transform:translateY(4px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 70%,#000)}
+.tb-card b{font-size:1.05rem;color:#2b2540;line-height:1.15;text-align:center}
+.tb-card.hecho{opacity:.55}.tb-card.hecho i{position:absolute;top:6px;right:10px;font-style:normal;font-size:1.4rem;color:#43a047}
+.tb-av{display:grid;place-items:center;width:78px;height:78px;border-radius:50%;font-size:2.8rem;background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.6) 0 9%,transparent 10%),var(--c);text-shadow:0 2px 0 rgba(0,0,0,.18);box-shadow:0 4px 12px color-mix(in srgb,var(--c) 50%,transparent);animation:tbFlota 3s ease-in-out infinite;color:#fff;font-weight:800}
+.tb-card:nth-child(3n) .tb-av{animation-delay:-1s}.tb-card:nth-child(3n+1) .tb-av{animation-delay:-2s}
+@keyframes tbFlota{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+@keyframes tbEntra{from{opacity:0;transform:translateY(16px) scale(.92)}}
+.tb-centro{max-width:820px;margin:0 auto;display:grid;justify-items:center;gap:16px;text-align:center;padding-top:10px}
+.tb-centro h2{font-family:var(--f-display);font-size:clamp(1.5rem,4vw,2.3rem);color:#3d2d6b}
+.tb-centro p{margin:0;font-size:1.1rem;color:#5e5873}
+.tb-uno{display:grid;justify-items:center;gap:6px}.tb-uno .tb-av{width:120px;height:120px;font-size:4.4rem}
+.tb-cals{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.tb-cal{width:clamp(78px,13vw,112px);height:clamp(78px,13vw,112px);border:0;border-radius:26px;font-family:var(--f-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;color:#fff;cursor:pointer;background:var(--c);box-shadow:0 7px 0 color-mix(in srgb,var(--c) 65%,#000),0 12px 24px color-mix(in srgb,var(--c) 40%,transparent);transition:transform .1s;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.tb-cal:active{transform:translateY(5px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 65%,#000)}.tb-cal.on{outline:5px solid #3d2d6b;outline-offset:3px}
+.tb-cals.chico .tb-cal{width:84px;height:62px;font-size:1.5rem;border-radius:18px}.tb-cal.gris{--c:#90a4ae}
+.tb-avs{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;width:100%}
+.tb-avs button{aspect-ratio:1;border:0;border-radius:20px;font-size:2.4rem;cursor:pointer;background:radial-gradient(circle at 35% 30%,#fff 0 15%,var(--c) 75%);box-shadow:0 5px 0 color-mix(in srgb,var(--c) 65%,#000);animation:tbEntra .4s var(--d) both}
+.tb-avs button:active{transform:translateY(4px)}
+.tb-qn{font-weight:700;color:#7e57c2;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem}
+.tb-emo{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;width:100%}
+.tb-emo button{display:grid;justify-items:center;gap:6px;padding:18px 8px;border:0;border-radius:22px;background:#fff;font-size:1.15rem;font-weight:700;color:#3d2d6b;cursor:pointer;box-shadow:0 6px 0 #d1c4e9,0 10px 20px rgba(60,40,90,.1)}
+.tb-emo button span{font-size:3.6rem;animation:tbFlota 2.6s ease-in-out infinite}.tb-emo button:active{transform:translateY(4px)}
+.tb-ops{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tb-ops button{padding:14px 20px;border-radius:99px;border:3px solid #d1c4e9;background:#fff;font-size:1.1rem;font-weight:700;color:#3d2d6b;cursor:pointer}
+.tb-ops button.on{background:#7e57c2;border-color:#7e57c2;color:#fff;transform:scale(1.04)}
+.tb-sig{font-size:1.15rem;padding:12px 26px}.tb-txt{width:100%;min-height:120px;font-size:1.15rem;border-radius:18px;border:3px solid #d1c4e9;padding:12px;background:#fff;color:#2b2540}
+.tb-ok{padding-top:40px}.tb-ok .tb-av{width:130px;height:130px;font-size:4.8rem;animation:tbSalta .7s ease-out}
+.tb-num{display:inline-block;min-width:1.6em;padding:2px 12px;border-radius:14px;background:var(--c);color:#fff;font-size:1.6rem}
+@keyframes tbSalta{0%{transform:scale(.3)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.tb-fiesta{position:relative;height:0;width:100%}.tb-fiesta span{position:absolute;left:calc(20% + var(--i)*15%);top:0;font-size:2.4rem;animation:tbChispa 1.4s ease-out both;animation-delay:calc(var(--i)*.08s)}
+@keyframes tbChispa{from{opacity:0;transform:translateY(80px) scale(.4)}40%{opacity:1}to{opacity:0;transform:translateY(-60px) scale(1.2) rotate(25deg)}}
+.tb-pinv{font-size:2.4rem;letter-spacing:.3em;color:#7e57c2}.tb-tecla{display:grid;grid-template-columns:repeat(3,84px);gap:12px}
+.tb-tecla button{height:70px;border:0;border-radius:18px;background:#fff;font-size:1.6rem;font-weight:800;color:#3d2d6b;box-shadow:0 5px 0 #d1c4e9;cursor:pointer}.tb-mal{color:#e53935!important;font-weight:700}
+.tb-nav{justify-content:center}.tb-hint{font-size:.85rem!important;color:#8a849a!important}
+.tb-rev{max-width:1100px;margin:0 auto;background:var(--surface);color:var(--ink);border-radius:18px;padding:18px;display:grid;gap:12px}
+.tb-res{background:var(--primary-soft);border-radius:12px;padding:10px 14px;font-size:.92rem;line-height:1.6}
+.tb-rs i{display:inline-block;font-style:normal;font-size:.75rem;padding:1px 7px;border-radius:99px;margin:1px 2px;background:var(--surface2)}.tb-rs i.dif{background:var(--l0bg);color:var(--l0)}.tb-rs i.fac{background:var(--l3bg);color:var(--l3)}
+.tb-cfg{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface2)}
+.tb-q{display:grid;gap:4px}.tb-q .hj-chk{padding:0}.tb-qt{flex:1;font-weight:700}.tb-qo{font-size:.85rem}
+.auto-b{display:grid;gap:6px}.auto-b p{margin:0}
+@media (max-width:600px){.tb-cab{flex-wrap:wrap}.tb-prog{width:100%}.tb-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}.tb-av{width:64px;height:64px;font-size:2.3rem}}
 /* Asistencia y reportes */
 .as-tw{max-height:calc(100vh - 170px);overflow:auto}
 .as-t{border-collapse:separate;border-spacing:0}
@@ -1132,6 +1192,8 @@ function prellenarFicha(aid){
   op=op.concat(nt('oportunidad').map(x=>x+'.'));o.oportunidades=op.join(' ');
   o.socioemocional=nt('socioemocional').concat(nt('familia')).map(x=>x+'.').join(' ');
   o.intereses=nt('intereses').map(x=>x+'.').join(' ');
+  {const x=autoTxt(aid);if(x){const yo=s=>s?s.replace(/^Se le facilita: /,'En sus autoevaluaciones reconoce que se le facilita ').replace(/^Se le dificulta: /,'En sus autoevaluaciones señala que se le dificulta ').replace(/^Pide para mejorar: /,'Para mejorar pide: '):'';
+    if(x.fac||x.ayu)o.intereses=[o.intereses,yo(x.fac),yo(x.ayu)].filter(Boolean).join(' ');if(x.dif)o.oportunidades=[o.oportunidades,yo(x.dif)].filter(Boolean).join(' ')}}
   o.apoyos=nt('apoyo').map(x=>x+'.').join(' ');
   const rc=[];
   (bajos.length?bajos:fc.slice(-1)).slice(-2).forEach(x=>rc.push(`En ${x.c.n}: ${SUG[x.c.k]}.`));
@@ -1612,7 +1674,7 @@ function vRegistrar(){
     </div>`}
   </section>
   ${log?(ctx.ppa||ctx.campos.length?partPanelHTML(ctx,false):'<section class="panel"><p class="hint">Elige el campo formativo para registrar participaciones.</p></section>')
-  :`<section class="panel">
+  :`${part?'':tabLanzaHTML()}<section class="panel">
     <div class="sec-h"><h3>${part?'Toca para sumar participaciones':'Califica a cada alumno de 5 a 10'}</h3>${part?'':`<div class="seg mini" role="group" aria-label="Forma de calificar"><button class="${modoDec()?'':'on'}" data-act="modoDec" data-k="0" aria-pressed="${!modoDec()}">Botones 5–10</button><button class="${modoDec()?'on':''}" data-act="modoDec" data-k="1" aria-pressed="${modoDec()}">Decimales</button></div>`}<div class="row" id="tools">${tools()}</div>${part?'':`<button class="btn sm mic${VOZ.on?' on':''}" id="voz-btn" data-act="vozToggle" aria-pressed="${VOZ.on}" title="Dictar nombre y calificación"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Dictar</button>`}</div>
     <div id="voz-bar">${part?'':vozBarHTML()}</div>
     ${part?`<div class="row"><span class="lbl">Calificación de cada participación</span><div class="chips">${[10,9,8,7,6].map(v=>`<button class="chip ${U.q===v?'on':''}" data-act="q" data-k="${v}">${v} · ${CALN[v]}</button>`).join('')}</div></div>`
@@ -2099,7 +2161,7 @@ const A={
     if(!Object.keys(d.valores).length){toast('Califica al menos a un alumno.');return}
     if(!d.titulo.trim()){if(d.tipo==='participacion')d.titulo='Participaciones del '+fmtF(d.fecha);else{toast('Escribe el nombre de la evidencia.');$('#d-titulo')?.focus();return}}
     const prev=d.id&&regById(d.id);
-    const r={...(prev||{}),...(P&&!prev?tpDe(P,d.pa?paDe(P,d.pa):null):{}),id:d.id||uid(),trim:P?+P.trim:(d.trim||U.trim),fecha:d.fecha,ppa:P?P.id:null,pa:P?(d.pa||null):null,campos:cs.slice(),disc:(d.disc||'').trim(),tipo:d.tipo,titulo:d.titulo.trim(),desc:(d.desc||'').trim(),valores:d.valores,fase:P&&d.fase&&faseDe(P,d.fase)?d.fase:null};
+    const r={...(prev||{}),...(P&&!prev?tpDe(P,d.pa?paDe(P,d.pa):null):{}),id:d.id||uid(),trim:P?+P.trim:(d.trim||U.trim),fecha:d.fecha,ppa:P?P.id:null,pa:P?(d.pa||null):null,campos:cs.slice(),disc:(d.disc||'').trim(),tipo:d.tipo,titulo:d.titulo.trim(),desc:(d.desc||'').trim(),valores:d.valores,fase:P&&d.fase&&faseDe(P,d.fase)?d.fase:null,...(d.ent?{ent:d.ent}:{})};
     const i=S.registros.findIndex(x=>x.id===r.id);if(i>=0)S.registros[i]=r;else S.registros.push(r);
     const keep={ppa:d.ppa,pa:d.pa,campos:d.campos,disc:d.disc,tipo:d.tipo,fecha:d.fecha,fase:d.fase};
     U.draft={...newDraft(),...(d.id?{}:keep)};LS.set('tsf-draft',U.draft);
@@ -2465,6 +2527,7 @@ Object.assign(A,{
     const n=Object.keys(r.valores||{}).length;
     modal(`<div><div class="eyebrow">Editar actividad</div><h3>${esc(r.titulo)}</h3></div>${hjModalCampos(P,{...r,tri:rTrim(r)})}
       <div class="row"><button class="btn primary" data-act="hjColOk" data-k="${r.id}">Guardar cambios</button><button class="btn" data-act="cerrar">Cancelar</button></div>
+      <div class="hj-sep"><span class="lbl">Registro rápido de esta actividad</span><div class="row"><button class="btn" data-act="tbConfigReg" data-k="${r.id}" data-m="alumnos">📱 Tablet para alumnos</button><button class="btn" data-act="tbConfigReg" data-k="${r.id}" data-m="uno">⚡ Uno por uno</button></div>${r.ent?tbResumen(r.ent,activos()):''}</div>
       <div class="hj-sep"><span class="lbl">Llenar las casillas vacías de esta actividad</span><div class="row"><input class="cin" id="hc-fill" inputmode="decimal" placeholder="8.5" aria-label="Calificación para las vacías"><button class="btn sm" data-act="hjFill" data-k="${r.id}">Aplicar</button><button class="btn sm" data-act="hjFill" data-k="${r.id}" data-v="ne">NE</button></div></div>
       <div class="hj-sep"><button class="btn sm ghost" data-act="hjColDel" data-k="${r.id}" data-n="${n}">Eliminar esta actividad</button></div>`)},
   hjAbrirM(b){$('#modal').innerHTML='';U.hoja=null;A.editReg(b)},
@@ -2741,6 +2804,7 @@ const RepW=(()=>{
       {c:[{t:'PROMEDIO GENERAL',b:true,jc:'left',sz:16,bg:CLARO},...[1,2,3].map(tt=>({t:pt(tt),b:true,sz:16,bg:CLARO})),{t:(()=>{const v=D.cols.map((c,j)=>prom(j)).filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),b:true,sz:16,bg:CLARO},{t:(()=>{const v=D.PA.filter(x=>x!=null);return v.length?f1n(avg(v)):'—'})(),sz:16,bg:CLARO,c:'7F7F7F'}]}]);
     return {o:'v',x:encab(fin?'REPORTE INDIVIDUAL FINAL · CICLO ESCOLAR '+ESC.ciclo:'REPORTE INDIVIDUAL DE CALIFICACIONES · '+TIT(t))+T([2000,8800],[{c:[{t:'ALUMNO(A)',b:true,sz:16,c:'FFFFFF',bg:AZ},{t:nomRep(a),b:true,sz:18,jc:'left'}]}])+P('',{after:80})+tabla
       +CHART(n,W,D.cols.length>10?3900:4300)
+      +(x=>x?P(R('Autoevaluación del alumno: ',{b:true,sz:16})+R([x.fac,x.dif].filter(Boolean).join(' ')||x.sent,{sz:16}),{before:40,after:40,jc:'both'}):'')(autoTxt(a.id,fin?null:[t]))
       +(as?P(R(fin?'Asistencia del ciclo: ':'Asistencia del trimestre: ',{b:true,sz:16})+R(`${as.pct}% · ${as.A} asistencias, ${as.F} faltas y ${as.J} justificadas en ${as.hab} días con lista.`,{sz:16}),{before:40,after:40}):'')
       +T([W],[{alto:700,c:[{raw:P(R('Observaciones: ',{b:true,sz:16})+R(obs,{sz:16}),{jc:'both',after:0})}]}])+firmas(W,true)}}
   /* asistencia */
@@ -2808,6 +2872,17 @@ const RepW=(()=>{
     const pie={c:[{t:'',bg:CLARO},{t:'PROMEDIO DEL GRUPO',b:true,sz:14,jc:'left',bg:CLARO},...[1,2,3].map(tt=>({t:ts.includes(tt)?f1n(g(tt)):'',b:true,sz:15,bg:CLARO})),...(fin?[{t:vf.length?f1n(avg(vf)):'—',b:true,sz:15,c:'FFFFFF',bg:AZ2}]:[]),{t:difT(dg),b:true,sz:15,c:fin?difC(dg):'FFFFFF',bg:fin?CLARO:AZ2}]};
     return {o:'v',x:encab(fin?'PROMEDIOS POR TRIMESTRE Y PROMEDIO FINAL':'COMPARATIVO ENTRE TRIMESTRES · ALUMNOS')+T(ws,[{h:true,c:hd.map(x=>({t:x.toUpperCase(),b:true,sz:13,c:'FFFFFF',bg:AZ}))},...filas,pie])
       +nota('Promedio de las disciplinas en cada trimestre. Cambio: diferencia entre los dos últimos trimestres evaluados; en verde, mejora; en guinda, disminución.')+firmas(W)}}
+  /* autoevaluación del grupo: entrevistas de la tablet en el trimestre */
+  function pAutoGrupo(t){const L=activos(),ts=t?[t]:null,au=L.map(a=>autoDe(a.id,ts)),n=au.reduce((s,x)=>s+x.n,0),sum=k=>{const m={};au.forEach(x=>Object.entries(x[k]).forEach(([o,c])=>m[o]=(m[o]||0)+c));return topDe(m,8)};
+    const sent=TB_SENT.map(([k,,nm])=>[nm,au.reduce((s,x)=>s+x.sent[k],0)]),dif=sum('dif'),fac=sum('fac'),ayu=sum('ayu');
+    const n1=chart({titulo:'¿CÓMO SE SINTIERON CON LAS ACTIVIDADES?',cats:sent.map(x=>x[0]),series:[{n:'Respuestas',c:AZ,v:sent.map(x=>x[1]),pts:['235B4E','1E3A5F','BC955C','9F2241']}],min:0,max:null,unit:null,gap:60,fmt:'0'});
+    const n2=dif.length?chart({titulo:'LO QUE MÁS SE LES DIFICULTÓ',cats:dif.map(x=>x[0]),series:[{n:'Alumnos que lo señalaron',c:'9F2241',v:dif.map(x=>x[1])}],horiz:true,min:0,max:null,unit:null,gap:45,fmt:'0'}):null;
+    const difc=L.map((a,i)=>({a,d:au[i].sent.d,n:au[i].n})).filter(x=>x.n&&x.d/x.n>=.5).sort((p,q)=>q.d/q.n-p.d/p.n);
+    return {o:'v',x:encab('AUTOEVALUACIÓN DEL GRUPO · '+(t?TIT(t):'CICLO ESCOLAR '+ESC.ciclo))+P(R(`${pl(n,'respuesta','respuestas')} de los alumnos en las entrevistas rápidas al registrar sus calificaciones. No modifica ninguna calificación; sirve para planear el refuerzo.`,{sz:17}),{after:100})
+      +CHART(n1,W,3000)+(n2?CHART(n2,W,Math.min(4200,1400+dif.length*360)):'')
+      +(fac.length?P(R('Lo que más se les facilitó: ',{b:true,sz:16,c:AZ})+R(fac.slice(0,5).map(([k,c])=>`${k} (${c})`).join(' · '),{sz:16}),{before:60,after:40}):'')
+      +(ayu.length?P(R('Lo que piden para mejorar: ',{b:true,sz:16,c:AZ})+R(ayu.slice(0,5).map(([k,c])=>`${k} (${c})`).join(' · '),{sz:16}),{after:40}):'')
+      +(difc.length?P(R('Reportan como difícil la mitad o más de sus actividades: ',{b:true,sz:16,c:AZ})+R(difc.map(x=>`${nomRep(x.a)} (${x.d} de ${x.n})`).join(' · '),{sz:16}),{after:40}):'')+firmas(W)}}
   /* citatorio: una página por alumno, con acuse de recibo desprendible */
   const CIT_AS={aca:'Desempeño académico',asis:'Inasistencias',bol:'Entrega de calificaciones',otro:'Asunto escolar'};
   function pCitatorio(a,o){const c=S.cfg,lugar=[c.localidad,c.municipio,c.estado].map(x=>String(x||'').trim()).filter(Boolean).join(', ');
@@ -2829,6 +2904,7 @@ const RepW=(()=>{
       if(op.conc)pags.push(pConcentrado(D,'REPORTE DE CALIFICACIONES DEL '+TIT(t)));if(op.alum)pags.push(pAlumnos(D,TIT(t)));if(op.disc)pags.push(pDisciplinas(D,TIT(t)));
       if(op.aprob)pags.push(pAprob(D,t));if(op.distrib)pags.push(pDistrib(D));if(op.aten)pags.push(pAtencion(D,t));
       if(op.honor)pags.push(pHonor(D,TIT(t)));
+      if(op.auto&&D.L.some(a=>autoDe(a.id,[t]).n))pags.push(pAutoGrupo(t));
       if(op.comp){const C=datosC();if(C.ts.length>1)pags.push(pCompDisc(C),pAlumTrim(C))}
       if(op.indiv)D.L.forEach((a,i)=>pags.push(pIndividual(D,t,i)));
       if(op.asis&&asFechasTrim(t).some(asTomado))pags.push(...pAsisTrim(t));
@@ -2837,6 +2913,7 @@ const RepW=(()=>{
       const pags=[pConcentrado(C,'REPORTE FINAL DE CALIFICACIONES · '+tit,true),pAlumTrim(C,true),pAlumnos(C,'PROMEDIO FINAL'),pDisciplinas(C,'PROMEDIO FINAL')];
       if(C.ts.length>1)pags.push(pCompDisc(C));
       pags.push(pAprob(C),pHonor(C,tit));
+      if(C.L.some(a=>autoDe(a.id).n))pags.push(pAutoGrupo(null));
       if(op.indiv)C.L.forEach((a,i)=>pags.push(pIndividual(C,0,i,true)));
       if(asFechas().some(asTomado))pags.push(...pAsisTrim('c'));
       return armar(pags)},
@@ -2845,9 +2922,9 @@ const RepW=(()=>{
     async mes(ym,fecha){ini(fecha);return armar(pAsisMes(ym))}
   };
 })();
-const REP_OPS=[['conc','Reporte de calificaciones (concentrado con promedios)'],['alum','Gráfica de promedio por alumno'],['disc','Gráfica de promedio por disciplina'],['aprob','Índice de aprobación por disciplina'],['distrib','Distribución de calificaciones'],['aten','Alumnos que requieren atención'],['honor','Cuadro de honor'],['comp','Comparativo entre trimestres (disciplinas y alumnos)'],['indiv','Reporte individual (una página por alumno)'],['asis','Asistencia del trimestre (concentrado y gráficas)']];
-function repOps(){return {conc:true,alum:true,disc:true,aprob:true,distrib:true,aten:true,honor:true,comp:true,indiv:false,asis:true,...LS.get('tsf-rep',{})}}
-function reportesHTML(t){const op=repOps(),hayAs=asFechasTrim(t).some(asTomado),ds=discsTrim(t),nts=RepW.trimsConDatos().length,falta=k=>k==='asis'?(hayAs?'':'sin lista en este trimestre'):k==='comp'?(nts>1?'':'se activa cuando haya dos trimestres con calificaciones'):'',n=REP_OPS.filter(([k])=>op[k]&&!falta(k)).length;
+const REP_OPS=[['conc','Reporte de calificaciones (concentrado con promedios)'],['alum','Gráfica de promedio por alumno'],['disc','Gráfica de promedio por disciplina'],['aprob','Índice de aprobación por disciplina'],['distrib','Distribución de calificaciones'],['aten','Alumnos que requieren atención'],['honor','Cuadro de honor'],['auto','Autoevaluación del grupo (entrevistas de la tablet)'],['comp','Comparativo entre trimestres (disciplinas y alumnos)'],['indiv','Reporte individual (una página por alumno)'],['asis','Asistencia del trimestre (concentrado y gráficas)']];
+function repOps(){return {conc:true,alum:true,disc:true,aprob:true,distrib:true,aten:true,honor:true,auto:true,comp:true,indiv:false,asis:true,...LS.get('tsf-rep',{})}}
+function reportesHTML(t){const op=repOps(),hayAs=asFechasTrim(t).some(asTomado),ds=discsTrim(t),nts=RepW.trimsConDatos().length,falta=k=>k==='asis'?(hayAs?'':'sin lista en este trimestre'):k==='auto'?(activos().some(a=>autoDe(a.id,[t]).n)?'':'aún sin entrevistas de la tablet en este trimestre'):k==='comp'?(nts>1?'':'se activa cuando haya dos trimestres con calificaciones'):'',n=REP_OPS.filter(([k])=>op[k]&&!falta(k)).length;
   return `<section class="panel rep"><div class="sec-h"><div><div class="eyebrow">Word editable · una página por reporte · gráficas editables</div><h2>Reportes del trimestre ${t}</h2></div></div>
     <p class="lead">Llevan el encabezado de tu escuela (Ajustes), el ciclo escolar ${esc(S.cfg.ciclo||'')} y las firmas del director y del docente. ${ds.length?`Columnas: ${pl(ds.length,'disciplina','disciplinas')} del trimestre.`:'Aún no hay disciplinas en este trimestre: las columnas serán los campos formativos.'}</p>
     <div class="rep-ops">${REP_OPS.map(([k,nm])=>{const fl=falta(k),dis=!!fl;return `<label class="${dis?'off':''}"><input type="checkbox" data-chg="repOp" data-k="${k}" ${op[k]&&!dis?'checked':''} ${dis?'disabled':''}> ${esc(nm)}${k==='indiv'?` <small class="muted">(${activos().length} páginas)</small>`:''}${dis?` <small class="muted">— ${fl}</small>`:''}</label>`}).join('')}</div>
@@ -2915,6 +2992,149 @@ Object.assign(CHG,{repOp(e){const op=repOps();op[e.target.dataset.k]=e.target.ch
   cfgChk(e){S.cfg[e.target.dataset.k]=e.target.checked;Store.grupo();render()},
   cfgSel(e){S.cfg[e.target.dataset.k]=e.target.value;Store.grupo()}});
 Object.assign(INP,{repFecha(e){U.repFecha=e.target.value||hoy()}});
+/* ---------- Tablet para alumnos y calificación uno por uno ---------- */
+// Sesión en U.tab (se guarda en el dispositivo hasta que el docente revisa y guarda):
+// {modo:'alumnos'|'uno', draft (valoración nueva) o rid (actividad existente), titulo, v:{aid:cal}, ent:{q:[...], r:{aid:{...}}}|null, pant, sel, i}
+const AVAT=['🦊','🐼','🐯','🦁','🐸','🐵','🐨','🐧','🦉','🐙','🦄','🐢','🐬','🦋','🐝','🐞','🦜','🐳','🦖','🐺','🐰','🐻','🦒','🦓','🐘','🦩','🐿️','🦔','⚽','🏀','⚾','🎾','🏐','🛹','🚴','🏊','🎸','🎹','🥁','🎧','🎨','📚','🔬','🧪','🔭','🚀','🛸','🌍','🌙','⭐','🌈','⚡','🔥','🌻','🌵','🍉','🍕','🌮','🍩','🎮','🤖','👾','🏆','💎'];
+const AV_COL=['#ff8a65','#ffb74d','#ffd54f','#aed581','#4db6ac','#4fc3f7','#7986cb','#ba68c8','#f06292','#a1887f','#90a4ae','#81c784'];
+const TB_CAL={5:'#ef5350',6:'#ff9800',7:'#fdd835',8:'#66bb6a',9:'#29b6f6',10:'#7e57c2'};
+const TB_SENT=[['f','😄','Fácil'],['b','🙂','Bien'],['m','😐','Más o menos'],['d','😟','Difícil']];
+const TB_OPC={LEN:['Leer','Comprender el texto','Redactar','Ortografía','Exponer','Buscar información'],SPC:['Hacer operaciones','Resolver problemas','Leer gráficas o tablas','Experimentar','Explicar mi procedimiento','Usar fórmulas'],
+  ENS:['Leer y comprender','Investigar','Ubicar en mapas o líneas del tiempo','Debatir','Organizar la información','Relacionar con mi comunidad'],HYC:['Trabajar en equipo','Expresar mis emociones','Hacer ejercicio','Crear o diseñar','Proponer soluciones','Seguir instrucciones']};
+const TB_GEN=['Entender las instrucciones','Terminar a tiempo','Trabajar en equipo'],TB_AYU=['Más tiempo','Más ejemplos','Ayuda del maestro','Trabajar con un compañero','Material concreto'];
+const nomPila=a=>{const w=String(a.nombre||'').trim().split(/\s+/);return w.length>=3?w.slice(2).join(' ')+' '+w[0][0]+'.':a.nombre};
+const avDe=a=>a.av!=null&&AVAT[a.av]?AVAT[a.av]:null,avCol=a=>AV_COL[((a.av??S.alumnos.indexOf(a))%AV_COL.length+AV_COL.length)%AV_COL.length];
+function tbPreguntas(campo){const op=[...(TB_OPC[campo]||[]),...TB_GEN].filter((x,i,l)=>l.indexOf(x)===i).slice(0,8);
+  return [{id:'sent',t:'¿Cómo te sentiste con esta actividad?',tipo:'emo',on:true},{id:'fac',t:'¿Qué se te facilitó?',tipo:'multi',op,on:true},{id:'dif',t:'¿Qué se te dificultó?',tipo:'multi',op:[...op,'Nada'],on:true},
+    {id:'ayu',t:'¿Qué te ayudaría a mejorar?',tipo:'multi',op:TB_AYU.slice(),on:false},{id:'txt',t:'Cuéntanos algo más',tipo:'txt',on:false}]}
+const tbGuarda=()=>LS.set('tsf-tab',U.tab||null);
+/* autoevaluación acumulada de un alumno (entrevistas de la tablet) */
+function autoDe(aid,ts){const o={n:0,sent:{f:0,b:0,m:0,d:0},fac:{},dif:{},ayu:{},txt:[]};
+  S.registros.forEach(r=>{const x=r.ent&&r.ent.r&&r.ent.r[aid];if(!x||(ts&&!ts.includes(rTrim(r))))return;o.n++;if(o.sent[x.sent]!=null)o.sent[x.sent]++;
+    ['fac','dif','ayu'].forEach(k=>(x[k]||[]).forEach(v=>{if(v!=='Nada')o[k][v]=(o[k][v]||0)+1}));if(x.txt)o.txt.push({t:x.txt,act:r.titulo,f:r.fecha})});return o}
+const topDe=(m,n=4)=>Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n);
+const vecesTx=l=>lista(l.map(([k,n])=>`${k.toLowerCase()} (${n} ${n===1?'vez':'veces'})`));
+function autoTxt(aid,ts){const o=autoDe(aid,ts);if(!o.n)return null;const s=o.sent,out={};
+  out.sent=`De ${pl(o.n,'actividad','actividades')} con autoevaluación: ${TB_SENT.filter(([k])=>s[k]).map(([k,,n])=>`${s[k]} ${n.toLowerCase()}`).join(', ')}.`;
+  const f=topDe(o.fac),d=topDe(o.dif),y=topDe(o.ayu,3);
+  if(f.length)out.fac='Se le facilita: '+vecesTx(f)+'.';if(d.length)out.dif='Se le dificulta: '+vecesTx(d)+'.';if(y.length)out.ayu='Pide para mejorar: '+vecesTx(y)+'.';
+  return out}
+/* panel en Registrar */
+function tabLanzaHTML(){const t=U.tab;
+  const pend=t?`<div class="editing tb-pend">Hay un registro en tablet sin guardar: <b>${esc(t.titulo)}</b> · ${Object.keys(t.v).length} de ${activos().length} alumnos.<span class="spacer"></span><button class="btn sm primary" data-act="tbSeguir">Continuar</button><button class="btn sm" data-act="tbRev">Revisar y guardar</button></div>`:'';
+  return `${pend}<section class="panel tb-lanza"><div class="sec-h"><div><div class="eyebrow">Registro rápido</div><h3>Que cada alumno toque su calificación</h3></div></div>
+    <div class="tb-btns"><button class="tb-b alumnos" data-act="tbConfig" data-k="alumnos"><span>📱</span><b>Tablet para alumnos</b><small>Buscan su personaje, tocan su calificación y responden una entrevista rápida</small></button>
+      <button class="tb-b uno" data-act="tbConfig" data-k="uno"><span>⚡</span><b>Calificar uno por uno</b><small>Tú tocas la calificación y avanza solo al siguiente alumno</small></button></div></section>`}
+/* configuración antes de abrir */
+function tbConfigHTML(o){const ps=o.ent.q,pl_=S.cfg.entPlant||[];
+  return `<div><div class="eyebrow">${o.modo==='alumnos'?'Tablet para alumnos':'Calificar uno por uno'}</div><h3>${esc(o.titulo)}</h3></div>
+    ${o.modo==='alumnos'?`<label class="hj-chk"><input type="checkbox" id="tb-enton" ${o.ent.on?'checked':''}> Hacer una entrevista rápida al registrar <span class="muted">· no cambia la calificación</span></label>
+    <div class="tb-cfg" ${o.ent.on?'':'hidden'}>
+      ${pl_.length?`<label class="fld"><span>Plantilla guardada</span><select id="tb-plant" data-chg="tbPlant"><option value="">Preguntas sugeridas para esta actividad</option>${pl_.map((p,i)=>`<option value="${i}">${esc(p.n)}</option>`).join('')}</select></label>`:''}
+      ${ps.map((q,i)=>`<div class="tb-q"><label class="hj-chk"><input type="checkbox" data-tbq="${i}" ${q.on?'checked':''}> <input class="tb-qt" data-tbqt="${i}" value="${esc(q.t)}"></label>${q.tipo==='multi'?`<input class="tb-qo" data-tbqo="${i}" value="${esc(q.op.join(', '))}" aria-label="Opciones separadas por coma">`:q.tipo==='emo'?`<span class="muted">${TB_SENT.map(x=>x[1]+' '+x[2]).join(' · ')}</span>`:'<span class="muted">Respuesta escrita (opcional para el alumno)</span>'}</div>`).join('')}
+      <div class="row"><input id="tb-pn" placeholder="Nombre de la plantilla, ej. Lecturas" style="max-width:280px"><button class="btn sm" data-act="tbPlantSave">Guardar como plantilla</button></div></div>
+    <label class="fld" style="max-width:260px"><span>PIN del docente para salir (4 números)</span><input id="tb-pin" inputmode="numeric" maxlength="4" value="${esc(S.cfg.pin||'')}" placeholder="0000"></label>`
+    :'<p class="lead">Aparece un alumno a la vez con su personaje: toca la calificación y pasa solo al siguiente. Al final revisas y guardas.</p>'}
+    <div class="row"><button class="btn primary" data-act="tbAbrir">Abrir</button><button class="btn" data-act="cerrar">Cancelar</button></div>`}
+/* pantallas de la tablet */
+function tabPintar(){const root=$('#tab-root');if(!root)return;const t=U.tab;if(!t||!t.abierta){root.innerHTML='';document.body.classList.remove('tb-on');return}
+  document.body.classList.add('tb-on');const L=activos(),hechos=Object.keys(t.v).filter(id=>L.some(a=>a.id===id)).length;
+  const al_=t.sel&&al(t.sel),cab=`<div class="tb-cab"><div><b>${esc(t.titulo)}</b><small>${t.modo==='alumnos'?'Busca tu personaje y toca tu nombre':'Calificación uno por uno'}</small></div><div class="tb-prog"><span>✔ ${hechos} de ${L.length}</span><i style="width:${L.length?100*hechos/L.length:0}%"></i></div><button class="tb-doc" data-act="tbDocente">🔒 Docente</button></div>`;
+  const ficha=a=>`<span class="tb-av" style="--c:${avCol(a)}">${avDe(a)||esc((nomPila(a)[0]||'?').toUpperCase())}</span>`;
+  let x='';
+  if(t.pant==='pin')x=`<div class="tb-centro"><h2>PIN del docente</h2><div class="tb-pinv">${'●'.repeat((t.pin||'').length)}${'○'.repeat(4-(t.pin||'').length)}</div><div class="tb-tecla">${[1,2,3,4,5,6,7,8,9,'←',0,'✕'].map(k=>`<button data-act="tbPinK" data-k="${k}">${k}</button>`).join('')}</div>${t.pinMal?'<p class="tb-mal">PIN incorrecto</p>':''}</div>`;
+  else if(t.pant==='rev')x=tbRevHTML();
+  else if(t.modo==='uno'){const a=L[t.i];if(!a){t.pant='rev';return tabPintar()}const v=t.v[a.id];
+    x=`<div class="tb-centro"><div class="tb-uno">${ficha(a)}<h2>${esc(a.nombre)}</h2><small>${L.indexOf(a)+1} de ${L.length}${v!=null?' · registrada: '+(v==='ne'?'NE':v==='j'?'J':fg(v)):''}</small></div>
+      <div class="tb-cals">${[5,6,7,8,9,10].map(c=>`<button class="tb-cal${v===c?' on':''}" style="--c:${TB_CAL[c]}" data-act="tbUnoCal" data-k="${c}">${c}</button>`).join('')}</div>
+      <div class="tb-cals chico">${[8.5,9.5].map(c=>`<button class="tb-cal" style="--c:${TB_CAL[Math.floor(c)]}" data-act="tbUnoCal" data-k="${c}">${c}</button>`).join('')}<button class="tb-cal gris" data-act="tbUnoCal" data-k="ne">NE</button><button class="tb-cal gris" data-act="tbUnoCal" data-k="j">J</button></div>
+      <div class="row tb-nav"><button class="btn" data-act="tbUnoMv" data-k="-1" ${t.i?'':'disabled'}>← Anterior</button><button class="btn" data-act="tbUnoMv" data-k="1">Saltar →</button><button class="btn primary" data-act="tbFin">Terminar y revisar</button></div>
+      <p class="tb-hint">Teclado: 5 a 9, 0 = 10, N = NE, J = justificado, ← regresar</p></div>`}
+  else if(t.pant==='av')x=`<div class="tb-centro"><h2>¡Hola, ${esc(nomPila(al_))}! Elige tu personaje</h2><p>Así te encontrarás más rápido la próxima vez.</p><div class="tb-avs">${AVAT.map((e,i)=>`<button style="--c:${AV_COL[i%AV_COL.length]};--d:${(i%8)*.12}s" data-act="tbAv" data-k="${i}">${e}</button>`).join('')}</div><button class="btn" data-act="tbAtras">← No soy yo</button></div>`;
+  else if(t.pant==='cal')x=`<div class="tb-centro"><div class="tb-uno">${ficha(al_)}<h2>${esc(nomPila(al_))}</h2><p>Toca la calificación que te dio tu maestro(a)</p></div>
+      <div class="tb-cals">${[5,6,7,8,9,10].map(c=>`<button class="tb-cal" style="--c:${TB_CAL[c]}" data-act="tbCal" data-k="${c}">${c}</button>`).join('')}</div><button class="btn" data-act="tbAtras">← No soy yo</button></div>`;
+  else if(t.pant==='q'){const qs=t.ent.q.filter(q=>q.on),q=qs[t.qi],r=t.resp||{};
+    x=`<div class="tb-centro"><div class="tb-qn">Pregunta ${t.qi+1} de ${qs.length}</div><h2>${esc(q.t)}</h2>${q.tipo==='emo'?`<div class="tb-emo">${TB_SENT.map(([k,e,n])=>`<button data-act="tbEmo" data-k="${k}"><span>${e}</span>${n}</button>`).join('')}</div>`
+      :q.tipo==='multi'?`<p>Puedes elegir varias</p><div class="tb-ops">${q.op.map(o=>`<button class="${(r[q.id]||[]).includes(o)?'on':''}" data-act="tbOp" data-k="${esc(o)}">${esc(o)}</button>`).join('')}</div><button class="btn primary tb-sig" data-act="tbSig" ${(r[q.id]||[]).length?'':'disabled'}>Siguiente →</button>`
+      :`<textarea id="tb-txt" class="tb-txt" placeholder="Escribe aquí (opcional)">${esc(r.txt||'')}</textarea><button class="btn primary tb-sig" data-act="tbSig">Terminar</button>`}</div>`}
+  else if(t.pant==='ok')x=`<div class="tb-centro tb-ok"><div class="tb-fiesta">${['🎉','⭐','✨','🎊','💫'].map((e,i)=>`<span style="--i:${i}">${e}</span>`).join('')}</div>${ficha(al_)}<h2>¡Listo, ${esc(nomPila(al_))}!</h2><p>Registraste <b class="tb-num" style="--c:${TB_CAL[Math.floor(t.v[t.sel])]||'#7e57c2'}">${fg(t.v[t.sel])}</b></p></div>`;
+  else if(t.pant==='ya')x=`<div class="tb-centro">${ficha(al_)}<h2>${esc(nomPila(al_))}, ya registraste tu calificación</h2><p>Si hay un error, avísale a tu maestro(a).</p><button class="btn primary" data-act="tbAtras">Aceptar</button></div>`;
+  else{const q=normTx(t.q||''),lst=L.filter(a=>!q||normTx(a.nombre).includes(q));
+    x=`<div class="tb-busca"><input id="tb-q" data-inp="tbQ" value="${esc(t.q||'')}" placeholder="🔍 Busca tu nombre…" autocomplete="off"></div>
+      <div class="tb-grid">${lst.map((a,i)=>`<button class="tb-card${t.v[a.id]!=null?' hecho':''}" style="--c:${avCol(a)};--d:${(i%10)*.08}s" data-act="tbSel" data-k="${a.id}">${ficha(a)}<b>${esc(nomPila(a))}</b>${t.v[a.id]!=null?'<i>✔</i>':''}</button>`).join('')||'<p>No encontré ese nombre.</p>'}</div>`}
+  root.innerHTML=`<div class="tb-win tb-${t.modo}">${cab}<div class="tb-body">${x}</div></div>`;
+  if(t.pant==='lista'&&t.q){const e=$('#tb-q');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}}
+}
+function tbRevHTML(){const t=U.tab,L=activos(),qs=t.ent&&t.ent.on?t.ent.q.filter(q=>q.on):[],falta=L.filter(a=>t.v[a.id]==null).length;
+  const resp=a=>{const r=t.ent&&t.ent.r&&t.ent.r[a.id];if(!r)return '';const s=TB_SENT.find(x=>x[0]===r.sent);return `<span class="tb-rs">${s?s[1]:''} ${[...(r.dif||[]).filter(x=>x!=='Nada').map(x=>'<i class="dif">'+esc(x)+'</i>'),...(r.fac||[]).map(x=>'<i class="fac">'+esc(x)+'</i>')].join('')}${r.txt?` <i>«${esc(corto(r.txt,40))}»</i>`:''}</span>`};
+  const res=qs.length?tbResumen(t.ent,L):'';
+  return `<div class="tb-rev"><div class="sec-h"><div><div class="eyebrow">Revisión del docente</div><h2>${esc(t.titulo)}</h2></div><span class="muted">${L.length-falta} de ${L.length} registrados</span></div>
+    ${res}<div class="tw"><table><thead><tr><th>#</th><th>Alumno(a)</th><th class="c">Calificación</th>${qs.length?'<th>Entrevista <small class="muted">(rojo: se le dificultó · verde: se le facilitó)</small></th>':''}</tr></thead><tbody>${L.map((a,i)=>{const v=t.v[a.id];
+      return `<tr><td class="muted">${i+1}</td><td>${avDe(a)||''} ${esc(a.nombre)}</td><td class="c"><input class="cin ${v==null?'':kcls(gradeOf(v))}" id="tbr-${a.id}" data-chg="tbRevCal" data-aid="${a.id}" value="${v==null?'':v==='ne'?'NE':v==='j'?'J':fg(v)}" placeholder="—" inputmode="decimal" style="width:70px"></td>${qs.length?`<td>${resp(a)}</td>`:''}</tr>`}).join('')}</tbody></table></div>
+    <p class="hint">Corrige cualquier calificación escribiendo de 5 a 10 (admite decimales), NE o J. Nada se guarda en tu registro hasta que toques «Guardar valoración».</p>
+    <div class="row">${falta?`<button class="btn" data-act="tbNE">Marcar NE a los ${falta} que faltan</button>`:''}<button class="btn" data-act="tbVolver">Seguir registrando</button><span class="spacer"></span><button class="btn ghost" data-act="tbSalir">Salir sin guardar</button><button class="btn ghost" data-act="tbDescartar">Descartar registro</button><button class="btn primary" data-act="tbGuardar">Guardar valoración</button></div></div>`}
+function tbResumen(ent,L){const qs=ent.q.filter(q=>q.on!==false),rs=L.map(a=>ent.r&&ent.r[a.id]).filter(Boolean);if(!rs.length)return '';
+  const cnt=(k)=>{const m={};rs.forEach(r=>(r[k]||[]).forEach(v=>{if(v!=='Nada')m[v]=(m[v]||0)+1}));return topDe(m,3)};
+  const s=TB_SENT.map(([k,e,n])=>[e,n,rs.filter(r=>r.sent===k).length]).filter(x=>x[2]);
+  return `<div class="tb-res"><b>Resumen de la entrevista (${rs.length} respuestas):</b> ${s.map(([e,n,c])=>`${e} ${n}: ${Math.round(100*c/rs.length)}%`).join(' · ')}
+    ${qs.some(q=>q.id==='dif')&&cnt('dif').length?`<br>Lo que más se dificultó: ${cnt('dif').map(([k,n])=>`<b>${esc(k)}</b> (${n})`).join(', ')}`:''}${qs.some(q=>q.id==='fac')&&cnt('fac').length?`<br>Lo que más se facilitó: ${cnt('fac').map(([k,n])=>`<b>${esc(k)}</b> (${n})`).join(', ')}`:''}${qs.some(q=>q.id==='ayu')&&cnt('ayu').length?`<br>Lo que piden: ${cnt('ayu').map(([k,n])=>`<b>${esc(k)}</b> (${n})`).join(', ')}`:''}</div>`}
+/* acciones */
+function tbIniciar(o){U.tab={...o,v:{...(o.v||{})},abierta:true,pant:o.modo==='uno'?'uno':'lista',i:0,q:''};if(o.modo==='alumnos'&&U.tab.ent.on)U.tab.ent.r=U.tab.ent.r||{};tbGuarda();tabPintar();
+  if(o.modo==='alumnos'){try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}}
+function tbFinAlumno(){const t=U.tab;t.pant='ok';tbGuarda();tabPintar();clearTimeout(t._tm);setTimeout(()=>{if(U.tab&&U.tab.pant==='ok'){U.tab.pant='lista';U.tab.sel=null;U.tab.resp=null;U.tab.q='';tabPintar()}},1900)}
+Object.assign(A,{
+  tbConfig(b){const modo=b.dataset.k,d=U.draft;resolveDraft();
+    if(!(d.titulo||'').trim()){toast('Primero escribe el nombre de la evidencia.');$('#d-titulo')?.focus();return}
+    if(!draftCampos().length){toast('Elige el proyecto o el campo formativo.');return}
+    const ult=S.cfg.entUlt,campo=draftCampos()[0];
+    U.tbCfg={modo,titulo:d.titulo.trim(),draft:clone(d),ent:{on:ult?ult.on!==false:true,q:ult&&ult.q?clone(ult.q):tbPreguntas(campo)}};modal(tbConfigHTML(U.tbCfg))},
+  tbConfigReg(b){const r=regById(b.dataset.k),P=r&&ppaById(r.ppa);if(!r)return;$('#modal').innerHTML='';const campo=(rCampos(r)[0])||'LEN',ult=S.cfg.entUlt;
+    U.tbCfg={modo:b.dataset.m,titulo:r.titulo,rid:r.id,v:{},ent:r.ent?{on:true,q:r.ent.q.map(q=>({...q,on:true})),r:clone(r.ent.r||{})}:{on:ult?ult.on!==false:true,q:ult&&ult.q?clone(ult.q):tbPreguntas(campo)}};
+    Object.entries(r.valores||{}).forEach(([k,v])=>{if(v!=null&&typeof v!=='object')U.tbCfg.v[k]=v});modal(tbConfigHTML(U.tbCfg))}, // las ya calificadas aparecen con ✔
+  tbAbrir(){const o=U.tbCfg;if(!o)return;
+    if(o.modo==='alumnos'){const pin=($('#tb-pin').value||'').trim();if(!/^\d{4}$/.test(pin)){toast('Escribe un PIN de 4 números para poder salir de la tablet.');$('#tb-pin').focus();return}
+      if(S.cfg.pin!==pin){S.cfg.pin=pin;Store.grupo()}tbLeerCfg();S.cfg.entUlt={on:o.ent.on,q:clone(o.ent.q)};Store.grupo()}
+    $('#modal').innerHTML='';tbIniciar(o)},
+  tbPlantSave(){const n=$('#tb-pn').value.trim();if(!n){toast('Escribe el nombre de la plantilla.');return}tbLeerCfg();S.cfg.entPlant=(S.cfg.entPlant||[]).filter(p=>p.n!==n).concat([{n,q:clone(U.tbCfg.ent.q)}]);Store.grupo();toast('Plantilla «'+n+'» guardada')},
+  tbSeguir(){if(!U.tab)return;U.tab.abierta=true;U.tab.pant=U.tab.modo==='uno'?'uno':'lista';tbGuarda();tabPintar()},
+  tbRev(){if(!U.tab)return;U.tab.abierta=true;U.tab.pant='rev';U.tab.rev=true;tbGuarda();tabPintar()},
+  tbSel(b){const t=U.tab,a=al(b.dataset.k);t.sel=a.id;t.resp={};t.pant=t.v[a.id]!=null?'ya':avDe(a)?'cal':'av';tabPintar()},
+  tbAtras(){const t=U.tab;t.sel=null;t.pant='lista';tabPintar()},
+  tbAv(b){const a=al(U.tab.sel);a.av=+b.dataset.k;Store.grupo();U.tab.pant='cal';tabPintar()},
+  tbCal(b){const t=U.tab;t.v[t.sel]=+b.dataset.k;if(t.ent&&t.ent.on&&t.ent.q.some(q=>q.on)){t.qi=0;t.resp={};t.pant='q';tbGuarda();tabPintar()}else{tbGuarda();tbFinAlumno()}},
+  tbEmo(b){const t=U.tab;t.resp.sent=b.dataset.k;A.tbSig()},
+  tbOp(b){const t=U.tab,q=t.ent.q.filter(x=>x.on)[t.qi],k=b.dataset.k,l=t.resp[q.id]||[];
+    t.resp[q.id]=k==='Nada'?(l.includes('Nada')?[]:['Nada']):l.includes(k)?l.filter(x=>x!==k):l.filter(x=>x!=='Nada').concat([k]);tabPintar()},
+  tbSig(){const t=U.tab,qs=t.ent.q.filter(q=>q.on),q=qs[t.qi];if(q&&q.tipo==='txt'){const v=($('#tb-txt')||{}).value||'';if(v.trim())t.resp.txt=v.trim()}
+    if(t.qi<qs.length-1){t.qi++;tabPintar();return}t.ent.r[t.sel]=t.resp;tbGuarda();tbFinAlumno()},
+  tbDocente(){const t=U.tab;if(t.modo==='uno'){t.pant='rev';tabPintar();return}t.pant='pin';t.pin='';t.pinMal=false;tabPintar()},
+  tbPinK(b){const t=U.tab,k=b.dataset.k;if(k==='✕'){t.pant='lista';tabPintar();return}if(k==='←')t.pin=(t.pin||'').slice(0,-1);else if((t.pin||'').length<4)t.pin=(t.pin||'')+k;t.pinMal=false;
+    if(t.pin.length===4){if(t.pin===S.cfg.pin){t.pant='rev';t.pin=''}else{t.pin='';t.pinMal=true}}tabPintar()},
+  tbVolver(){const t=U.tab;t.pant=t.modo==='uno'?'uno':'lista';tabPintar()},
+  tbUnoCal(b){const t=U.tab,a=activos()[t.i];if(!a)return;const k=b.dataset.k;t.v[a.id]=/^[\d.]+$/.test(k)?+k:k;t.i++;tbGuarda();if(navigator.vibrate)try{navigator.vibrate(25)}catch(e){}tabPintar()},
+  tbUnoMv(b){const t=U.tab;t.i=Math.max(0,t.i+(+b.dataset.k));tabPintar()},
+  tbFin(){U.tab.pant='rev';tabPintar()},
+  tbNE(){const t=U.tab;activos().forEach(a=>{if(t.v[a.id]==null)t.v[a.id]='ne'});tbGuarda();tabPintar()},
+  tbSalir(){const t=U.tab;t.abierta=false;tbGuarda();tabPintar();try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}render();toast('El registro sigue pendiente: lo encuentras en Registrar.')},
+  tbDescartar(b){if(b&&!b.dataset.sure){b.dataset.sure='1';b.textContent='Confirmar: descartar todo';b.classList.remove('ghost');b.classList.add('warn');return}U.tab=null;tbGuarda();tabPintar();try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}render();toast('Registro descartado')},
+  async tbGuardar(){const t=U.tab,v={};Object.entries(t.v).forEach(([k,x])=>{if(x!=null&&x!=='')v[k]=x});if(!Object.keys(v).length){toast('Aún no hay calificaciones.');return}
+    const ent=t.ent&&t.ent.on&&Object.keys(t.ent.r||{}).length?{q:t.ent.q.filter(q=>q.on).map(({on,...q})=>q),r:t.ent.r}:null;
+    U.tab=null;tbGuarda();tabPintar();try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}
+    if(t.rid){const r=regById(t.rid);if(!r){toast('No encontré la actividad.');return}r.valores={...(r.valores||{}),...v};if(ent)r.ent={q:ent.q,r:{...((r.ent||{}).r||{}),...ent.r}};render();await Store.reg(r);toast('Calificaciones guardadas en «'+r.titulo+'»');return}
+    U.draft=normDraft({...t.draft,valores:v,...(ent?{ent}:{})});LS.set('tsf-draft',U.draft);U.view='registrar';LS.set('tsf-view','registrar');await A.saveReg()}
+});
+function tbLeerCfg(){const o=U.tbCfg;if(!o||o.modo!=='alumnos')return;const on=$('#tb-enton');if(on)o.ent.on=on.checked;
+  o.ent.q.forEach((q,i)=>{const c=document.querySelector(`[data-tbq="${i}"]`),tt=document.querySelector(`[data-tbqt="${i}"]`),op=document.querySelector(`[data-tbqo="${i}"]`);
+    if(c)q.on=c.checked;if(tt&&tt.value.trim())q.t=tt.value.trim();if(op){const l=op.value.split(',').map(s=>s.trim()).filter(Boolean);if(l.length)q.op=q.id==='dif'&&!l.includes('Nada')?l.concat(['Nada']):l}})}
+Object.assign(INP,{tbQ(e){U.tab.q=e.target.value;clearTimeout(U._tbq);U._tbq=setTimeout(tabPintar,120)}});
+Object.assign(CHG,{
+  tbPlant(e){const p=(S.cfg.entPlant||[])[+e.target.value];if(p){U.tbCfg.ent.q=clone(p.q);U.tbCfg.ent.on=true}else U.tbCfg.ent.q=tbPreguntas(draftCampos()[0]);modal(tbConfigHTML(U.tbCfg));const s=$('#tb-plant');if(s)s.value=e.target.value},
+  tbRevCal(e){const t=U.tab,x=leerCalif(e.target.value);if(x.bad){e.target.classList.add('bad');toast('Escribe de 5 a 10, NE o J.');return}if(x.v==null)delete t.v[e.target.dataset.aid];else t.v[e.target.dataset.aid]=x.v;tbGuarda();tabPintar()}});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='tb-enton'){const c=document.querySelector('.tb-cfg');if(c)c.hidden=!e.target.checked}});
+document.addEventListener('keydown',e=>{const t=U.tab;if(!t||!t.abierta||t.modo!=='uno'||t.pant!=='uno'||(e.target.matches&&e.target.matches('input,textarea')))return;
+  const m={'5':5,'6':6,'7':7,'8':8,'9':9,'0':10,'n':'ne','N':'ne','j':'j','J':'j'};if(m[e.key]!=null){e.preventDefault();A.tbUnoCal({dataset:{k:String(m[e.key])}})}else if(e.key==='ArrowLeft'){e.preventDefault();A.tbUnoMv({dataset:{k:'-1'}})}else if(e.key==='ArrowRight'){e.preventDefault();A.tbUnoMv({dataset:{k:'1'}})}});
+U.tab=LS.get('tsf-tab',null);if(U.tab)U.tab.abierta=false;
+document.body.insertAdjacentHTML('beforeend','<div id="tab-root"></div>');
 /* ---------- Asistente de IA (ventana flotante) ---------- */
 // La clave de cada servicio se guarda solo en este dispositivo (no viaja a Drive ni al respaldo). Los nombres se cambian por «Alumno N» antes de enviar.
 const IA_PROV={
@@ -2945,7 +3165,8 @@ function tsDe(per){return per==='ciclo'?[1,2,3]:[+per]}
 function datosAlumnoIA(aid,ts){
   const r=resumenAl(aid,ts),tm=temasAl(aid).filter(x=>ts.includes(x.t)).map(x=>({trimestre:x.t,temas:x.grupos.map(g=>({proyecto:g.n,actividades:g.items.filter(i=>i.on).map(i=>i.txt)}))}));
   r.notasDocente=notasDe(aid,ts).map(n=>({fecha:n.fecha,tipo:NOTA_CAT[n.cat]||n.cat,actividad:n.act||undefined,texto:n.texto}));
-  return {alumno:alias(aid),...r,temasTrabajados:tm};
+  const au=autoDe(aid,ts);
+  return {alumno:alias(aid),...r,temasTrabajados:tm,...(au.n?{autoevaluacionDelAlumno:{actividadesConEntrevista:au.n,comoSeSintio:Object.fromEntries(TB_SENT.map(([k,,n])=>[n,au.sent[k]])),seLeFacilita:topDe(au.fac,6),seLeDificulta:topDe(au.dif,6),pideParaMejorar:topDe(au.ayu,4),comentarios:au.txt.map(x=>x.t)}}:{})};
 }
 function datosGrupoIA(ts){
   const A=activos(),prev=ts.length===1&&ts[0]>1?ts[0]-1:null;
@@ -3112,7 +3333,12 @@ function fichaExtrasHTML(aid){
       ${com||'<p class="muted">Aún no hay comentarios. Usa «+ Nota» junto al nombre del alumno al registrar una actividad.</p>'}<p class="hint">Las palomeadas se incluyen en la ficha, los borradores y las consultas a la IA.</p></section>
     <section class="panel"><div class="sec-h"><div><div class="eyebrow">Actividades donde tiene valoración</div><h3>Temas vistos en el ciclo</h3></div></div>
       ${tms||'<p class="muted">Aparecerán cuando registres valoraciones con nombre de evidencia.</p>'}
-      <label class="fld"><span>Otros temas trabajados (opcional)</span><textarea id="f-temasExtra" data-inp="ficha" data-aid="${aid}" data-k="temasExtra" style="min-height:60px" placeholder="Uno por renglón">${esc(fin.temasExtra||'')}</textarea></label></section></div>`;
+      <label class="fld"><span>Otros temas trabajados (opcional)</span><textarea id="f-temasExtra" data-inp="ficha" data-aid="${aid}" data-k="temasExtra" style="min-height:60px" placeholder="Uno por renglón">${esc(fin.temasExtra||'')}</textarea></label></section></div>
+    ${(au=>`<section class="panel auto-b"><div><div class="eyebrow">Entrevistas de la tablet</div><h3>Autoevaluación del alumno</h3></div>
+      ${au?`${[1,2,3].map(t=>{const x=autoTxt(aid,[t]);return x?`<div class="fx-t"><div class="eyebrow">Trimestre ${t}</div><p>${esc(x.sent)}</p>${x.fac?`<p>${esc(x.fac)}</p>`:''}${x.dif?`<p>${esc(x.dif)}</p>`:''}${x.ayu?`<p>${esc(x.ayu)}</p>`:''}</div>`:''}).join('')}
+        ${autoDe(aid).txt.length?`<div class="fx-t"><div class="eyebrow">Lo que escribió</div>${autoDe(aid).txt.map(x=>`<p>«${esc(x.t)}» <small class="muted">· ${esc(x.act)}</small></p>`).join('')}</div>`:''}
+        <p class="hint">Se incluye en la ficha en Word, en «Prellenar», en el generador con IA y en el reporte individual. No cambia ninguna calificación.</p>`
+      :'<p class="muted">Aparecerá cuando el alumno responda la entrevista rápida al registrar una calificación en la tablet.</p>'}</section>`)(autoTxt(aid))}`;
 }
 function temasTxt(aid){const tm=temasAl(aid).map(x=>({t:x.t,gs:x.grupos.map(g=>({n:g.n,it:g.items.filter(i=>i.on).map(i=>i.txt)})).filter(g=>g.it.length)})).filter(x=>x.gs.length);
   const ex=String(((S.fichas[aid]||{}).final||{}).temasExtra||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
@@ -3196,6 +3422,8 @@ function fichaDocxBody(aid,primera){
   if(tm.length||ex.length){b+=wP(wR('Temas y contenidos trabajados en el ciclo',{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});
     tm.forEach(x=>{b+=wP(wR(`Trimestre ${x.t}`,{b:true,sz:19}),{before:60,after:20,keep:true});x.gs.forEach(g=>b+=wP(wR(g.n+': ',{b:true})+wR(g.it.join('; ')),{after:30}))});
     if(ex.length)b+=wP(wR('Otros: ',{b:true})+wR(ex.join('; ')),{after:30})}
+  const au=autoTxt(aid);
+  if(au){b+=wP(wR('Autoevaluación del alumno',{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});[au.sent,au.fac,au.dif,au.ayu].filter(Boolean).forEach(x=>b+=wP(wR(x),{after:40,jc:'both'}))}
   const ns=comentariosFicha(aid);
   if(ns.length){b+=wP(wR('Observaciones registradas durante el ciclo',{b:true,c:AZ,sz:22}),{before:180,after:40,keep:true});
     ns.forEach(n=>b+=wP(wR(`T${n.trim} · ${fmtF(n.fecha)}${etqNota(n)?' · '+etqNota(n):''} — `,{b:true,c:'595959',sz:18})+wR(n.texto,{sz:18}),{after:40}))}
