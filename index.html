@@ -316,6 +316,10 @@ textarea.fnota{min-height:64px;margin-top:6px}
 .prog{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}.prog i{display:block;height:100%;background:var(--primary);border-radius:99px}
 @media (max-width:520px){.prow{grid-template-columns:minmax(0,1fr) 52px}.prow .prog{grid-column:1/-1;grid-row:2}}
 .legend2{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}.legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* Proyectos en varios trimestres */
+.tri-etq{display:inline-block;font-size:.74rem;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--p-SPC);color:var(--ink);margin-left:6px}
+.lnk{border:0;background:none;padding:0;color:var(--primary);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.tr-op{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}@media (max-width:560px){.tr-op{grid-template-columns:1fr}}
 /* Hoja de calificaciones */
 .hj-top .chips{flex-wrap:wrap}
 .hj-fils{gap:8px 14px;align-items:end}.hj-f{display:grid;gap:3px;font-size:.74rem;font-weight:700;color:var(--muted)}.hj-f select{padding:6px 8px;font-size:.88rem;font-weight:400;color:var(--ink);max-width:190px}
@@ -930,7 +934,14 @@ function barraFases(P,pa,mini){
   return `<div class="fbar${mini?' mini':''}" role="img" aria-label="${a.n} de ${a.t} ${etqFase(P,true)} con evidencias">${a.fs.map((f,i)=>`<span class="${a.con.has(f.id)?'on':''}" title="${i+1}. ${esc(f.n)}${a.con.has(f.id)?' · con evidencias':' · sin evidencias'}"></span>`).join('')}</div>`;
 }
 function discsCampo(k){const c=S.cfg.disciplinas;return (c&&Array.isArray(c[k])?c[k]:discDefault()[k])||[]}
-function rTrim(r){const P=r.ppa&&ppaById(r.ppa);return P?+P.trim:+r.trim}
+function rTrim(r){const P=r.ppa&&ppaById(r.ppa);return P?+(r.tp||P.trim):+r.trim} // r.tp: la valoración cuenta en otro trimestre que el del proyecto
+// Proyectos que continúan en otro trimestre: pa.trim (proyecto académico) o P.trimAct (todo el trabajo) indican dónde cuentan las valoraciones nuevas
+const trimNuevo=(P,pa)=>+((pa&&pa.trim)||P.trimAct||P.trim);
+const tpDe=(P,pa)=>{const t=trimNuevo(P,pa);return t!==+P.trim?{tp:t}:{}};
+function trimsDe(P,pa){const s=new Set([+P.trim,trimNuevo(P,pa)]);if(!pa)(P.pas||[]).forEach(x=>s.add(trimNuevo(P,x)));S.registros.forEach(r=>{if(r.ppa===P.id&&(!pa||r.pa===pa.id))s.add(rTrim(r))});return [...s].sort()}
+const ppaEnTrim=(P,t)=>trimsDe(P).includes(t);
+const trimUlt=P=>Math.max(...[trimNuevo(P,null),...(P.pas||[]).map(pa=>trimNuevo(P,pa))]);
+function trimsEtq(P,pa){const ts=trimsDe(P,pa),tn=trimNuevo(P,pa);return ts.length<2?'':`Trimestres ${ts.join(' y ')}`+(tn!==Math.min(...ts)?` · continúa en el ${tn}.º`:'')}
 function rCampos(r){const P=r.ppa&&ppaById(r.ppa);if(!P)return r.campos||[];const pa=r.pa&&paDe(P,r.pa);return pa&&pa.campos&&pa.campos.length?pa.campos:(P.campos||[])}
 function rDiscs(r){ // disciplinas (asignaturas) a las que cuenta una valoración
   if(r.disc)return [r.disc];
@@ -1035,11 +1046,11 @@ function ponderacionTxt(tp){
   return pw.length?'Ponderación aplicada: '+pw.map(t=>`${t.pl} ${Math.round(100*pesoDe(t.k)/sum)}%`).join(' · ')+'.':'Ningún tipo de evidencia tiene peso asignado.';
 }
 /* Participaciones continuas por proyecto académico */
-function logKey(c){return c.ppa?`${c.ppa}#${c.pa||''}#${c.disc||''}`:`-#${c.trim}#${(c.campos||[]).slice().sort().join(',')}#${c.disc||''}`}
+function logKey(c){const P=c.ppa&&ppaById(c.ppa),tn=P?trimNuevo(P,c.pa?paDe(P,c.pa):null):0;return c.ppa?`${c.ppa}#${c.pa||''}#${c.disc||''}`+(P&&tn!==+P.trim?'#t'+tn:''):`-#${c.trim}#${(c.campos||[]).slice().sort().join(',')}#${c.disc||''}`}
 const findLog=c=>S.registros.find(r=>r.log&&r.lk===logKey(c));
 function getLog(c){
   let r=findLog(c);if(r)return r;const P=c.ppa&&ppaById(c.ppa);
-  r={id:uid(),log:true,lk:logKey(c),trim:P?+P.trim:+c.trim,fecha:hoy(),ult:hoy(),ppa:P?P.id:null,pa:P?(c.pa||null):null,campos:(c.campos||[]).slice(),disc:c.disc||'',tipo:'participacion',
+  r={id:uid(),log:true,lk:logKey(c),trim:P?+P.trim:+c.trim,...(P?tpDe(P,c.pa?paDe(P,c.pa):null):{}),fecha:hoy(),ult:hoy(),ppa:P?P.id:null,pa:P?(c.pa||null):null,campos:(c.campos||[]).slice(),disc:c.disc||'',tipo:'participacion',
     titulo:P?(c.pa?'Participaciones del proyecto':'Participaciones del PPA'):'Participaciones · '+(c.campos||[]).map(cortoCampo).join(', '),desc:'',valores:{}};
   S.registros.push(r);return r;
 }
@@ -1152,7 +1163,7 @@ function resumenAl(aid,ts){
   return {periodo:ts.length===1?'Trimestre '+ts[0]:'Ciclo escolar completo',
     campos:CAMPOS.map(c=>({campo:c.n,porTrimestre:[1,2,3].filter(t=>ts.includes(t)).map(t=>{const k=calif(aid,c.k,t);return {trimestre:t,calificacion:k.cal,promedioPonderado:k.s==null?null:+f1(k.s)}})})),
     disciplinas:discsEn(S.registros.filter(r=>ts.includes(rTrim(r)))).map(d=>({disciplina:d.n,campo:nombreCampo(d.c),porTrimestre:[1,2,3].filter(t=>ts.includes(t)).map(t=>({trimestre:t,calificacion:califD(aid,d.n,t).cal}))})),
-    proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(p=>{const s=scorePPA(aid,p);return {ppa:p.nombre,promedio:s==null?null:+f1(s)}}).filter(x=>x.promedio!=null),
+    proyectos:S.ppas.filter(p=>ts.some(t=>ppaEnTrim(p,t))).map(p=>{const s=scorePPA(aid,p);return {ppa:p.nombre,promedio:s==null?null:+f1(s)}}).filter(x=>x.promedio!=null),
     cumplimiento:{evidencias:st.asig,entregadas:st.ent,porcentaje:st.pct},
     participaciones:{total:st.part,ideas:st.pk.i,exposiciones:st.pk.e,voluntarias:st.pk.v,promedioDelGrupo:+f1(partGrupo(ts))},
     asistencia:(x=>x.hab?{diasConLista:x.hab,asistencias:x.A,faltas:x.F,justificadas:x.J,porcentaje:x.pct,faltasSeguidasActuales:asRacha(aid)}:undefined)(asTot(aid,asFechas(f=>ts.includes(trimDe(f))))),
@@ -1214,7 +1225,7 @@ const AZ='1F3864',AZ2='2E75B6',AZ3='BDD7EE',GR='F2F2F2',BO='CCCCCC',ROJO='C00000
 const LARGOS=['Proyecto parcial de aula','Contenido integrador','Proyecto académico','Producto final','Campo formativo','Disciplinas','Evidencia que evalúa'];
 function datosEnc(P,pa){
   const c=S.cfg;
-  const d=[['Escuela',c.escuela||'Telesecundaria'],['CCT',c.cct||'—'],['Docente',c.docente||'—'],['Grado y grupo',`${c.grado||''}° ${c.grupo||''}`.trim()],['Ciclo escolar',c.ciclo||'—'],['Trimestre',ORDC[P.trim]||'—'],['Periodo',rango(P)||'—'],['Fecha de emisión',fmtF(hoy())],['Campo formativo',(pa&&pa.campos&&pa.campos.length?pa.campos:P.campos||[]).map(nombreCampo).join(', ')||'—']].concat(esMet(P)?[['Metodología',nomMet(P)],['Proyecto o secuencia',P.nombre]]:[['Proyecto parcial de aula',P.nombre]]);
+  const d=[['Escuela',c.escuela||'Telesecundaria'],['CCT',c.cct||'—'],['Docente',c.docente||'—'],['Grado y grupo',`${c.grado||''}° ${c.grupo||''}`.trim()],['Ciclo escolar',c.ciclo||'—'],['Trimestre',trimsDe(P,pa).length>1?trimsDe(P,pa).map(t=>ORDC[t]).join(' y '):ORDC[P.trim]||'—'],['Periodo',rango(P)||'—'],['Fecha de emisión',fmtF(hoy())],['Campo formativo',(pa&&pa.campos&&pa.campos.length?pa.campos:P.campos||[]).map(nombreCampo).join(', ')||'—']].concat(esMet(P)?[['Metodología',nomMet(P)],['Proyecto o secuencia',P.nombre]]:[['Proyecto parcial de aula',P.nombre]]);
   if(P.contenido)d.push([esMet(P)?'Propósito o contenido':'Contenido integrador',P.contenido]);
   if(pa){d.push(['Proyecto académico',pa.nombre]);{const dd=paDs(pa);if(dd.length)d.push([dd.length>1?'Disciplinas':'Disciplina',dd.join(', ')])}if(pa.producto)d.push(['Producto final',pa.producto])}
   else{const l=[...new Set(discsEn(regsPPA(P)).map(x=>x.n).concat(discsDePPA(P)))];if(l.length)d.push(['Disciplinas',l.join(', ')])}
@@ -1550,7 +1561,7 @@ function partRows(c){
 function refreshPart(){const c=U.pctx;if(!c)return;const l=$('#part-list');if(l)l.innerHTML=partRows(c);const r=findLog(c),t=$('#part-tot');if(t)t.textContent=partTotTxt(r?logTot(r):{i:0,e:0,v:0,c:0})}
 
 /* Registrar */
-function ppaDefault(){const ps=S.ppas.filter(p=>+p.trim===U.trim&&p.estado!=='concluido').sort(ordPPA);return ps[0]?ps[0].id:''}
+function ppaDefault(){const ps=S.ppas.filter(p=>p.estado!=='concluido'&&(trimNuevo(p,null)===U.trim||(p.pas||[]).some(pa=>trimNuevo(p,pa)===U.trim))).sort(ordPPA);return ps[0]?ps[0].id:''}
 function resolveDraft(){
   const d=U.draft;
   if(d.ppa==null)d.ppa=ppaDefault();
@@ -1564,13 +1575,13 @@ function draftDiscInh(){const d=U.draft,P=d.ppa&&ppaById(d.ppa);if(esMet(P))retu
 function ctxDraft(){const d=U.draft;return {ppa:d.ppa||null,pa:d.ppa?(d.pa||''):null,disc:d.disc||'',campos:draftCampos().slice(),trim:d.trim||U.trim}}
 const modoLog=()=>U.draft.tipo==='participacion'&&!U.draft.id;
 function ppaOptions(sel){
-  const g=[1,2,3].map(t=>{const ps=S.ppas.filter(p=>+p.trim===t).sort(ordPPA);return ps.length?`<optgroup label="Trimestre ${t}">${ps.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esMet(p)?esc(METS[metDe(p)].corto)+' · ':''}${esc(p.nombre)}${p.estado==='concluido'?' (concluido)':''}</option>`).join('')}</optgroup>`:''}).join('');
+  const g=[1,2,3].map(t=>{const ps=S.ppas.filter(p=>trimUlt(p)===t).sort(ordPPA);return ps.length?`<optgroup label="Trimestre ${t}">${ps.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esMet(p)?esc(METS[metDe(p)].corto)+' · ':''}${esc(p.nombre)}${p.estado==='concluido'?' (concluido)':''}</option>`).join('')}</optgroup>`:''}).join('');
   return `<option value="" ${sel===''?'selected':''}>Actividad suelta (sin proyecto)</option>${g}`;
 }
 function vRegistrar(){
   if(!activos().length)return sinAlumnos();
   resolveDraft();
-  const d=U.draft,part=d.tipo==='participacion',log=modoLog(),P=d.ppa&&ppaById(d.ppa),t=P?+P.trim:(d.trim||U.trim),pas=P?(P.pas||[]):[];
+  const d=U.draft,part=d.tipo==='participacion',log=modoLog(),P=d.ppa&&ppaById(d.ppa),t=P?(d.id&&regById(d.id)?rTrim(regById(d.id)):trimNuevo(P,d.pa?paDe(P,d.pa):null)):(d.trim||U.trim),pas=P?(P.pas||[]):[];
   const cs=draftCampos(),inh=draftDiscInh(),ef=d.disc?[d.disc]:inh;
   const dopts=[...new Set(cs.flatMap(k=>discsCampo(k)).concat(ef))];
   const todoDs=P&&d.pa===''&&!d.disc?discsDePPA(P):[];
@@ -1653,7 +1664,7 @@ function refreshList(){const l=$('#stlist');if(l)l.innerHTML=stList();const c=$(
 /* Proyectos (PPA) */
 function vProyectos(){
   if(U.hoja&&ppaById(U.hoja.ppa))return vHoja();
-  const t=U.trim,ps=S.ppas.filter(p=>+p.trim===t).sort(ordPPA);
+  const t=U.trim,ps=S.ppas.filter(p=>ppaEnTrim(p,t)).sort(ordPPA);
   const sueltos=S.registros.filter(r=>!r.ppa&&rTrim(r)===t).length;
   const P=U.ppaSel&&ppaById(U.ppaSel);
   return `<section class="panel flat"><div class="sec-h"><div><div class="eyebrow">Trimestre ${t}</div><h2>Proyectos y secuencias</h2></div>${U.ppaForm||U.elegirTipo?'':'<button class="btn primary" data-act="newPPA">+ Nuevo proyecto o secuencia</button>'}</div>
@@ -1661,7 +1672,7 @@ function vProyectos(){
   ${U.elegirTipo?tipoNuevoHTML():''}${U.ppaForm?ppaFormHTML():''}
   ${ps.length?ps.map(ppaCard).join(''):(U.ppaForm||U.elegirTipo?'':`<section class="panel empty"><h3>Sin proyectos en el trimestre ${t}</h3><p class="lead">Crea tu primer PPA, secuencia didáctica o proyecto con metodología sociocrítica.</p><button class="btn primary" data-act="newPPA">+ Nuevo proyecto o secuencia</button></section>`)}
   ${sueltos?`<p class="hint">${sueltos===1?'1 valoración de este trimestre no pertenece':sueltos+' valoraciones de este trimestre no pertenecen'} a un PPA. Consúltalas en la Bitácora.</p>`:''}
-  ${P&&+P.trim===t?ppaDetalle(P):''}`;
+  ${P&&ppaEnTrim(P,t)?ppaDetalle(P):''}`;
 }
 function metResumen(P,regs){ // tarjeta de una metodología: avance por fases
   const A=activos(),a=avanceFases(P,null),act=faseActual(P,null);
@@ -1673,12 +1684,12 @@ function ppaCard(P){
   const A=activos(),pas=P.pas||[],regs=regsPPA(P),fin=P.estado==='concluido',sel=U.ppaSel===P.id;
   const pg=avg(A.map(a=>scorePPA(a.id,P)).filter(x=>x!=null)),todo=regs.filter(r=>!r.pa).length;
   return `<section class="ppa ${sel?'sel':''}">
-    <div class="hd"><div style="min-width:0"><span class="tag met">${esc(nomMet(P))}</span><h3>${esc(P.nombre)}</h3><div class="meta">${(P.campos||[]).map(k=>`<span><span class="dot" style="--cc:var(--c-${k})"></span> ${nombreCampo(k)}</span>`).join('')}${rango(P)?`<span>${rango(P)}</span>`:''}<span class="badge ${fin?'fin':'curso'}">${fin?'Concluido':'En curso'}</span></div></div>
+    <div class="hd"><div style="min-width:0"><span class="tag met">${esc(nomMet(P))}</span><h3>${esc(P.nombre)}</h3><div class="meta">${(P.campos||[]).map(k=>`<span><span class="dot" style="--cc:var(--c-${k})"></span> ${nombreCampo(k)}</span>`).join('')}${rango(P)?`<span>${rango(P)}</span>`:''}<span class="badge ${fin?'fin':'curso'}">${fin?'Concluido':'En curso'}</span>${trimsEtq(P,null)?`<span class="tri-etq">${trimsEtq(P,null)}</span>`:''}</div></div>
       <div class="prom">${gnum(pg,'cal')}<small>Promedio del grupo</small></div></div>
     ${esMet(P)?metResumen(P,regs):''}<div class="palist" ${esMet(P)?'hidden':''}>${pas.map((pa,i)=>{const rs=regs.filter(r=>r.pa===pa.id),n=rs.length,ni=rs.filter(r=>r.inst).length,pr=avg(A.map(a=>scorePA(a.id,P,pa).score).filter(x=>x!=null));
-      return `<div class="parow"><span class="k">${i+1}</span><span style="min-width:0"><b>${esc(pa.nombre)}</b>${paDs(pa).length?' '+tagsDisc(paDs(pa)):''}${pa.estado==='concluido'?' <span class="badge fin">Concluido</span>':''}${pa.producto?`<br><span class="muted" style="font-size:.85rem">Producto final: ${esc(pa.producto)}</span>`:''}</span><span class="stat muted" style="font-size:.85rem">${pl(n,'valoración','valoraciones')}${ni?' · '+pl(ni,'instrumento','instrumentos'):''}<br>${(()=>{const a=avanceFases(P,pa);return `<span title="Etapas con evidencias">${barraFases(P,pa,true)} ${a.n}/${a.t} etapas</span>`})()}</span>${gnum(pr)}</div>`}).join('')||'<p class="hint">Sin proyectos académicos. Edita el PPA para agregar hasta tres.</p>'}
+      return `<div class="parow"><span class="k">${i+1}</span><span style="min-width:0"><b>${esc(pa.nombre)}</b>${paDs(pa).length?' '+tagsDisc(paDs(pa)):''}${pa.estado==='concluido'?' <span class="badge fin">Concluido</span>':''}${pa.producto?`<br><span class="muted" style="font-size:.85rem">Producto final: ${esc(pa.producto)}</span>`:''}</span><span class="stat muted" style="font-size:.85rem">${trimsEtq(P,pa)?`<span class="tri-etq">${trimsEtq(P,pa)}</span><br>`:''}${pl(n,'valoración','valoraciones')}${ni?' · '+pl(ni,'instrumento','instrumentos'):''} · <button class="lnk" data-act="trMenu" data-k="${P.id}" data-pa="${pa.id}" title="Continuar o mover a otro trimestre">Trimestre…</button><br>${(()=>{const a=avanceFases(P,pa);return `<span title="Etapas con evidencias">${barraFases(P,pa,true)} ${a.n}/${a.t} etapas</span>`})()}</span>${gnum(pr)}</div>`}).join('')||'<p class="hint">Sin proyectos académicos. Edita el PPA para agregar hasta tres.</p>'}
       ${todo?`<p class="hint">${todo===1?'1 valoración aplica':todo+' valoraciones aplican'} a todo el PPA.</p>`:''}</div>
-    <div class="row"><button class="btn sm ${sel?'primary':''}" data-act="verPPA" data-k="${P.id}">${sel?'Ocultar valoraciones':'Ver valoraciones'}</button><button class="btn sm primary" data-act="hoja" data-k="${P.id}">Hoja de calificaciones</button><button class="btn sm" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><button class="btn sm" data-act="editPPA" data-k="${P.id}">Editar</button><button class="btn sm" data-act="finPPA" data-k="${P.id}">${fin?'Reabrir':'Concluir'}</button><span class="spacer"></span><button class="btn sm" data-act="docx" data-k="${P.id}">Descargar Word</button><button class="btn sm" data-act="xlsx" data-k="${P.id}">Descargar Excel</button>${confirmBtn('delPPA',P.id,regs.length?`Eliminar (${pl(regs.length,'valoración','valoraciones')})`:'Eliminar')}</div>
+    <div class="row"><button class="btn sm ${sel?'primary':''}" data-act="verPPA" data-k="${P.id}">${sel?'Ocultar valoraciones':'Ver valoraciones'}</button><button class="btn sm primary" data-act="hoja" data-k="${P.id}">Hoja de calificaciones</button><button class="btn sm" data-act="regPPA" data-k="${P.id}">Registrar valoración</button><button class="btn sm" data-act="editPPA" data-k="${P.id}">Editar</button><button class="btn sm" data-act="trMenu" data-k="${P.id}">Trimestre…</button><button class="btn sm" data-act="finPPA" data-k="${P.id}">${fin?'Reabrir':'Concluir'}</button><span class="spacer"></span><button class="btn sm" data-act="docx" data-k="${P.id}">Descargar Word</button><button class="btn sm" data-act="xlsx" data-k="${P.id}">Descargar Excel</button>${confirmBtn('delPPA',P.id,regs.length?`Eliminar (${pl(regs.length,'valoración','valoraciones')})`:'Eliminar')}</div>
   </section>`;
 }
 function ppaDetalle(P){
@@ -1723,7 +1734,7 @@ function matrizPA(P,pa){
   const k_=`data-k="${P.id}" data-pa="${pa?pa.id:''}"`;
   const acciones=`<div class="row"><button class="btn primary" data-act="hoja" ${k_}>Hoja de calificaciones</button><button class="btn" data-act="${pa?'regPA':'regPPA'}" ${k_}>Registrar valoración</button><button class="btn" data-act="partOpen" ${k_}>Registrar participaciones</button><button class="btn" data-act="instNew" ${k_}>+ Rúbrica o lista de cotejo</button></div>`;
   const fin=pa?`<button class="btn" data-act="finPA" ${k_}>${pa.estado==='concluido'?'Reabrir proyecto académico':'Concluir proyecto académico'}</button>`:'';
-  const head=pa?`<div class="row"><div style="min-width:0"><b>${esc(pa.nombre)}</b> ${tagsDisc(paDs(pa))}${pa.producto?`<br><span class="muted" style="font-size:.88rem">Producto final: ${esc(pa.producto)}</span>`:''}</div>${pa.estado==='concluido'?'<span class="badge fin">Concluido</span>':''}</div>`:esMet(P)?`<div class="row"><div style="min-width:0"><span class="tag met">${esc(nomMet(P))}</span> ${tagsDisc(P.discs||[])}${P.contenido?`<br><span class="muted" style="font-size:.88rem">${esc(P.contenido)}</span>`:''}</div></div>`:'';
+  const head=pa?`<div class="row"><div style="min-width:0"><b>${esc(pa.nombre)}</b> ${tagsDisc(paDs(pa))}${trimsEtq(P,pa)?` <span class="tri-etq">${trimsEtq(P,pa)}</span>`:''} <button class="lnk" data-act="trMenu" data-k="${P.id}" data-pa="${pa.id}">Trimestre…</button>${pa.producto?`<br><span class="muted" style="font-size:.88rem">Producto final: ${esc(pa.producto)}</span>`:''}</div>${pa.estado==='concluido'?'<span class="badge fin">Concluido</span>':''}</div>`:esMet(P)?`<div class="row"><div style="min-width:0"><span class="tag met">${esc(nomMet(P))}</span> ${tagsDisc(P.discs||[])}${P.contenido?`<br><span class="muted" style="font-size:.88rem">${esc(P.contenido)}</span>`:''}</div></div>`:'';
   if(!cols.length)return `${head}${acciones}<div class="empty"><p class="lead">Aún no hay valoraciones${pa?' en este proyecto académico':' en este PPA'}.</p></div>${instLista(P,pa)}`;
   const regs=cols.map(c=>c.r),sc=A.map(a=>scoreSet(a.id,regs)),dOf=discsPA(pa);
   const dsAll=discsEn(regs,dOf),ds=dsAll.length>1?dsAll:[];
@@ -1858,7 +1869,7 @@ function resumenReg(r){
 }
 function etiquetaPPA(r){const P=r.ppa&&ppaById(r.ppa);if(!P)return '';const pa=r.pa&&paDe(P,r.pa);return `<span>${esc(corto(P.nombre,44))} › ${pa?esc(corto(pa.nombre,44)):'todo el PPA'}</span>`}
 function vBitacora(){
-  const ps=S.ppas.filter(p=>+p.trim===U.trim).sort(ordPPA);
+  const ps=S.ppas.filter(p=>ppaEnTrim(p,U.trim)).sort(ordPPA);
   const rs=S.registros.filter(r=>rTrim(r)===U.trim&&(!U.filtro||rCampos(r).includes(U.filtro))&&(U.filtroPPA===''||(U.filtroPPA==='-'?!r.ppa:r.ppa===U.filtroPPA))).sort((a,b)=>a.fecha<b.fecha?1:a.fecha>b.fecha?-1:0);
   const ns=S.notas.filter(n=>n.trim===U.trim).sort((a,b)=>a.fecha<b.fecha?1:-1);
   return `<section class="panel"><div class="sec-h"><h2>Valoraciones del trimestre ${U.trim}</h2><span class="muted">${rs.length} registros</span></div>
@@ -1895,7 +1906,7 @@ function barras(items,o={}){ // gráfico de barras verticales, escala 5 a 10
 }
 function vInicio(){
   if(!activos().length)return sinAlumnos();
-  const t=U.trim,A=activos(),c=S.cfg,ps=S.ppas.filter(p=>+p.trim===t).sort(ordPPA);
+  const t=U.trim,A=activos(),c=S.cfg,ps=S.ppas.filter(p=>ppaEnTrim(p,t)).sort(ordPPA);
   const regsT=S.registros.filter(r=>rTrim(r)===t),proms=A.map(a=>promAl(a.id,t)).filter(x=>x!=null),at=atencion(t);
   const ult=S.registros.filter(r=>r.ppa&&ppaById(r.ppa)).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''))[0],Pu=ult&&ppaById(ult.ppa);
   const h=new Date().getHours(),sal=h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches';
@@ -1916,7 +1927,7 @@ function vInicio(){
   return `<section class="hero">
     <div class="panel hello"><div class="eyebrow">${fmtF(hoy())} · Trimestre ${t}</div><h2>${sal}${c.docente?', '+esc(c.docente.split(' ')[0]):''}</h2>
       <p class="lead">${ps.length?`Este trimestre llevas ${pl(ps.length,'proyecto o secuencia','proyectos o secuencias')} y ${pl(regsT.length,'valoración registrada','valoraciones registradas')}.`:'Aún no tienes proyectos en este trimestre. Empieza creando uno.'}</p>
-      <div class="qa"><button class="btn primary" data-act="nav" data-k="registrar">Registrar valoración</button>${Pu&&+Pu.trim===t?`<button class="btn" data-act="irTrabajo" data-k="${Pu.id}">Continuar: ${esc(corto(Pu.nombre,28))}</button>`:''}<button class="btn" data-act="newPPA">+ Nuevo proyecto o secuencia</button></div></div>
+      <div class="qa"><button class="btn primary" data-act="nav" data-k="registrar">Registrar valoración</button>${Pu&&ppaEnTrim(Pu,t)?`<button class="btn" data-act="irTrabajo" data-k="${Pu.id}">Continuar: ${esc(corto(Pu.nombre,28))}</button>`:''}<button class="btn" data-act="newPPA">+ Nuevo proyecto o secuencia</button></div></div>
     <div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="kpi"><b>${f1(avg(proms))}</b><span>Promedio del grupo · trimestre ${t}</span></div><div class="kpi"><b>${regsT.length}</b><span>Valoraciones del trimestre</span></div>
       <div class="kpi"><b>${A.length}</b><span>Alumnos activos</span></div><div class="kpi"><b>${at.length}</b><span>${at.length?`<button class="btn sm ghost" data-act="nav" data-k="trimestre" style="padding:0;border:0">Requieren atención →</button>`:'Requieren atención'}</span></div></div>
   </section>
@@ -2088,7 +2099,7 @@ const A={
     if(!Object.keys(d.valores).length){toast('Califica al menos a un alumno.');return}
     if(!d.titulo.trim()){if(d.tipo==='participacion')d.titulo='Participaciones del '+fmtF(d.fecha);else{toast('Escribe el nombre de la evidencia.');$('#d-titulo')?.focus();return}}
     const prev=d.id&&regById(d.id);
-    const r={...(prev||{}),id:d.id||uid(),trim:P?+P.trim:(d.trim||U.trim),fecha:d.fecha,ppa:P?P.id:null,pa:P?(d.pa||null):null,campos:cs.slice(),disc:(d.disc||'').trim(),tipo:d.tipo,titulo:d.titulo.trim(),desc:(d.desc||'').trim(),valores:d.valores,fase:P&&d.fase&&faseDe(P,d.fase)?d.fase:null};
+    const r={...(prev||{}),...(P&&!prev?tpDe(P,d.pa?paDe(P,d.pa):null):{}),id:d.id||uid(),trim:P?+P.trim:(d.trim||U.trim),fecha:d.fecha,ppa:P?P.id:null,pa:P?(d.pa||null):null,campos:cs.slice(),disc:(d.disc||'').trim(),tipo:d.tipo,titulo:d.titulo.trim(),desc:(d.desc||'').trim(),valores:d.valores,fase:P&&d.fase&&faseDe(P,d.fase)?d.fase:null};
     const i=S.registros.findIndex(x=>x.id===r.id);if(i>=0)S.registros[i]=r;else S.registros.push(r);
     const keep={ppa:d.ppa,pa:d.pa,campos:d.campos,disc:d.disc,tipo:d.tipo,fecha:d.fecha,fase:d.fase};
     U.draft={...newDraft(),...(d.id?{}:keep)};LS.set('tsf-draft',U.draft);
@@ -2143,7 +2154,7 @@ const A={
     let r=f.regId?regById(f.regId):f.vinc.startsWith('reg:')?regById(f.vinc.slice(4)):null,nuevo=false;
     if(r){r.inst=inst;r.marcas=r.marcas||{};r.valores=r.valores||{};if(f.regId){r.tipo=f.vt||r.tipo;if(String(f.vn).trim())r.titulo=String(f.vn).trim()}limpiarMarcas(r)}
     else{const pa=f.pa&&paDe(P,f.pa),vt=f.vinc.slice(4)||'producto';nuevo=true;
-      r={id:uid(),trim:+P.trim,fecha:hoy(),ppa:P.id,pa:f.pa||null,campos:(pa&&pa.campos&&pa.campos.length?pa.campos:P.campos||[]).slice(),disc:'',tipo:vt,titulo:String(f.vn).trim()||(pa&&pa.producto)||tipo(vt).n,desc:'',valores:{},inst,marcas:{}};
+      r={id:uid(),trim:+P.trim,...tpDe(P,pa),fecha:hoy(),ppa:P.id,pa:f.pa||null,campos:(pa&&pa.campos&&pa.campos.length?pa.campos:P.campos||[]).slice(),disc:'',tipo:vt,titulo:String(f.vn).trim()||(pa&&pa.producto)||tipo(vt).n,desc:'',valores:{},inst,marcas:{}};
       S.registros.push(r)}
     U.instForm=null;U.instEval=r.id;U.instAid=null;U.instModo='alumno';if(f.pa)U.paSel=f.pa;render();irA('inst-eval');
     try{await Store.reg(r);toast(nuevo?'Instrumento guardado. Ya puedes evaluar a cada alumno.':'Instrumento actualizado')}catch(e){}},
@@ -2176,7 +2187,7 @@ const A={
     setTimeout(()=>$('#n-texto')?.focus(),30)},
   async saveNota(b){const tx=$('#n-texto').value.trim();if(!tx){toast('Escribe la observación.');return}
     const n={id:uid(),aid:b.dataset.aid,trim:U.trim,fecha:hoy(),cat:$('#n-cat').value,campo:$('#n-campo').value,texto:tx};
-    if(U.view==='registrar'){const d=U.draft,P=d.ppa&&ppaById(d.ppa);if(P){n.ppa=P.id;n.trim=+P.trim;if(d.pa)n.pa=d.pa;if(d.fase)n.fase=d.fase}if(d.fecha)n.fecha=d.fecha;if((d.titulo||'').trim())n.act=d.titulo.trim()} // comentario ligado a la actividad que se registra
+    if(U.view==='registrar'){const d=U.draft,P=d.ppa&&ppaById(d.ppa);if(P){n.ppa=P.id;n.trim=d.id&&regById(d.id)?rTrim(regById(d.id)):trimNuevo(P,d.pa?paDe(P,d.pa):null);if(d.pa)n.pa=d.pa;if(d.fase)n.fase=d.fase}if(d.fecha)n.fecha=d.fecha;if((d.titulo||'').trim())n.act=d.titulo.trim()} // comentario ligado a la actividad que se registra
     S.notas.push(n);$('#modal').innerHTML='';if(U.view!=='registrar')render();await Store.nota(n);toast('Nota guardada')},
   cerrar(){$('#modal').innerHTML=''},
   bg(b,e){if(e.target===b)$('#modal').innerHTML=''},
@@ -2208,7 +2219,7 @@ const A={
     const datos={periodo:k==='final'?'Ciclo escolar':'Trimestre '+ts[0],alumnos:L.length,
       promedioPorCampo:CAMPOS.map(c=>({campo:c.n,promedio:r1n(avg(L.map(a=>ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k)).filter(x=>x!=null)))})),
       promedioPorDisciplina:discsEn(S.registros.filter(r=>ts.includes(rTrim(r)))).map(d=>({disciplina:d.n,promedio:r1n(avg(L.map(a=>ts.length===1?califD(a.id,d.n,ts[0]).cal:finalDisc(a.id,d.n)).filter(x=>x!=null)))})),
-      proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(p=>({ppa:p.nombre,promedioGrupo:r1n(avg(L.map(a=>scorePPA(a.id,p)).filter(x=>x!=null)))})),
+      proyectos:S.ppas.filter(p=>ts.some(t=>ppaEnTrim(p,t))).map(p=>({ppa:p.nombre,promedioGrupo:r1n(avg(L.map(a=>scorePPA(a.id,p)).filter(x=>x!=null)))})),
       cumplimientoPromedio:Math.round(avg(L.map(a=>stats(a.id,ts).pct).filter(x=>x!=null))||0),
       alumnosConAlertas:ts.length===1?atencion(ts[0]).map(x=>x.r):null};
     redactar(`${PROMPT_BASE}\n\nRedacta la ${k==='final'?'ficha descriptiva grupal de fin de ciclo, dirigida al docente del siguiente grado':'síntesis grupal del trimestre'}: un texto de 130 a 200 palabras sobre el desempeño colectivo por campo formativo, disciplina y proyecto, las fortalezas y retos del grupo y estrategias recomendadas en el marco del trabajo por proyectos de telesecundaria. No nombres a ningún alumno.\n\nDatos:\n${JSON.stringify(datos)}`,$('#g-'+k),b)},
@@ -2282,6 +2293,23 @@ const A={
     U.ppaForm=null;U.ppaSel=P.id;U.paSel='resumen';if(P.trim!==U.trim){U.trim=P.trim;LS.set('tsf-trim',U.trim)}
     render();irA('detalle-ppa');
     try{await Store.ppa(P);toast(i>=0?(met?'Cambios guardados':'PPA actualizado'):(met?'Listo. Ya puedes registrar valoraciones por fase.':'PPA creado. Ya puedes registrar valoraciones.'))}catch(e){}},
+  trMenu(b){const P=ppaById(b.dataset.k);if(!P)return;const pa=b.dataset.pa?paDe(P,b.dataset.pa):null,rs=S.registros.filter(r=>r.ppa===P.id&&(!pa||r.pa===pa.id)),tn=trimNuevo(P,pa);
+    const cnt=t=>rs.filter(r=>rTrim(r)===t).length,quien=pa?'proyecto académico':esMet(P)?'trabajo':'PPA completo';
+    modal(`<div><div class="eyebrow">Trimestre del ${quien}</div><h3>${esc(pa?pa.nombre:P.nombre)}</h3></div>
+      <p class="lead">Ahora sus valoraciones nuevas cuentan en el <b>trimestre ${tn}</b>. Registradas: ${[1,2,3].map(t=>`T${t}: ${cnt(t)}`).join(' · ')}.</p>
+      <label class="fld" style="max-width:260px"><span>Trimestre</span><select id="tr-sel">${[1,2,3].map(t=>`<option value="${t}" ${t===(tn<3?tn+1:tn)?'selected':''}>Trimestre ${t}</option>`).join('')}</select></label>
+      <div class="tr-op"><button class="btn primary" data-act="trOk" data-k="${P.id}" data-pa="${pa?pa.id:''}" data-m="cont">Continuar en ese trimestre</button><span class="muted">Lo ya registrado se queda donde está; las valoraciones nuevas cuentan en el trimestre elegido.</span></div>
+      <div class="tr-op"><button class="btn" data-act="trOk" data-k="${P.id}" data-pa="${pa?pa.id:''}" data-m="mover">Mover todo a ese trimestre</button><span class="muted">${pl(rs.length,'valoración pasa','valoraciones pasan')} al trimestre elegido, junto con las nuevas.</span></div>
+      <p class="hint">Cada trimestre toma solo las actividades que cuentan en él. El promedio del ${pa?'proyecto académico':'proyecto'} sigue considerando todas sus actividades. En la Hoja de calificaciones puedes cambiar el trimestre de una actividad en particular.</p>
+      <div class="row"><button class="btn ghost" data-act="cerrar">Cancelar</button></div>`)},
+  async trOk(b){const P=ppaById(b.dataset.k);if(!P)return;const pa=b.dataset.pa?paDe(P,b.dataset.pa):null,t=+$('#tr-sel').value,m=b.dataset.m,base=+P.trim,cambiados=[];
+    const fija=(o,k)=>{if(t===base)delete o[k];else o[k]=t};
+    if(pa)fija(pa,'trim');else{fija(P,'trimAct');(P.pas||[]).forEach(x=>fija(x,'trim'))}
+    if(m==='mover')S.registros.forEach(r=>{if(r.ppa===P.id&&(!pa||r.pa===pa.id)){if(t===base)delete r.tp;else r.tp=t;cambiados.push(r)}});
+    if(m==='mover'&&!pa){P.trim=t;delete P.trimAct;(P.pas||[]).forEach(x=>delete x.trim);cambiados.forEach(r=>delete r.tp)} // mover todo el trabajo: cambia su trimestre base
+    CACHE={};$('#modal').innerHTML='';if(U.trim!==t){U.trim=t;LS.set('tsf-trim',t)}U.ppaSel=P.id;render();
+    await Store.ppa(P);for(const r of cambiados)await Store.reg(r);
+    toast(m==='mover'?`${pa?pa.nombre:P.nombre}: todo pasa al trimestre ${t}`:`${pa?pa.nombre:P.nombre}: las valoraciones nuevas cuentan en el trimestre ${t}`)},
   irTrabajo(b){const P=ppaById(b.dataset.k);if(!P)return;U.view='proyectos';LS.set('tsf-view','proyectos');U.ppaSel=P.id;U.paSel='resumen';limpiarModos();render();irA('detalle-ppa')},
   verPPA(b){const id=b.dataset.k;U.ppaSel=U.ppaSel===id?null:id;U.paSel='resumen';limpiarModos();render();if(U.ppaSel)irA('detalle-ppa')},
   paSel(b){U.paSel=b.dataset.k;limpiarModos();render();irA('detalle-ppa')},
@@ -2379,7 +2407,7 @@ function vHoja(){
       return `<td><div class="hj-cel"><input class="cin hj ${hjCls(v)}" id="hj-${r.id}-${a.id}" data-chg="hjCel" data-r="${r.id}" data-aid="${a.id}" data-f="${f}" data-c="${c}" value="${hjTxt(v)}" inputmode="decimal" autocomplete="off" aria-label="${esc(a.nombre)}, ${esc(r.titulo)}">${h.uno!=null?`<button class="btn sm" data-act="hjVal" data-r="${r.id}" data-aid="${a.id}" data-k="ne">NE</button><button class="btn sm" data-act="hjVal" data-r="${r.id}" data-aid="${a.id}" data-k="j">J</button>`:''}</div></td>`}).join('')}<td class="hj-p" id="hp-${a.id}">${gnum(hjProm(a.id,P,h))}</td></tr>`;
   return `${barra}<div class="hj-tw tw"><table class="mx hj-t"><thead>
     <tr class="hj-g"><th class="nm" rowspan="2">Alumno(a)</th>${gs.map(g=>`<th class="grp" colspan="${g.rs.length}" title="${esc(g.n)}">${esc(corto(g.n,g.rs.length*20))}</th>`).join('')}<th class="hj-p" rowspan="2">Promedio<small>${h.pa==='todo'&&pas.length?'del PPA':esMet(P)?'del trabajo':'del proyecto'}</small></th></tr>
-    <tr class="hj-c">${cols.map(r=>`<th><button class="hj-h" data-act="hjCol" data-k="${r.id}" title="${esc(r.titulo)}${r.desc?' · '+esc(r.desc):''}. Toca para editar."><b>${hjEditable(r)?'':'🔒 '}${esc(corto(r.titulo,34))}</b><small>${r.fecha?esc(fmtF(r.fecha).replace(/ \d{4}$/,''))+' · ':''}${esc(tipo(r.tipo).n)}${!r.pa&&pas.length&&h.pa!=='todo'?' · todo el PPA':''}</small></button></th>`).join('')}</tr></thead>
+    <tr class="hj-c">${cols.map(r=>`<th><button class="hj-h" data-act="hjCol" data-k="${r.id}" title="${esc(r.titulo)}${r.desc?' · '+esc(r.desc):''}. Toca para editar."><b>${hjEditable(r)?'':'🔒 '}${esc(corto(r.titulo,34))}</b><small>${r.fecha?esc(fmtF(r.fecha).replace(/ \d{4}$/,''))+' · ':''}${esc(tipo(r.tipo).n)}${rTrim(r)!==+P.trim?' · <b>T'+rTrim(r)+'</b>':''}${!r.pa&&pas.length&&h.pa!=='todo'?' · todo el PPA':''}</small></button></th>`).join('')}</tr></thead>
     <tbody>${L.map(fila).join('')}</tbody>
     <tfoot><tr><td class="nm">Promedio del grupo</td>${cols.map(r=>`<td id="hc-${r.id}">${gnum(promReg(r))}</td>`).join('')}<td class="hj-p" id="hp-grupo">${gnum(avg(L.map(a=>hjProm(a.id,P,h)).filter(x=>x!=null)))}</td></tr></tfoot></table></div>
   <p class="hint">Escribe de 5 a 10 (admite decimales), NE (o N) o J; se guarda solo. <b>Enter</b> baja al siguiente alumno, <b>Tab</b> y las flechas te mueven, <b>Ctrl+Z</b> deshace. Para pasar calificaciones de Excel, copia las celdas y pégalas en la primera casilla. Toca el nombre de una actividad para editarla o llenar las vacías. 🔒 = se califica con rúbrica, lista de cotejo o participaciones: tócala para abrir su pantalla. El promedio de la derecha considera todo ${h.pa==='todo'&&pas.length?'el PPA':'el proyecto'} con tu ponderación, aunque uses filtros.</p>`;
@@ -2410,12 +2438,14 @@ function hjModalCampos(P,o){ // campos comunes de actividad: tipo, proyecto acad
   return `<label class="fld"><span>Nombre de la actividad</span><input id="hc-tit" value="${esc(o.titulo||'')}" placeholder="Ej. Lectura comentada de leyendas"></label>
     <div class="grid2"><label class="fld"><span>Tipo de evidencia</span><select id="hc-tip">${tps.map(t=>`<option value="${t.k}" ${o.tipo===t.k?'selected':''}>${esc(t.n)}</option>`).join('')}</select></label>
       <label class="fld"><span>Fecha</span><input type="date" id="hc-fec" value="${esc(o.fecha||hoy())}"></label></div>
+    <label class="fld"><span>Trimestre en que cuenta</span><select id="hc-tri">${[1,2,3].map(t=>`<option value="${t}" ${+(o.tri||P.trim)===t?'selected':''}>Trimestre ${t}${t===+P.trim?' (el del proyecto)':''}</option>`).join('')}</select></label>
     ${pas.length?`<label class="fld"><span>Proyecto académico</span><select id="hc-pa">${pas.map((x,i)=>`<option value="${x.id}" ${o.pa===x.id?'selected':''}>${i+1}. ${esc(x.nombre)}</option>`).join('')}<option value="" ${!o.pa?'selected':''}>Todo el PPA</option></select></label>`:''}
     ${fs.length?`<label class="fld"><span>${etqFase(P)==='etapa'?'Etapa':'Fase'} (opcional)</span><select id="hc-fas"><option value="">Sin ${etqFase(P)}</option>${fs.map((f,i)=>`<option value="${f.id}" ${o.fase===f.id?'selected':''}>${i+1}. ${esc(f.n)}</option>`).join('')}</select></label>`:''}
     <label class="fld"><span>Descripción, PDA o criterio (opcional)</span><input id="hc-des" value="${esc(o.desc||'')}"></label>`;
 }
 function hjLeerCampos(P){const t=$('#hc-tit').value.trim();if(!t){toast('Escribe el nombre de la actividad.');$('#hc-tit').focus();return null}
-  const p=$('#hc-pa'),f=$('#hc-fas');return {titulo:t,tipo:$('#hc-tip').value,fecha:$('#hc-fec').value||hoy(),pa:p?(p.value||null):null,fase:f&&f.value&&faseDe(P,f.value)?f.value:null,desc:$('#hc-des').value.trim()}}
+  const p=$('#hc-pa'),f=$('#hc-fas');return {titulo:t,tipo:$('#hc-tip').value,fecha:$('#hc-fec').value||hoy(),pa:p?(p.value||null):null,fase:f&&f.value&&faseDe(P,f.value)?f.value:null,desc:$('#hc-des').value.trim(),tri:+$('#hc-tri').value}}
+const hjTri=(r,P,o)=>{const t=o.tri;delete o.tri;if(t&&t!==+P.trim)r.tp=t;else delete r.tp}; // trimestre propio de la actividad
 Object.assign(A,{
   hoja(b){const id=b.dataset.k,pa=b.dataset.pa;limpiarModos();U.hoja={ppa:id,pa:pa||'todo',tipo:'',disc:'',fase:'',pend:false,uno:null,undo:[]};render();window.scrollTo(0,0)},
   hjCerrar(){const P=U.hoja&&U.hoja.ppa;U.hoja=null;if(P)U.ppaSel=P;render();irA('detalle-ppa')},
@@ -2433,21 +2463,21 @@ Object.assign(A,{
     if(!hjEditable(r)){modal(`<div><div class="eyebrow">${r.inst?esc(instNom(r.inst)):'Participaciones'}</div><h3>${esc(r.titulo)}</h3></div><p class="lead">${r.inst?'Esta calificación sale de los criterios de su instrumento.':'Esta calificación sale del conteo de participaciones.'} Para modificarla, abre su pantalla.</p>
       <div class="row"><button class="btn primary" data-act="hjAbrirM" data-k="${r.id}">Abrir</button><button class="btn" data-act="cerrar">Cerrar</button></div>`);return}
     const n=Object.keys(r.valores||{}).length;
-    modal(`<div><div class="eyebrow">Editar actividad</div><h3>${esc(r.titulo)}</h3></div>${hjModalCampos(P,r)}
+    modal(`<div><div class="eyebrow">Editar actividad</div><h3>${esc(r.titulo)}</h3></div>${hjModalCampos(P,{...r,tri:rTrim(r)})}
       <div class="row"><button class="btn primary" data-act="hjColOk" data-k="${r.id}">Guardar cambios</button><button class="btn" data-act="cerrar">Cancelar</button></div>
       <div class="hj-sep"><span class="lbl">Llenar las casillas vacías de esta actividad</span><div class="row"><input class="cin" id="hc-fill" inputmode="decimal" placeholder="8.5" aria-label="Calificación para las vacías"><button class="btn sm" data-act="hjFill" data-k="${r.id}">Aplicar</button><button class="btn sm" data-act="hjFill" data-k="${r.id}" data-v="ne">NE</button></div></div>
       <div class="hj-sep"><button class="btn sm ghost" data-act="hjColDel" data-k="${r.id}" data-n="${n}">Eliminar esta actividad</button></div>`)},
   hjAbrirM(b){$('#modal').innerHTML='';U.hoja=null;A.editReg(b)},
-  async hjColOk(b){const r=regById(b.dataset.k),P=r&&ppaById(r.ppa);if(!r)return;const o=hjLeerCampos(P);if(!o)return;Object.assign(r,o);$('#modal').innerHTML='';hjRender();await Store.reg(r);toast('Actividad actualizada')},
+  async hjColOk(b){const r=regById(b.dataset.k),P=r&&ppaById(r.ppa);if(!r)return;const o=hjLeerCampos(P);if(!o)return;hjTri(r,P,o);Object.assign(r,o);$('#modal').innerHTML='';hjRender();await Store.reg(r);toast('Actividad actualizada')},
   hjFill(b){const r=regById(b.dataset.k);if(!r)return;const x=b.dataset.v?{v:b.dataset.v}:hjLeer($('#hc-fill').value);if(x.bad||x.v==null){toast('Escribe una calificación de 5 a 10, NE o J.');return}
     const n=hjSet(activos().filter(a=>(r.valores||{})[a.id]==null).map(a=>({r,aid:a.id,v:x.v})));$('#modal').innerHTML='';toast(n?`Se llenaron ${pl(n,'casilla','casillas')}`:'Esta actividad no tiene casillas vacías')},
   async hjColDel(b){if(!b.dataset.sure){b.dataset.sure='1';b.classList.remove('ghost');b.classList.add('warn');b.textContent=+b.dataset.n?`Confirmar: se borran ${pl(+b.dataset.n,'calificación','calificaciones')}`:'Confirmar eliminación';return}
     const id=b.dataset.k;S.registros=S.registros.filter(x=>x.id!==id);(U.hoja.undo||[]).forEach((l,i,a)=>{a[i]=l.filter(c=>c.rid!==id)});U.hoja.undo=U.hoja.undo.filter(l=>l.length);$('#modal').innerHTML='';hjRender();await Store.delReg(id);toast('Actividad eliminada')},
   hjNueva(){const h=U.hoja,P=ppaById(h.ppa),pas=P.pas||[];
-    modal(`<div><div class="eyebrow">${esc(P.nombre)}</div><h3>Nueva actividad</h3></div>${hjModalCampos(P,{tipo:h.tipo&&h.tipo!=='participacion'?h.tipo:'actividad',fecha:hoy(),pa:h.pa!=='todo'?h.pa:(pas[0]&&pas[0].id)||null,fase:h.fase||null})}
+    modal(`<div><div class="eyebrow">${esc(P.nombre)}</div><h3>Nueva actividad</h3></div>${hjModalCampos(P,{tipo:h.tipo&&h.tipo!=='participacion'?h.tipo:'actividad',fecha:hoy(),pa:h.pa!=='todo'?h.pa:(pas[0]&&pas[0].id)||null,fase:h.fase||null,tri:trimNuevo(P,h.pa!=='todo'?paDe(P,h.pa):pas[0]||null)})}
       <div class="row"><button class="btn primary" data-act="hjNuevaOk">Agregar y calificar</button><button class="btn" data-act="cerrar">Cancelar</button></div>`);setTimeout(()=>$('#hc-tit')?.focus(),30)},
   async hjNuevaOk(){const h=U.hoja,P=ppaById(h.ppa),o=hjLeerCampos(P);if(!o)return;const pa=o.pa&&paDe(P,o.pa);
-    const r={id:uid(),trim:+P.trim,ppa:P.id,campos:ctxPA(P,pa).campos||[],disc:'',valores:{},...o};S.registros.push(r);
+    const r={id:uid(),trim:+P.trim,ppa:P.id,campos:ctxPA(P,pa).campos||[],disc:'',valores:{}};hjTri(r,P,o);Object.assign(r,o);S.registros.push(r);
     Object.assign(h,{tipo:'',disc:'',fase:'',pend:false});if(h.pa!=='todo'&&r.pa&&r.pa!==h.pa)h.pa='todo';
     if(h.uno!=null){const l=hjGrupos(P,h).flatMap(g=>g.rs);h.uno=Math.max(0,l.indexOf(r))}
     $('#modal').innerHTML='';hjRender();const e=$(`input.hj[data-r="${r.id}"]`);if(e){e.focus();e.scrollIntoView({block:'nearest',inline:'center'})}await Store.reg(r)}
@@ -2921,7 +2951,7 @@ function datosGrupoIA(ts){
   const A=activos(),prev=ts.length===1&&ts[0]>1?ts[0]-1:null;
   return {grupo:`${S.cfg.grado||''}° ${S.cfg.grupo||''}`.trim(),alumnosActivos:A.length,periodo:ts.length===1?'Trimestre '+ts[0]:'Ciclo escolar completo',
     promedioPorCampo:CAMPOS.map(c=>({campo:c.n,promedio:(x=>x==null?null:+f1(x))(avg(A.map(a=>ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k)).filter(x=>x!=null)))})),
-    proyectos:S.ppas.filter(p=>ts.includes(+p.trim)).map(P=>{const av=avanceTrabajo(P),pr=promTrabajo(P);return {nombre:P.nombre,tipo:nomTrabajo(P),trimestre:+P.trim,promedioGrupo:pr==null?null:+f1(pr),avance:`${av.n} de ${av.t} ${etqFase(P,true)} con evidencias`,estado:P.estado||'en curso'}}),
+    proyectos:S.ppas.filter(p=>ts.some(t=>ppaEnTrim(p,t))).map(P=>{const av=avanceTrabajo(P),pr=promTrabajo(P);return {nombre:P.nombre,tipo:nomTrabajo(P),trimestre:trimsDe(P).join(' y '),promedioGrupo:pr==null?null:+f1(pr),avance:`${av.n} de ${av.t} ${etqFase(P,true)} con evidencias`,estado:P.estado||'en curso'}}),
     alumnos:A.map(a=>{const st=stats(a.id,ts),p=ts.length===1?promAl(a.id,ts[0]):finalAl(a.id),pp=prev?promAl(a.id,prev):null;
       return {alumno:alias(a.id),promedio:p==null?null:+f1(p),promedioTrimestreAnterior:pp==null?undefined:+f1(pp),porCampo:Object.fromEntries(CAMPOS.map(c=>[c.c||c.k,(x=>x==null?null:+f1(x))(ts.length===1?calif(a.id,c.k,ts[0]).cal:finalCampo(a.id,c.k))])),cumplimientoPct:st.pct,participaciones:st.part,asistenciaPct:asTot(a.id,asFechas(f=>ts.includes(trimDe(f)))).pct??undefined,notas:notasDe(a.id,ts).length}}),
     requierenAtencion:ts.length===1?atencion(ts[0]).map(x=>({alumno:alias(x.a.id),motivos:x.r})):undefined};
