@@ -409,6 +409,17 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .tb-q{display:grid;gap:4px}.tb-q .hj-chk{padding:0}.tb-qt{flex:1;font-weight:700}.tb-qo{font-size:.85rem}
 .auto-b{display:grid;gap:6px}.auto-b p{margin:0}
 @media (max-width:600px){.tb-cab{flex-wrap:wrap}.tb-prog{width:100%}.tb-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.tb-av{width:88px;height:88px;font-size:3.2rem}.tb-card b{font-size:1.2rem}}
+/* Proporción: el personaje, el círculo, el nombre y los botones crecen juntos según la pantalla */
+.tb-grid{grid-template-columns:repeat(auto-fill,minmax(clamp(150px,21vw,230px),1fr))}
+.tb-av{font-size:clamp(3rem,7.5vw,4.6rem);width:1.7em;height:1.7em}
+.tb-card b{font-size:clamp(1.1rem,2.5vw,1.6rem)}
+.tb-uno .tb-av{font-size:clamp(4rem,9vw,6rem);width:1.7em;height:1.7em}
+.tb-ok .tb-av{font-size:clamp(4.6rem,10vw,6.6rem);width:1.7em;height:1.7em}
+.tb-cal{font-size:clamp(2rem,5vw,3rem);width:2.4em;height:2.4em;border-radius:.55em}
+.tb-cals.chico .tb-cal{font-size:1.5rem;width:3.5em;height:2.6em;border-radius:.75em}
+.tb-avs{grid-template-columns:repeat(auto-fill,minmax(clamp(80px,11vw,120px),1fr))}.tb-avs button{font-size:clamp(2.6rem,5.5vw,4rem)}
+@media (max-width:600px){.tb-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.tb-av{font-size:3rem}.tb-card b{font-size:1.15rem}}
+@media (orientation:landscape) and (max-height:820px){.tb-uno .tb-av{font-size:clamp(3.4rem,11vh,6rem)}.tb-ok .tb-av{font-size:clamp(4rem,13vh,6.6rem)}.tb-cal{font-size:clamp(1.8rem,6vh,3rem)}.tb-centro{gap:12px}}
 /* Asistencia y reportes */
 .as-tw{max-height:calc(100vh - 170px);overflow:auto}
 .as-t{border-collapse:separate;border-spacing:0}
@@ -3068,6 +3079,7 @@ function tabPintar(){const root=$('#tab-root');if(!root)return;const t=U.tab;if(
 function tbAjusta(root){if(!root)return;root.querySelectorAll('.tb-card b').forEach(b=>{b.style.fontSize='';let f=parseFloat(getComputedStyle(b).fontSize)||18;
   const lh=()=>parseFloat(getComputedStyle(b).lineHeight)||f*1.1;
   while(f>11&&(b.scrollWidth>b.clientWidth+1||b.offsetHeight>lh()*2.2)){f-=1;b.style.fontSize=f+'px'}})}
+window.addEventListener('resize',()=>{clearTimeout(U._tbRz);U._tbRz=setTimeout(()=>tbAjusta($('#tab-root')),150)}); // al girar la tablet se recalculan los nombres
 function tbRevHTML(){const t=U.tab,L=activos(),qs=t.ent&&t.ent.on?t.ent.q.filter(q=>q.on):[],falta=L.filter(a=>t.v[a.id]==null).length;
   const resp=a=>{const r=t.ent&&t.ent.r&&t.ent.r[a.id];if(!r)return '';const s=TB_SENT.find(x=>x[0]===r.sent);return `<span class="tb-rs">${s?s[1]:''} ${[...(r.dif||[]).filter(x=>x!=='Nada').map(x=>'<i class="dif">'+esc(x)+'</i>'),...(r.fac||[]).map(x=>'<i class="fac">'+esc(x)+'</i>')].join('')}${r.txt?` <i>«${esc(corto(r.txt,40))}»</i>`:''}</span>`};
   const res=qs.length?tbResumen(t.ent,L):'';
