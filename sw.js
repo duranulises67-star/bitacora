@@ -1,6 +1,6 @@
 // Guarda la app en el dispositivo para que abra sin internet.
 // La página se pide primero a internet (así cada actualización se ve al abrir); si no hay conexión en 4 s, se usa la copia guardada.
-const CACHE='bitacora-tabnom-2';
+const CACHE='bitacora-tabnom-3';
 const ARCHIVOS=['./','index.html','config.js','manifest.webmanifest','icono-192.png','icono-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARCHIVOS.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
