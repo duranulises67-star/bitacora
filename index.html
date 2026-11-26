@@ -29,7 +29,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 <link rel="icon" href="data:image/svg+xml,<svg viewBox='0 0 96 96' xmlns='http://www.w3.org/2000/svg'><rect width='96' height='96' rx='24' fill='%23fffdfa'/><rect x='1.5' y='1.5' width='93' height='93' rx='22.5' fill='none' stroke='%23e3ddd3' stroke-width='3'/><rect x='18' y='50' width='16' height='28' rx='8' fill='%23bcd5ea'/><rect x='40' y='38' width='16' height='40' rx='8' fill='%23b9d3c4'/><rect x='62' y='24' width='16' height='54' rx='8' fill='%233f6f68'/><path d='M22 40 L48 26 L70 14' fill='none' stroke='%23e9a77e' stroke-width='4' stroke-linecap='round' stroke-dasharray='1 8'/><circle cx='72' cy='13' r='6' fill='%23e9a77e'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
 <style>
 /* Layout: una sola columna de trabajo; encabezado fijo con selector de trimestre y pestañas; captura rápida con calificaciones 5–10; matrices por proyecto y disciplina; participaciones continuas y rúbricas por proyecto académico */
 :root{
@@ -357,7 +357,7 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .tb-pend{margin-bottom:0}
 .tb-centro .btn{background:#fff;color:#3d2d6b;border:2px solid #d1c4e9;font-weight:700}.tb-centro .btn.primary{background:#7e57c2;color:#fff;border-color:#7e57c2}.tb-centro .btn:disabled{opacity:.45}
 .tb-on .ia-fab,.tb-on .ia-win{display:none}
-.tb-win{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;background:radial-gradient(circle at 10% 0%,#fff3e0 0,transparent 40%),radial-gradient(circle at 90% 10%,#e1f5fe 0,transparent 45%),radial-gradient(circle at 50% 100%,#f3e5f5 0,transparent 50%),#fffdf8;color:#2b2540;font-family:var(--f-body)}
+.tb-win{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;background:radial-gradient(circle at 10% 0%,#fff3e0 0,transparent 40%),radial-gradient(circle at 90% 10%,#e1f5fe 0,transparent 45%),radial-gradient(circle at 50% 100%,#f3e5f5 0,transparent 50%),#fffdf8;color:#2b2540;font-family:var(--f-body);--f-fun:'Fredoka','Baloo 2','Comic Sans MS','Chalkboard SE',var(--f-display)}
 .tb-cab{display:flex;gap:14px;align-items:center;padding:12px 18px;background:linear-gradient(90deg,#7e57c2,#5c6bc0 50%,#29b6f6);color:#fff}
 .tb-uno .tb-cab,.tb-win.tb-uno .tb-cab{background:linear-gradient(90deg,#ff7043,#ffa726)}
 .tb-cab>div:first-child{flex:1;min-width:0}.tb-cab b{display:block;font-family:var(--f-display);font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tb-cab small{opacity:.9}
@@ -366,25 +366,25 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .tb-doc{border:0;border-radius:99px;padding:8px 14px;font-weight:700;background:rgba(255,255,255,.22);color:#fff;cursor:pointer}
 .tb-body{flex:1;overflow:auto;padding:16px}
 .tb-busca{max-width:560px;margin:0 auto 14px}.tb-busca input{width:100%;font-size:1.25rem;padding:14px 18px;border-radius:99px;border:3px solid #d1c4e9;background:#fff;color:#2b2540}
-.tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:1200px;margin:0 auto}
-.tb-card{position:relative;display:grid;justify-items:center;gap:8px;padding:16px 10px 14px;border:0;border-radius:22px;cursor:pointer;background:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 70%,#000),0 10px 24px rgba(60,40,90,.12);border-top:8px solid var(--c);animation:tbEntra .45s var(--d) both;transition:transform .12s}
+.tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));grid-auto-rows:1fr;gap:16px;max-width:1200px;margin:0 auto}
+.tb-card{position:relative;display:grid;justify-items:center;gap:10px;align-content:center;padding:18px 10px 14px;min-width:0;overflow:hidden;border:0;border-radius:22px;cursor:pointer;background:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 70%,#000),0 10px 24px rgba(60,40,90,.12);border-top:8px solid var(--c);animation:tbEntra .45s var(--d) both;transition:transform .12s}
 .tb-card:active{transform:translateY(4px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 70%,#000)}
-.tb-card b{font-size:1.05rem;color:#2b2540;line-height:1.15;text-align:center}
+.tb-card b{display:block;width:100%;font-family:var(--f-fun);font-weight:600;font-size:1.35rem;color:#3d2d6b;line-height:1.1;text-align:center;overflow-wrap:normal;word-break:normal;hyphens:none;text-wrap:balance;letter-spacing:.01em}
 .tb-card.hecho{opacity:.55}.tb-card.hecho i{position:absolute;top:6px;right:10px;font-style:normal;font-size:1.4rem;color:#43a047}
-.tb-av{display:grid;place-items:center;width:78px;height:78px;border-radius:50%;font-size:2.8rem;background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.6) 0 9%,transparent 10%),var(--c);text-shadow:0 2px 0 rgba(0,0,0,.18);box-shadow:0 4px 12px color-mix(in srgb,var(--c) 50%,transparent);animation:tbFlota 3s ease-in-out infinite;color:#fff;font-weight:800}
+.tb-av{display:flex;align-items:center;justify-content:center;flex:none;width:108px;height:108px;border-radius:50%;font-size:4rem;line-height:1;font-family:var(--f-fun),'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.6) 0 9%,transparent 10%),var(--c);text-shadow:0 2px 0 rgba(0,0,0,.18);box-shadow:0 4px 12px color-mix(in srgb,var(--c) 50%,transparent);animation:tbFlota 3s ease-in-out infinite;color:#fff;font-weight:800}
 .tb-card:nth-child(3n) .tb-av{animation-delay:-1s}.tb-card:nth-child(3n+1) .tb-av{animation-delay:-2s}
 @keyframes tbFlota{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
 @keyframes tbEntra{from{opacity:0;transform:translateY(16px) scale(.92)}}
 .tb-centro{max-width:820px;margin:0 auto;display:grid;justify-items:center;gap:16px;text-align:center;padding-top:10px}
-.tb-centro h2{font-family:var(--f-display);font-size:clamp(1.5rem,4vw,2.3rem);color:#3d2d6b}
+.tb-centro h2{font-family:var(--f-fun);font-weight:700;font-size:clamp(1.5rem,4vw,2.3rem);color:#3d2d6b}
 .tb-centro p{margin:0;font-size:1.1rem;color:#5e5873}
-.tb-uno{display:grid;justify-items:center;gap:6px}.tb-uno .tb-av{width:120px;height:120px;font-size:4.4rem}
+.tb-uno{display:grid;justify-items:center;gap:6px}.tb-uno .tb-av{width:150px;height:150px;font-size:5.6rem}
 .tb-cals{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
 .tb-cal{width:clamp(78px,13vw,112px);height:clamp(78px,13vw,112px);border:0;border-radius:26px;font-family:var(--f-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;color:#fff;cursor:pointer;background:var(--c);box-shadow:0 7px 0 color-mix(in srgb,var(--c) 65%,#000),0 12px 24px color-mix(in srgb,var(--c) 40%,transparent);transition:transform .1s;text-shadow:0 2px 0 rgba(0,0,0,.15)}
 .tb-cal:active{transform:translateY(5px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 65%,#000)}.tb-cal.on{outline:5px solid #3d2d6b;outline-offset:3px}
 .tb-cals.chico .tb-cal{width:84px;height:62px;font-size:1.5rem;border-radius:18px}.tb-cal.gris{--c:#90a4ae}
-.tb-avs{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;width:100%}
-.tb-avs button{aspect-ratio:1;border:0;border-radius:20px;font-size:2.4rem;cursor:pointer;background:radial-gradient(circle at 35% 30%,#fff 0 15%,var(--c) 75%);box-shadow:0 5px 0 color-mix(in srgb,var(--c) 65%,#000);animation:tbEntra .4s var(--d) both}
+.tb-avs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;width:100%}
+.tb-avs button{aspect-ratio:1;display:flex;align-items:center;justify-content:center;line-height:1;border:0;border-radius:22px;font-size:3.3rem;cursor:pointer;background:radial-gradient(circle at 35% 30%,#fff 0 15%,var(--c) 75%);box-shadow:0 5px 0 color-mix(in srgb,var(--c) 65%,#000);animation:tbEntra .4s var(--d) both}
 .tb-avs button:active{transform:translateY(4px)}
 .tb-qn{font-weight:700;color:#7e57c2;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem}
 .tb-emo{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;width:100%}
@@ -394,7 +394,7 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .tb-ops button{padding:14px 20px;border-radius:99px;border:3px solid #d1c4e9;background:#fff;font-size:1.1rem;font-weight:700;color:#3d2d6b;cursor:pointer}
 .tb-ops button.on{background:#7e57c2;border-color:#7e57c2;color:#fff;transform:scale(1.04)}
 .tb-sig{font-size:1.15rem;padding:12px 26px}.tb-txt{width:100%;min-height:120px;font-size:1.15rem;border-radius:18px;border:3px solid #d1c4e9;padding:12px;background:#fff;color:#2b2540}
-.tb-ok{padding-top:40px}.tb-ok .tb-av{width:130px;height:130px;font-size:4.8rem;animation:tbSalta .7s ease-out}
+.tb-ok{padding-top:40px}.tb-ok .tb-av{width:170px;height:170px;font-size:6.2rem;animation:tbSalta .7s ease-out}
 .tb-num{display:inline-block;min-width:1.6em;padding:2px 12px;border-radius:14px;background:var(--c);color:#fff;font-size:1.6rem}
 @keyframes tbSalta{0%{transform:scale(.3)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 .tb-fiesta{position:relative;height:0;width:100%}.tb-fiesta span{position:absolute;left:calc(20% + var(--i)*15%);top:0;font-size:2.4rem;animation:tbChispa 1.4s ease-out both;animation-delay:calc(var(--i)*.08s)}
@@ -408,7 +408,7 @@ input.cin.hj.bad{outline:2px solid var(--l0);background:var(--l0bg)}
 .tb-cfg{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface2)}
 .tb-q{display:grid;gap:4px}.tb-q .hj-chk{padding:0}.tb-qt{flex:1;font-weight:700}.tb-qo{font-size:.85rem}
 .auto-b{display:grid;gap:6px}.auto-b p{margin:0}
-@media (max-width:600px){.tb-cab{flex-wrap:wrap}.tb-prog{width:100%}.tb-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}.tb-av{width:64px;height:64px;font-size:2.3rem}}
+@media (max-width:600px){.tb-cab{flex-wrap:wrap}.tb-prog{width:100%}.tb-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.tb-av{width:88px;height:88px;font-size:3.2rem}.tb-card b{font-size:1.2rem}}
 /* Asistencia y reportes */
 .as-tw{max-height:calc(100vh - 170px);overflow:auto}
 .as-t{border-collapse:separate;border-spacing:0}
@@ -486,8 +486,6 @@ ol.pasos{margin:0;padding-left:20px;display:grid;gap:4px}
 .st.voz-hit{background:color-mix(in srgb,var(--l3) 16%,transparent);border-radius:10px;transition:background .3s}
 </style>
 
-</head>
-<body>
 <div class="wrap">
   <header class="top">
     <div class="toprow">
@@ -3064,7 +3062,12 @@ function tabPintar(){const root=$('#tab-root');if(!root)return;const t=U.tab;if(
       <div class="tb-grid">${lst.map((a,i)=>`<button class="tb-card${t.v[a.id]!=null?' hecho':''}" style="--c:${avCol(a)};--d:${(i%10)*.08}s" data-act="tbSel" data-k="${a.id}">${ficha(a)}<b>${esc(nomPila(a))}</b>${t.v[a.id]!=null?'<i>✔</i>':''}</button>`).join('')||'<p>No encontré ese nombre.</p>'}</div>`}
   root.innerHTML=`<div class="tb-win tb-${t.modo}">${cab}<div class="tb-body">${x}</div></div>`;
   if(t.pant==='lista'&&t.q){const e=$('#tb-q');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}}
+  tbAjusta(root);if(document.fonts&&document.fonts.ready&&!U._tbFont){U._tbFont=1;document.fonts.ready.then(()=>tbAjusta($('#tab-root')))}
 }
+// achica el nombre de cada tarjeta hasta que quepa completo (máx. 2 renglones, sin cortar palabras)
+function tbAjusta(root){if(!root)return;root.querySelectorAll('.tb-card b').forEach(b=>{b.style.fontSize='';let f=parseFloat(getComputedStyle(b).fontSize)||18;
+  const lh=()=>parseFloat(getComputedStyle(b).lineHeight)||f*1.1;
+  while(f>11&&(b.scrollWidth>b.clientWidth+1||b.offsetHeight>lh()*2.2)){f-=1;b.style.fontSize=f+'px'}})}
 function tbRevHTML(){const t=U.tab,L=activos(),qs=t.ent&&t.ent.on?t.ent.q.filter(q=>q.on):[],falta=L.filter(a=>t.v[a.id]==null).length;
   const resp=a=>{const r=t.ent&&t.ent.r&&t.ent.r[a.id];if(!r)return '';const s=TB_SENT.find(x=>x[0]===r.sent);return `<span class="tb-rs">${s?s[1]:''} ${[...(r.dif||[]).filter(x=>x!=='Nada').map(x=>'<i class="dif">'+esc(x)+'</i>'),...(r.fac||[]).map(x=>'<i class="fac">'+esc(x)+'</i>')].join('')}${r.txt?` <i>«${esc(corto(r.txt,40))}»</i>`:''}</span>`};
   const res=qs.length?tbResumen(t.ent,L):'';
